@@ -1,0 +1,30 @@
+{
+  // Restricting options
+  "strict":     true,      // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/Strict_mode
+  "trailing":   true,      // Makes it an error to leave a trailing whitespace in your code.
+  "curly":      true,      // Force braces around blocks in loops and conditionals.
+  "immed":      true,      // Prohibits the use of immediate function invocations without wrapping them in parentheses.
+  "eqeqeq":     true,      // Force triple equality
+  "undef":      true,      // Prohibits the use of explicitly undeclared variables. Use /*global ... */ for exceptions
+  "latedef":    true,      // Prohibits the use of a variable before it has been defined.
+  "unused":     true,      // Warns when you define and never use your variables.
+  "newcap":     true,      // Forces you to capitalize names of constructor functions.
+  "noarg":      true,      // Prohibits the use of arguments.caller and arguments.callee, which are deprecated in EcmaScript 5.
+  "quotmark":   "single",  // Force single quotes for strings
+  "maxdepth":   4,         // The maximum depth level of nested blocks
+
+  // Relaxing options
+  "expr":       true,      // Allow expressions where normally you would expect to see assignments or function calls.
+  "onecase":    true,      // Allow switches with only one case (not counting default)
+  "sub":        true,      // Allow using [] notation when it can also be expressed in dot notation: person['name'] vs. person.name.
+
+  // Environment
+  "browser":    true,      // Define common browser globals: document, navigator, etc.
+  "devel":      true,      // Define globals that are usually used for debugging: console, alert, etc.
+
+  // Misc.
+  "white":      true,      // Enforce Crockford style guides
+  "indent":     2,          // Set indentation to two spaces
+
+  "predef": [ "define", "require" ]
+}

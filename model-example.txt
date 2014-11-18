@@ -1,0 +1,23 @@
+var PlayerModel = modelConstructorFactory.create({
+  name: 'Player', // Name of the constructor
+  inheritsFrom: EntityModel,
+  attributes: {
+    name: undefined, // this is the same as { type: undefined }, i.e. any type
+    id: {
+      type: Number, // specifying a type will force a type check on set
+      required: true, // constructor check
+    }
+    race: {
+      type: String,
+      notNull: true,
+      notUndefined: true,
+    },
+    avatar: {
+      getter: function () { return this.race + '.png'; },
+      setter: false, // Will throw an error if trying to set.
+    }
+  },
+});
+
+
+playerModelFactory.checkTypes = false; // Disables type checking for faster code. I.e. String/Number... and notNull, notUndefined

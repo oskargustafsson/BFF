@@ -1,0 +1,30 @@
+AMD compatible
+
+Controller event handling:
+listenTo, listenToOnce and stopListening
+
+Object.freeze, Object.seal
+
+var MyModel = Model.create({
+  properties: {
+    firstName: 'Oskar',     // Defaults to { enumerable: true, writable: true, value: 'Oskar' }
+    lastName: 'Gustafsson',
+    fullName: {
+      sources: [ 'firstName', 'lastName' ],   // May include calculated properties (circularity check?)
+      get: function (firstName, lastName) { return firstName + ' ' + lastName },
+      silent: [ 'firstName' ]   // Don't trigger the change event when firstName is updated
+      // silent: true   // Never trigger the change event
+    }
+  },
+
+  // Add check if (constant.toUpperCase() != contant) { throw 'error' }
+  // Set on prototype, for performance
+  constants: {
+    PI: 3.141592    // becomes { PI: { get: function () { return 3.141592; } } }
+  }
+})
+
+
+
+
+Views should be extensible with traits.
