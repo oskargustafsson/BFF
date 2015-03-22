@@ -2,7 +2,6 @@ define([], function () {
   'use strict';
 
   function makeSetter(model, propName, propSchema) {
-
     var evName = 'change:' + propName;
 
     function setter(val) {
@@ -10,14 +9,15 @@ define([], function () {
       propSchema.setter && (val = propSchema.setter(val));
 
       // Input validation
-      // TODO: make it possible to disable this
-      var type = typeof val;
-      if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
-        throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
-            ' and can not be assigned a value of type ' + (typeof val);
-      }
-      if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
-        throw 'Property ' + propName + ' is not allowed to be ' + val;
+      if (model.runtimeChecks) {
+        var type = typeof val;
+        if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
+          throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
+              ' and can not be assigned a value of type ' + (typeof val);
+        }
+        if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
+          throw 'Property ' + propName + ' is not allowed to be ' + val;
+        }
       }
 
       // Set value and emit event
@@ -34,11 +34,7 @@ define([], function () {
   }
 
   function makeGetter(model, propName) {
-
-    function getter() { return model.properties[propName]; }
-
-    return getter;
-
+    return function getter() { return model.properties[propName]; };
   }
 
   function Model(schema, properties) {
