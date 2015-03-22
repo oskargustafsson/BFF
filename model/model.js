@@ -20,14 +20,11 @@ define([], function () {
         }
       }
 
-      // Set value and emit event
-      if (model.callbacks[evName]) {
-        var oldVal = model[propName];
-        model.properties[propName] = val;
-        model.emit(evName, [ val, oldVal ]);
-      } else {
-        model.properties[propName] = val;
-      }
+      var oldVal = model[propName];
+      if (val === oldVal) { return; }
+
+      model.properties[propName] = val;
+      model.callbacks[evName] && model.emit(evName, [ val, oldVal ]);
     }
 
     return setter;
