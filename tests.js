@@ -1,5 +1,5 @@
 define([
-  'model-constructor-factory'
+  'model/model-constructor-factory'
 ], function (
   modelConstructorFactory
 ) {

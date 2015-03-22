@@ -1,5 +1,5 @@
 define([
-  'model'
+  './model'
 ], function (
   Model
 ) {
