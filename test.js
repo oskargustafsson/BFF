@@ -6,7 +6,7 @@ define([
   'use strict';
 
   var PlayerModel = modelConstructorFactory.create({
-    name: undefined, // no restrictions on this attribute
+    name: undefined, // no restrictions on this property
     id: {
       type: 'number', // specifying a type will force a type check on set
     },

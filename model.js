@@ -1,47 +1,47 @@
 define([], function () {
   'use strict';
 
-  function makeSetter(model, attrName, attr) {
+  function makeSetter(model, propName, propSchema) {
 
-    var evName = 'change:' + attrName;
+    var evName = 'change:' + propName;
 
     function setter(val) {
       // Input validation
       // TODO: make it possible to disable this
-      if (attr.type && typeof val !== attr.type) {
-        throw 'Attribute ' + attrName + ' is of type ' + (typeof attr.type) +
+      if (propSchema.type && typeof val !== propSchema.type) {
+        throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
             ' and can not be assigned a value of type ' + (typeof val);
       }
-      if (attr.forbiddenValues && attr.forbiddenValues.indexOf(val) !== -1) {
-        throw 'Attribute ' + attrName + ' is not allowed to be ' + val;
+      if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
+        throw 'Property ' + propName + ' is not allowed to be ' + val;
       }
 
       // Set value and emit event
       if (model.callbacks[evName]) {
-        var oldVal = model[attrName];
-        model.attributes[attrName] = val;
+        var oldVal = model[propName];
+        model.properties[propName] = val;
         model.emit(evName, [ val, oldVal ]);
       } else {
-        model.attributes[attrName] = val;
+        model.properties[propName] = val;
       }
     }
 
     return setter;
   }
 
-  function makeGetter(model, attrName) {
+  function makeGetter(model, propName) {
 
-    function getter() { return model.attributes[attrName]; }
+    function getter() { return model.properties[propName]; }
 
     return getter;
 
   }
 
-  function Model(schema, attributes) {
-    this.attributes = {}; // TODO: make private
+  function Model(schema, properties) {
+    this.properties = {}; // TODO: make private
     this.callbacks = {}; // TODO: make private
 
-    attributes = attributes || {};
+    properties = properties || {};
 
     for (var property in schema) {
       var propertySchema = schema[property] || {};
@@ -50,8 +50,7 @@ define([], function () {
         set: makeSetter(this, property, propertySchema),
         get: makeGetter(this, property, propertySchema),
       });
-      //attributes.hasOwnProperty(property) && (this.attributes[property] = attributes[property]);
-      this[property] = attributes.hasOwnProperty(property) ? attributes[property] : propertySchema.defaultValue;
+      this[property] = properties.hasOwnProperty(property) ? properties[property] : propertySchema.defaultValue;
     }
 
     Object.preventExtensions(this);
