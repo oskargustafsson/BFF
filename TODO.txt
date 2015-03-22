@@ -1,5 +1,8 @@
 Unit tests
 Docblocks
+
+MODEL
+-----
 Break out event into mixin
 Use Object.defineProperties instead of Object.defineProperty
 Check that properties not in the schema are not passed to the constructor (e.g. { namee: 'O' })

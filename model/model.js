@@ -65,6 +65,14 @@ define([], function () {
     Object.preventExtensions(this);
   }
 
+  Model.prototype.toPlainObject = function () {
+    return JSON.parse(this.toString());
+  };
+
+  Model.prototype.toString = function () {
+    return JSON.stringify(this.properties);
+  };
+
   // TODO: Mix these in
   Model.prototype.emit = function emit(evName, args) {
     var cbs = this.callbacks[evName];

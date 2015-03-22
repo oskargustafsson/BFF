@@ -56,4 +56,8 @@ define([
   // Test that the setter actually transforms the value
   player.race = 'HuMaN';
 
+  // Test that the Model can be serialized
+  console.log(player + '');
+  console.log(player.toPlainObject());
+
 });
