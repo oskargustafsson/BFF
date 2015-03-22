@@ -1,0 +1,8 @@
+{
+  "name": "js-components",
+  "description": "Base modules for JS front-end development",
+  "author": "Oskar Gustafsson <oskargustafsson88@gmail.com>",
+  "devDependencies": {
+    "intern": "^2.2.2"
+  }
+}
