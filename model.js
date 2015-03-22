@@ -1,26 +1,37 @@
 define([], function () {
   'use strict';
 
-  function makeSetter(self, attrName) {
+  function makeSetter(model, attrName, attr) {
 
     var evName = 'change:' + attrName;
 
     function setter(val) {
-      if (self.callbacks[evName]) {
-        var oldVal = self[attrName];
-        self.attributes[attrName] = val;
-        self.emit(evName, [ val, oldVal ]);
+      // Input validation
+      // TODO: make it possible to disable this
+      if (attr.type && typeof val !== attr.type) {
+        throw 'Attribute ' + attrName + ' is of type ' + (typeof attr.type) +
+            ' and can not be assigned a value of type ' + (typeof val);
+      }
+      if (attr.forbiddenValues && attr.forbiddenValues.indexOf(val) !== -1) {
+        throw 'Attribute ' + attrName + ' is not allowed to be ' + val;
+      }
+
+      // Set value and emit event
+      if (model.callbacks[evName]) {
+        var oldVal = model[attrName];
+        model.attributes[attrName] = val;
+        model.emit(evName, [ val, oldVal ]);
       } else {
-        self.attributes[attrName] = val;
+        model.attributes[attrName] = val;
       }
     }
 
     return setter;
   }
 
-  function makeGetter(self, attrName) {
+  function makeGetter(model, attrName) {
 
-    function getter() { return self.attributes[attrName]; }
+    function getter() { return model.attributes[attrName]; }
 
     return getter;
 
@@ -33,12 +44,14 @@ define([], function () {
     attributes = attributes || {};
 
     for (var property in schema) {
+      var propertySchema = schema[property] || {};
       Object.defineProperty(this, property, {
         enumerable: true,
-        set: makeSetter(this, property),
-        get: makeGetter(this, property)
+        set: makeSetter(this, property, propertySchema),
+        get: makeGetter(this, property, propertySchema),
       });
-      attributes.hasOwnProperty(property) && (this.attributes[property] = attributes[property]);
+      //attributes.hasOwnProperty(property) && (this.attributes[property] = attributes[property]);
+      this[property] = attributes.hasOwnProperty(property) ? attributes[property] : propertySchema.defaultValue;
     }
 
     Object.preventExtensions(this);

@@ -6,15 +6,17 @@ define([
   'use strict';
 
   var PlayerModel = modelConstructorFactory.create({
-    name: undefined, // this is the same as { type: undefined }, i.e. any type
+    name: undefined, // no restrictions on this attribute
     id: {
-      type: Number, // specifying a type will force a type check on set
-      required: true, // constructor check
+      type: 'number', // specifying a type will force a type check on set
     },
     race: {
-      type: String,
-      notNull: true,
-      notUndefined: true,
+      type: 'string',
+      defaultValue: 'human',
+    },
+    color: {
+      forbiddenValues: [ null, undefined ], // Forbidding undefined is like saying that this field is required
+      defaultValue: 'green',
     },
     avatar: {
       getter: function () { return this.race + '.png'; },
@@ -25,10 +27,12 @@ define([
   var player = new PlayerModel({
     name: 'Oskar',
     id: 1337,
-    race: 'Human',
+    //color: 'green',
   });
 
   //player.asd = 'asdf'; // TODO write unit test for this
+
+  // Test that events are emitted
 
   player.on('change:name', function (newName, oldName) {
     console.log('oldName', oldName, 'newName', newName);
@@ -37,5 +41,13 @@ define([
   player.name = 'Bob';
 
   console.log(player.name);
+
+  // Test that type checking is working
+
+  player.race = 'Alien';  // Should work
+  //player.race = 4;  // Should throw error
+
+  // Test that forbidden values are working
+  //player.color = undefined;
 
 });
