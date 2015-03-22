@@ -10,18 +10,19 @@ define([
     id: {
       type: 'number', // specifying a type will force a type check on set
     },
-    race: {
-      type: 'string',
-      defaultValue: 'human',
-    },
     color: {
       forbiddenValues: [ null, undefined ], // Forbidding undefined is like saying that this field is required
       defaultValue: 'green',
     },
-    avatar: {
-      getter: function () { return this.race + '.png'; },
-      setter: false, // Will throw an error if trying to set.
-    }
+    race: {
+      type: 'string',
+      defaultValue: 'human',
+      setter: function (val) { return val.toLowerCase(); }
+    },
+    avatarUrl: {
+      getter: function () { return 'assets/' + this.race + '_' + this.color + '.png'; },
+      setter: false,
+    },
   });
 
   var player = new PlayerModel({
@@ -43,11 +44,16 @@ define([
   console.log(player.name);
 
   // Test that type checking is working
-
-  player.race = 'Alien';  // Should work
+  player.race = 'alien';  // Should work
   //player.race = 4;  // Should throw error
 
   // Test that forbidden values are working
   //player.color = undefined;
+
+  // Test that you can't set a value on a property whose setter is explicitly defined as false
+  //player.avatarUrl = 'wat';
+
+  // Test that the setter actually transforms the value
+  player.race = 'HuMaN';
 
 });

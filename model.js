@@ -6,9 +6,13 @@ define([], function () {
     var evName = 'change:' + propName;
 
     function setter(val) {
+      // If there is a custom setter, use it to transform the value
+      propSchema.setter && (val = propSchema.setter(val));
+
       // Input validation
       // TODO: make it possible to disable this
-      if (propSchema.type && typeof val !== propSchema.type) {
+      var type = typeof val;
+      if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
         throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
             ' and can not be assigned a value of type ' + (typeof val);
       }
@@ -45,18 +49,27 @@ define([], function () {
 
     for (var property in schema) {
       var propertySchema = schema[property] || {};
-      Object.defineProperty(this, property, {
+
+      var descriptor = {
         enumerable: true,
-        set: makeSetter(this, property, propertySchema),
-        get: makeGetter(this, property, propertySchema),
-      });
-      this[property] = properties.hasOwnProperty(property) ? properties[property] : propertySchema.defaultValue;
+      };
+      if (propertySchema.getter !== false) {
+        descriptor.get = propertySchema.getter || makeGetter(this, property);
+      }
+      if (propertySchema.setter !== false) {
+        descriptor.set = makeSetter(this, property, propertySchema);
+      }
+      Object.defineProperty(this, property, descriptor);
+
+      if (propertySchema.setter !== false) {
+        this[property] = properties.hasOwnProperty(property) ? properties[property] : propertySchema.defaultValue;
+      }
     }
 
     Object.preventExtensions(this);
   }
 
-  // Mix these in
+  // TODO: Mix these in
   Model.prototype.emit = function emit(evName, args) {
     var cbs = this.callbacks[evName];
     cbs.forEach(function (cb) {
