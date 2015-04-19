@@ -7,13 +7,14 @@
   this.setRootEl(player); // Either a selector string or a DOM element
 
   // .bind() takes either a Model, DOMElement or a selector String
-  this.bind(this.model, 'change:name', function (ev) {
-    // Event always has properties: source
-    // (and $source if they are DOM els and jQ/Zepto is present)
+  this.listenTo(this.model, 'change:name', function (ev) {
+    // Event always has properties: target
+    // (and $target if they are DOM els and jQ/Zepto is present)
     // change:* events also has value and previousValue properties
-    this.find('.name span').innerHTML = ev.value; // Alt: ev.source.name
+    // this.find is a shorthand for this.el.querySelector
+    this.find('.name span').innerHTML = ev.value; // Alt: ev.target.name
   });
-  this.bind('.name input', 'change', function (ev) {
+  this.listenTo('.name input', 'change', function (ev) {
     this.model.name = ev.target.value;
   });
 
