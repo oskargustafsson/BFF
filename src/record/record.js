@@ -40,8 +40,9 @@ define([], function () {
 
     properties = properties || {};
 
-    for (var property in schema) {
-      var propertySchema = schema[property] || {};
+    var property, propertySchema;
+    for (property in schema) {
+      propertySchema = schema[property] || {};
 
       var descriptor = {
         enumerable: true,
@@ -53,13 +54,20 @@ define([], function () {
         descriptor.set = makeSetter(this, property, propertySchema);
       }
       Object.defineProperty(this, property, descriptor);
-
-      if (propertySchema.setter !== false) {
-        this[property] = properties.hasOwnProperty(property) ? properties[property] : propertySchema.defaultValue;
-      }
     }
 
     Object.preventExtensions(this);
+
+    var propertiesUnion = {};
+    for (property in schema) {
+      propertiesUnion[property] = (schema[property] || {}).defaultValue;
+    }
+    for (property in properties) {
+      propertiesUnion[property] = properties[property];
+    }
+    for (property in propertiesUnion) {
+      this[property] = propertiesUnion[property];
+    }
   }
 
   Record.prototype.toPlainObject = function () {

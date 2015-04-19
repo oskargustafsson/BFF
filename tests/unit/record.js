@@ -12,6 +12,41 @@ define(function (require) {
 
       name: 'Model',
 
+      'properties': {
+
+        'can be declared without any additional information and set in the constructor': function () {
+          Record = factory.create({ race: undefined });
+          expect(new Record({ race: 'human' }).race).to.equal('human');
+        },
+
+        'can be after creation': function () {
+          Record = factory.create({ race: undefined });
+          var record = new Record();
+          expect(record.race).to.equal(undefined);
+          record.race = 'human';
+          expect(record.race).to.equal('human');
+        },
+
+        'can not be set unless declared': function () {
+          Record = factory.create();
+          expect(function () { new Record({ race: 'human' }); }).to.throw();
+          expect(function () {
+            var record = new Record();
+            record.race = 'human';
+          }).to.throw();
+        },
+
+        /*'can be read only': function () {
+        },
+
+        'can be set only': function () {
+        },
+
+        'setters': {},
+        'getters': {},*/
+
+      },
+
       'type checking': {
 
         'throws an error if the passed value is of the wrong type': function () {
@@ -79,5 +114,7 @@ define(function (require) {
       },
 
     };
+
   });
+
 });
