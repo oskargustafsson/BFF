@@ -1,11 +1,11 @@
 define([
-  'model/model-constructor-factory'
+  'record/record-constructor-factory'
 ], function (
-  modelConstructorFactory
+  recordConstructorFactory
 ) {
   'use strict';
 
-  var PlayerModel = modelConstructorFactory.create({
+  var PlayerRecord = recordConstructorFactory.create({
     name: undefined, // no restrictions on this property
     id: {
       type: 'number', // specifying a type will force a type check on set
@@ -25,7 +25,7 @@ define([
     },
   });
 
-  var player = new PlayerModel({
+  var player = new PlayerRecord({
     name: 'Oskar',
     id: 1337,
     //color: 'green',
@@ -56,7 +56,7 @@ define([
   // Test that the setter actually transforms the value
   player.race = 'HuMaN';
 
-  // Test that the Model can be serialized
+  // Test that the Record can be serialized
   console.log(player + '');
   console.log(player.toPlainObject());
 

@@ -1,7 +1,7 @@
 define([], function () {
   'use strict';
 
-  function makeSetter(model, propName, propSchema) {
+  function makeSetter(record, propName, propSchema) {
     var evName = 'change:' + propName;
 
     function setter(val) {
@@ -9,7 +9,7 @@ define([], function () {
       propSchema.setter && (val = propSchema.setter(val));
 
       // Input validation
-      if (model.runtimeChecks) {
+      if (record.runtimeChecks) {
         var type = typeof val;
         if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
           throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
@@ -20,21 +20,21 @@ define([], function () {
         }
       }
 
-      var oldVal = model[propName];
+      var oldVal = record[propName];
       if (val === oldVal) { return; }
 
-      model.properties[propName] = val;
-      model.callbacks[evName] && model.emit(evName, [ val, oldVal ]);
+      record.properties[propName] = val;
+      record.callbacks[evName] && record.emit(evName, [ val, oldVal ]);
     }
 
     return setter;
   }
 
-  function makeGetter(model, propName) {
-    return function getter() { return model.properties[propName]; };
+  function makeGetter(record, propName) {
+    return function getter() { return record.properties[propName]; };
   }
 
-  function Model(schema, properties) {
+  function Record(schema, properties) {
     this.properties = {}; // TODO: make private
     this.callbacks = {}; // TODO: make private
 
@@ -62,28 +62,28 @@ define([], function () {
     Object.preventExtensions(this);
   }
 
-  Model.prototype.toPlainObject = function () {
+  Record.prototype.toPlainObject = function () {
     return JSON.parse(this.toString());
   };
 
-  Model.prototype.toString = function () {
+  Record.prototype.toString = function () {
     return JSON.stringify(this.properties);
   };
 
   // TODO: Mix these in
-  Model.prototype.emit = function emit(evName, args) {
+  Record.prototype.emit = function emit(evName, args) {
     var cbs = this.callbacks[evName];
     cbs.forEach(function (cb) {
       cb.apply(this, args);
     });
   };
 
-  Model.prototype.on = function (evName, callback) {
+  Record.prototype.on = function (evName, callback) {
     this.callbacks[evName] || (this.callbacks[evName] = []);
     this.callbacks[evName].push(callback);
   };
 
-  Model.prototype.off = function (evName, callback) {
+  Record.prototype.off = function (evName, callback) {
     if (typeof callback === 'function') {
       var cbs = this.callbacks[evName];
       var pos = cbs.indexOf(callback);
@@ -94,6 +94,6 @@ define([], function () {
     }
   };
 
-  return Model;
+  return Record;
 
 });

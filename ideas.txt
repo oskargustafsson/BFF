@@ -5,7 +5,7 @@ listenTo, listenToOnce and stopListening
 
 Object.freeze, Object.seal
 
-var MyModel = Model.create({
+var MyRecord = Record.create({
   properties: {
     firstName: 'Oskar',     // Defaults to { enumerable: true, writable: true, value: 'Oskar' }
     lastName: 'Gustafsson',
