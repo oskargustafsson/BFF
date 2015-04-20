@@ -60,7 +60,10 @@ define([], function () {
 
     var propertiesUnion = {};
     for (property in schema) {
-      propertiesUnion[property] = (schema[property] || {}).defaultValue;
+      var schemaInfo = schema[property] || {};
+      if (schemaInfo.setter !== false) {
+        propertiesUnion[property] = schemaInfo.defaultValue;
+      }
     }
     for (property in properties) {
       propertiesUnion[property] = properties[property];

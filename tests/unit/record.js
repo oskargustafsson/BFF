@@ -36,13 +36,31 @@ define(function (require) {
           }).to.throw();
         },
 
-        /*'can be read only': function () {
+        'can be read only': function () {
+          Record = factory.create({
+            MAX_LEVEL: {
+              getter: function () { return 99; },
+              setter: false,
+            },
+          });
+          var record = new Record();
+          expect(record.MAX_LEVEL).to.equal(99);
+          expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+          expect(function () { new Record({ MAX_LEVEL: 98 }); }).to.throw();
         },
 
         'can be set only': function () {
+          Record = factory.create({
+            password: {
+              getter: false,
+            },
+          });
+          var record = new Record();
+          record.password = 'bananahammock';
+          expect(record.password).to.equal(undefined);
         },
 
-        'setters': {},
+        /*'setters': {},
         'getters': {},*/
 
       },
@@ -112,6 +130,11 @@ define(function (require) {
         },
 
       },
+
+      //'emits an event when a value is changed'
+      //'does not emit an event if the assigned value is identical to the current one'
+      //'emits an event when a dependency causes the value to change'
+      //'does not emit an event if a dependency is changed but does not cause the value to change'
 
     };
 
