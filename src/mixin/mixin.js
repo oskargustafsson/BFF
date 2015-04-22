@@ -5,34 +5,24 @@ define(function () {
   var SOLVERS;
 
   function getType(item) { return item === null ? 'null' : item instanceof Array ? 'array' : typeof item; }
+  function getSolverFunction(val) { return getType(val) === 'function' ? val : SOLVERS[val]; }
 
   function mixin(target, source, onConflict, defaultOnConflict) {
-    // Assign to the target's prototype if possible
     target = target.prototype || target;
 
-    if (typeof onConflict === 'string') {
-      defaultOnConflict = onConflict;
-      onConflict = {};
-    } else if (getType(onConflict) !== 'object') {
-      throw 'onConflict must be either a string or an object';
-    }
+    var isOnConflictObject = getType(onConflict) === 'object';
+    defaultOnConflict = getSolverFunction(isOnConflictObject ? defaultOnConflict : onConflict) || SOLVERS.crash;
+    isOnConflictObject || (onConflict = {});
 
-    defaultOnConflict = typeof defaultOnConflict === 'function' ?
-        defaultOnConflict :
-        SOLVERS[defaultOnConflict] || SOLVERS.crash;
-
-    var solvers = {};
+    var solverFunctions = {};
     TYPES.forEach(function (type) {
-      var solver = onConflict[type];
-      solvers[type] = typeof solver === 'function' ? solver : SOLVERS[solver] || defaultOnConflict;
+      solverFunctions[type] = getSolverFunction(onConflict[type]) || defaultOnConflict;
     });
 
     for (var prop in source) {
-      if (target.hasOwnProperty[prop]) {
-        solvers[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict);
-      } else {
-        target[prop] = source[prop];
-      }
+      target.hasOwnProperty[prop] ?
+          solverFunctions[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict) :
+          target[prop] = source[prop];
     }
 
     return target;
