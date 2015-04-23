@@ -73,11 +73,13 @@ define([], function () {
     }
   }
 
-  Record.prototype.toPlainObject = function () {
+  // toJSON() actually returns an object, which is a bit misleading. For compatibility reasons.
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior
+  Record.prototype.toJSON = Record.prototype.toObject = function () {
     return JSON.parse(this.toString());
   };
 
-  Record.prototype.toString = function () {
+  Record.prototype.toJSONString = Record.prototype.toString = function () {
     return JSON.stringify(this.properties);
   };
 

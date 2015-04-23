@@ -87,14 +87,27 @@ define(function (require) {
 
       'forbidden value checking': {
 
-        'throws an error when a forbidden value is passed': function () {
+        'throws an error when a forbidden value is passed to constructor': function () {
           Record = factory.create({
-            race: { type: 'string', forbiddenValues: [ undefined, null ] },
+            race: { type: 'string', forbiddenValues: [ undefined, null, 'cow' ] },
           });
           expect(function () { new Record(); }).to.throw();
           expect(function () { new Record({ race: undefined }); }).to.throw();
           expect(function () { new Record({ race: null }); }).to.throw();
+          expect(function () { new Record({ race: 'cow' }); }).to.throw();
           expect(new Record({ race: 'human' }).race).to.equal('human');
+        },
+
+        'throws an error when a forbidden value is assigned': function () {
+          Record = factory.create({
+            race: { type: 'string', forbiddenValues: [ undefined, null, 'cow' ] },
+          });
+          var record = new Record({ race: 'human' });
+          expect(function () { delete record.race; }).to.throw();
+          expect(function () { record.race = undefined; }).to.throw();
+          expect(function () { record.race = null; }).to.throw();
+          expect(function () { record.race = 'cow'; }).to.throw();
+          expect(record.race).to.equal('human');
         },
 
       },
@@ -135,6 +148,11 @@ define(function (require) {
       //'does not emit an event if the assigned value is identical to the current one'
       //'emits an event when a dependency causes the value to change'
       //'does not emit an event if a dependency is changed but does not cause the value to change'
+
+      // To test:
+      // Dependencies
+      // Getters & setters (e.g. to lowercase)
+      // Serialization (toObject, toJson, toString)
 
     };
 
