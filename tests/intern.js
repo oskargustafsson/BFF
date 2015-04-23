@@ -40,9 +40,14 @@ define({
 	// The desired AMD loader to use when running unit tests (client.html/client.js). Omit to use the default Dojo
 	// loader
   useLoader: {
+    'host-node': 'dojo/dojo',
+    'host-browser': 'node_modules/dojo/dojo.js'
+  },
+  /* Fails to load Sinon for some reason...
+  useLoader: {
     'host-node': 'requirejs',
     'host-browser': '../../node_modules/requirejs/require.js',
-  },
+  },*/
 
 	// Configuration options for the module loader; any AMD configuration options supported by the specified AMD loader
 	// can be used here
@@ -55,6 +60,7 @@ define({
 
 	// Non-functional test suite(s) to run in each browser
 	suites: [
+    'tests/unit/event-emitter',
     'tests/unit/record',
   ],
 

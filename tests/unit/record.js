@@ -10,7 +10,7 @@ define(function (require) {
 
     return {
 
-      name: 'Model',
+      name: 'Record',
 
       'properties': {
 

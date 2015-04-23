@@ -3,7 +3,10 @@
   "description": "Base modules for JS front-end development",
   "author": "Oskar Gustafsson <oskargustafsson88@gmail.com>",
   "devDependencies": {
+    "chai": "^2.2.0",
     "intern": "^2.2.2",
-    "requirejs": "^2.1.17"
+    "requirejs": "^2.1.17",
+    "sinon": "^1.14.1",
+    "sinon-chai": "^2.7.0"
   }
 }
