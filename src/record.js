@@ -1,4 +1,10 @@
-define([], function () {
+define([
+  './mixin',
+  './event-emitter',
+], function (
+  mixin,
+  eventEmitter
+) {
   'use strict';
 
   function makeSetter(record, propName, propSchema) {
@@ -23,20 +29,19 @@ define([], function () {
       var oldVal = record[propName];
       if (val === oldVal) { return; }
 
-      record.properties[propName] = val;
-      record.callbacks[evName] && record.emit(evName, [ val, oldVal ]);
+      record.__properties[propName] = val;
+      record.emit(evName, [ val, oldVal ]);
     }
 
     return setter;
   }
 
   function makeGetter(record, propName) {
-    return function getter() { return record.properties[propName]; };
+    return function getter() { return record.__properties[propName]; };
   }
 
   function Record(schema, properties) {
-    this.properties = {}; // TODO: make private
-    this.callbacks = {}; // TODO: make private
+    this.__properties = {};
 
     properties = properties || {};
 
@@ -80,32 +85,10 @@ define([], function () {
   };
 
   Record.prototype.toJSONString = Record.prototype.toString = function () {
-    return JSON.stringify(this.properties);
+    return JSON.stringify(this.__properties);
   };
 
-  // TODO: Mix these in
-  Record.prototype.emit = function emit(evName, args) {
-    var cbs = this.callbacks[evName];
-    cbs.forEach(function (cb) {
-      cb.apply(this, args);
-    });
-  };
-
-  Record.prototype.on = function (evName, callback) {
-    this.callbacks[evName] || (this.callbacks[evName] = []);
-    this.callbacks[evName].push(callback);
-  };
-
-  Record.prototype.off = function (evName, callback) {
-    if (typeof callback === 'function') {
-      var cbs = this.callbacks[evName];
-      var pos = cbs.indexOf(callback);
-      if (pos === -1) { throw 'No such callback'; }
-      cbs.splice(pos, 1);
-    } else {
-      delete this.callbacks[evName];
-    }
-  };
+  mixin(Record, eventEmitter);
 
   return Record;
 

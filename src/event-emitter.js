@@ -29,7 +29,7 @@ define(function () {
         throw 'Second argument must be a function'; // Catch a common cause of errors
       }
 
-      var listeners = this.__listeners || Object.defineProperty(this, '__listeners', {});
+      var listeners = this.__listeners || (this.__listeners = {});
       var listenersForEvent = listeners[eventName] || (listeners[eventName] = []);
 
       if (indexOf(listenersForEvent, callback) !== -1) {

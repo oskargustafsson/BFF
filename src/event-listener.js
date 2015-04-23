@@ -19,7 +19,7 @@ define(function () {
         throw 'Third argument must be a function'; // Catch a common cause of errors
       }
 
-      var listeningTo = this.__listeningTo || Object.defineProperty(this, '__listeningTo', {});
+      var listeningTo = this.__listeningTo || (this.__listeningTo = {});
       var listeningToEvent = listeningTo[eventName] || (listeningTo[eventName] = []);
 
       listeningToEvent.push({ callback: callback, emitter: eventEmitter });

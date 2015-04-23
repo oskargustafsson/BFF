@@ -1,3 +1,4 @@
+Make "private" props non-enumerable, e.g. Object.defineProperty(this, '__listeners', { value: {}, writable: true, });
 Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
 Docblocks
 
