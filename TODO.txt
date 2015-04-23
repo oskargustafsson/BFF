@@ -1,4 +1,4 @@
-Unit tests
+Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
 Docblocks
 
 MODEL
