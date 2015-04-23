@@ -3,7 +3,7 @@ define(function (require) {
 
   var registerSuite = require('intern!object');
   var expect = require('intern/chai!expect');
-  var factory = require('src/record/record-constructor-factory');
+  var factory = require('src/record-constructor-factory');
 
   registerSuite(function () {
     var Record;
