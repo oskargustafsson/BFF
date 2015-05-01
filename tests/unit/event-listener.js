@@ -22,7 +22,29 @@ define(function (require) {
       'throws an error when trying to listen to something that is not an Event Emitter': function () {
         var listener = mixin({}, eventListener);
         expect(function () {
-          listener.listenTo({ noAnEventEmitter: true }, 'kwanzaa', function () {});
+          listener.listenTo({ notAnEventEmitter: true }, 'kwanzaa', function () {});
+        }).to.throw();
+      },
+
+      'throws an error when listenTo is not getting an event name': function () {
+        var emitter = mixin({}, eventEmitter);
+        var listener = mixin({}, eventListener);
+        var events = {
+          easilyMisspelledEventName: 'kwanzaa'
+        };
+        expect(function () {
+          listener.listenTo(emitter, events.eeeasilyMisspelledEventName, function () {});
+        }).to.throw();
+      },
+
+      'throws an error when not getting a callback': function () {
+        var emitter = mixin({}, eventEmitter);
+        var listener = mixin({}, eventListener);
+        var callbacks = {
+          easilyMisspelledCallbackName: function () {},
+        };
+        expect(function () {
+          listener.listenTo(emitter, 'kwanzaa', callbacks.eeeasilyMisspelledCallbackName);
         }).to.throw();
       },
 
@@ -62,6 +84,17 @@ define(function (require) {
 
         listener.listenTo(emitter, 'kwanzaa', callback, context);
         emitter.emit('kwanzaa');
+      },
+
+      'throws an error when trying to stop listening to something that is not an Event Emitter': function () {
+        var listener = mixin({}, eventListener);
+        var notAnEmitter = { notAnEventEmitter: true };
+        expect(function () {
+          listener.stopListening(notAnEmitter, 'kwanzaa');
+        }).to.throw();
+        expect(function () {
+          listener.stopListening(notAnEmitter);
+        }).to.throw();
       },
 
       'can stop listening to all emitters and events': function () {

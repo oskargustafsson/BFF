@@ -18,6 +18,9 @@ define(function () {
       if (!eventEmitter.removeEventListener) {
         throw 'First argument is not an event emitter';
       }
+      if (typeof eventName !== 'string') {
+        throw 'Second argument is not a string';
+      }
       if (typeof callback !== 'function') {
         throw 'Third argument must be a function'; // Catch a common cause of errors
       }
@@ -33,7 +36,7 @@ define(function () {
     },
 
     stopListening: function (eventEmitter, eventName) {
-      if (arguments.length === 1 && !eventEmitter.removeEventListener) {
+      if ((eventEmitter || arguments.length === 1) && !(eventEmitter || {}).removeEventListener) {
         throw 'First argument is not an event emitter';
       }
 
