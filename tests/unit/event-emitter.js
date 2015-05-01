@@ -16,7 +16,7 @@ define(function (require) {
 
     return {
 
-      name: 'Event emitter',
+      name: 'Event Emitter',
 
       'can add listeners': function () {
         var emitter = mixin({}, eventEmitter);

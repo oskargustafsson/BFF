@@ -61,6 +61,7 @@ define({
 	// Non-functional test suite(s) to run in each browser
 	suites: [
     'tests/unit/event-emitter',
+    'tests/unit/event-listener',
     'tests/unit/record',
   ],
 
