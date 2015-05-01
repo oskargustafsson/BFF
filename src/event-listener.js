@@ -2,8 +2,6 @@ define(function () {
   'use strict';
 
   function filterList(listeningToList, eventName, eventEmitter) {
-    if (!listeningToList) { return; }
-
     var length = listeningToList.length;
     for (var i = length - 1; i >= 0; --i) {
       var listeningTo = listeningToList[i];
@@ -41,12 +39,14 @@ define(function () {
 
       if (!this.__listeningTo) { return; } // Not listening to anything? We are done.
 
-      if (eventName) {
-        filterList(this.__listeningTo[eventName], eventName, eventEmitter);
-      } else {
-        for (eventName in this.__listeningTo) {
-          filterList(this.__listeningTo[eventName], eventName, eventEmitter);
-        }
+      var eventNames = eventName ? {} : this.__listeningTo;
+      eventName && (eventNames[eventName] = undefined);
+
+      for (var eventName in eventNames) {
+        var listeningToList = this.__listeningTo[eventName];
+        if (!listeningToList) { continue; }
+        filterList(listeningToList, eventName, eventEmitter);
+        listeningToList.length || (this.__listeningTo[eventName] = undefined);
       }
     },
 
