@@ -34,6 +34,13 @@ define(function (require) {
         }).to.throw();
       },
 
+      'throws an error if the callback arg is not a function': function () {
+        var emitter = mixin({}, eventEmitter);
+        expect(function () {
+           emitter.addEventListener('kwanzaa').to.throw();
+        });
+      },
+
       'can remove all event listeners': function () {
         var emitter = mixin({}, eventEmitter);
         var callback = sinon.spy();
@@ -75,6 +82,13 @@ define(function (require) {
         expect(callback2).have.been.calledTwice;
       },
 
+      'throws an error if the callback to removeEventListener arg is not a function': function () {
+        var emitter = mixin({}, eventEmitter);
+        expect(function () {
+           emitter.removeEventListener('kwanzaa', undefined).to.throw();
+        });
+      },
+
       'calls all callbacks registered to an event': function () {
         var emitter = mixin({}, eventEmitter);
 
@@ -112,6 +126,22 @@ define(function (require) {
         emitter.emit('kwanzaa');
 
         expect(callback2).to.have.been.calledBefore(callback);
+      },
+
+      'can emit events even if no one is listening': function () {
+        var emitter = mixin({}, eventEmitter);
+        emitter.emit('kwanzaa');
+        emitter.addEventListener('kwanzaa', function () {});
+        emitter.emit('hanukkah');
+      },
+
+      'can remove event listeners even if they were never registered': function () {
+        var emitter = mixin({}, eventEmitter);
+        emitter.removeEventListener('kwanzaa');
+        emitter.addEventListener('kwanzaa', function () {});
+        emitter.removeEventListener('kwanzaa');
+        emitter.removeEventListener('kwanzaa');
+        emitter.removeEventListener('hanukkah');
       },
 
     };
