@@ -17,27 +17,40 @@ define(function (require) {
 
       name: 'List',
 
-      'inherits from Array': function () {
-        var list = new List();
+      'adds elements passed to its constructor': function () {
+        var list1 = new List('3');
+        expect(list1.length).to.equal(1);
+        expect(list1[0]).to.equal('3');
 
-        expect(list instanceof Array).to.equal(true);
+        var list2 = new List('3', 3);
+        expect(list2.length).to.equal(2);
+        expect(list2[0]).to.equal('3');
+        expect(list2[1]).to.equal(3);
       },
 
-      'takes the same constructor args as an array': function () {
-          var list1 = new List(3);
-          expect(list1.length).to.equal(3);
-          expect(list1[0]).to.equal(undefined);
-          expect(list1[1]).to.equal(undefined);
-          expect(list1[2]).to.equal(undefined);
+      '"length" property': {
 
-          var list2 = new List('3');
-          expect(list2.length).to.equal(1);
-          expect(list2[0]).to.equal('3');
+        'triggers a change:length event whenever it is changed': function () {
+          var list = new List();
+          var spy = sinon.spy();
 
-          var list3 = new List('3', 3);
-          expect(list3.length).to.equal(2);
-          expect(list3[0]).to.equal('3');
-          expect(list3[1]).to.equal(3);
+          list.addEventListener('change:length', spy);
+          list.push('a');
+
+          expect(spy).to.have.been.calledOnce;
+          expect(spy).to.have.been.calledWith(1, 0);
+
+          list.push('b');
+
+          expect(spy).to.have.been.calledTwice;
+          expect(spy).to.have.been.calledWith(2, 1);
+
+          list.length = 0;
+
+          expect(spy).to.have.been.calledThrice;
+          expect(spy).to.have.been.calledWith(0, 2);
+        },
+
       },
 
       '"first" property': {

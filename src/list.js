@@ -8,17 +8,26 @@ define([
   'use strict';
 
   function List() {
-    if (arguments.length === 1 && typeof arguments[0] === 'number') {
-      this.length = arguments[0];
-    } else if (arguments.length) {
+    this.__array = new Array();
+
+    if (arguments.length) {
       this.push.apply(this, arguments);
     }
   }
 
-  List.prototype = new Array();
-  List.prototype.constructor = List;
+  List.prototype.push = function () {
+    this.__array.push.apply(this, arguments);
+  };
 
   Object.defineProperties(List.prototype, {
+    length: {
+      get: function () { return this.__array.length; },
+      set: function (length) {
+        var oldLength = this.__array.length;
+        this.__array.length = length;
+        oldLength === length || this.emit('change:length', [ length, oldLength ]);
+      },
+    },
     first: {
       get: function () { return this[0]; },
       set: function (val) { this[0] = val; },
