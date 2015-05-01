@@ -64,6 +64,7 @@ define({
     'tests/unit/event-listener',
     'tests/unit/mixin',
     'tests/unit/record',
+    'tests/unit/list',
   ],
 
 	// Functional test suite(s) to run in each browser once non-functional tests are completed
