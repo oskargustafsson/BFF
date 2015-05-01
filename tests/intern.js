@@ -62,6 +62,7 @@ define({
 	suites: [
     'tests/unit/event-emitter',
     'tests/unit/event-listener',
+    'tests/unit/mixin',
     'tests/unit/record',
   ],
 

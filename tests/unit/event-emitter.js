@@ -86,10 +86,10 @@ define(function (require) {
 
         emitter.emit('kwanzaa', [ 'firstArg', 'secondArg' ]);
 
-        expect(callback).have.been.calledOnce;
+        expect(callback).to.have.been.calledOnce;
         expect(callback).to.have.been.calledWith('firstArg', 'secondArg');
 
-        expect(callback2).have.been.calledOnce;
+        expect(callback2).to.have.been.calledOnce;
         expect(callback2).to.have.been.calledWith('firstArg', 'secondArg');
       },
 

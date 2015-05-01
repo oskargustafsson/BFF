@@ -20,7 +20,7 @@ define(function () {
     });
 
     for (var prop in source) {
-      target.hasOwnProperty[prop] ?
+      target.hasOwnProperty(prop) ?
           solverFunctions[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict) :
           target[prop] = source[prop];
     }
