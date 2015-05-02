@@ -28,6 +28,24 @@ define(function (require) {
         expect(list2[1]).to.equal(3);
       },
 
+      'emits an event when an item is set': function () {
+        var list = new List('a', 'b');
+        var spy = sinon.spy();
+
+        list.addEventListener('itemChanged', spy);
+        list[0] = 'c';
+
+        expect(list[0]).to.equal('c');
+        expect(spy).to.have.been.calledOnce;
+        expect(spy).to.have.been.calledWith('c', 'a', 0);
+
+        list[1] = 'd';
+
+        expect(list[1]).to.equal('d');
+        expect(spy).to.have.been.calledTwice;
+        expect(spy).to.have.been.calledWith('d', 'b', 1);
+      },
+
       '"length" property': {
 
         'triggers a change:length event whenever it is changed': function () {
@@ -44,11 +62,6 @@ define(function (require) {
 
           expect(spy).to.have.been.calledTwice;
           expect(spy).to.have.been.calledWith(2, 1);
-
-          list.length = 0;
-
-          expect(spy).to.have.been.calledThrice;
-          expect(spy).to.have.been.calledWith(0, 2);
         },
 
       },

@@ -1,14 +1,50 @@
 define([
   './mixin',
   './event-emitter',
+  './event-listener',
 ], function (
   mixin,
-  eventEmitter
+  eventEmitter,
+  eventListner
 ) {
   'use strict';
 
+  function makeSetter(list, index) {
+
+    function setter(val) {
+      var oldVal = list[index];
+      if (val === oldVal) { return; }
+
+      list.__array[index] = val;
+      list.emit('itemChanged', [ val, oldVal, index ]);
+    }
+
+    return setter;
+  }
+
+  function makeGetter(list, index) {
+    return function getter() { return list.__array[index]; };
+  }
+
   function List() {
     this.__array = new Array();
+
+    this.listenTo(this, 'change:length', function (length, prevLength) {
+      var diff = length - prevLength;
+      var i;
+      if (diff > 0) {
+        for (i = prevLength; i < length; ++i) {
+          Object.defineProperty(this, i + '', {
+            get: makeGetter(this, i),
+            set: makeSetter(this, i),
+          });
+        }
+      } else {
+        for (i = length; i < prevLength; ++i) {
+          delete this[i];
+        }
+      }
+    });
 
     if (arguments.length) {
       this.push.apply(this, arguments);
@@ -16,17 +52,14 @@ define([
   }
 
   List.prototype.push = function () {
-    this.__array.push.apply(this, arguments);
+    var oldLength = this.length;
+    this.__array.push.apply(this.__array, arguments);
+    this.emit('change:length', [ this.length, oldLength ]);
   };
 
   Object.defineProperties(List.prototype, {
     length: {
       get: function () { return this.__array.length; },
-      set: function (length) {
-        var oldLength = this.__array.length;
-        this.__array.length = length;
-        oldLength === length || this.emit('change:length', [ length, oldLength ]);
-      },
     },
     first: {
       get: function () { return this[0]; },
@@ -39,6 +72,7 @@ define([
   });
 
   mixin(List, eventEmitter);
+  mixin(List, eventListner);
 
   return List;
 
