@@ -3,7 +3,13 @@ define(function (require) {
 
   var registerSuite = require('intern!object');
   var expect = require('intern/chai!expect');
+  var chai = require('intern/chai!');
+  var sinon = require('node_modules/sinon/pkg/sinon');
+  var sinonChai = require('node_modules/sinon-chai/lib/sinon-chai');
+
   var factory = require('src/record-constructor-factory');
+
+  chai.use(sinonChai);
 
   registerSuite(function () {
     var Record;
@@ -60,6 +66,58 @@ define(function (require) {
           expect(record.password).to.equal(undefined);
         },
 
+        'dependencies': {
+
+          'causes events to be triggered on dependent properties': function () {
+            Record = factory.create({
+              firstName: { type: 'string', defaultValue: 'Boutros' },
+              lastName: { type: 'string', defaultValue: 'Gali' },
+              fullName: {
+                setter: false,
+                getter: function () {
+                  return this.firstName + ' ' + this.lastName;
+                },
+                dependencies: [ 'firstName', 'lastName' ],
+              },
+            });
+            var record = new Record();
+            var callback = sinon.spy();
+
+            expect(record.fullName).to.equal('Boutros Gali');
+
+            record.addEventListener('change:fullName', callback);
+            record.lastName = 'Boutros-Gali';
+
+            expect(record.fullName).to.equal('Boutros Boutros-Gali');
+            expect(callback).to.have.been.calledWith('Boutros Boutros-Gali', 'Boutros Gali', record);
+          },
+
+          'does not trigger an event if the dependent does not actually change': function () {
+            Record = factory.create({
+              firstName: { type: 'string', defaultValue: 'Boutros' },
+              lastName: { type: 'string', defaultValue: 'boutros-gali' },
+              fullName: {
+                setter: false,
+                getter: function () {
+                  return (this.firstName + ' ' + this.lastName).toUpperCase();
+                },
+                dependencies: [ 'firstName', 'lastName' ],
+              },
+            });
+            var record = new Record();
+            var callback = sinon.spy();
+
+            expect(record.fullName).to.equal('BOUTROS BOUTROS-GALI');
+
+            record.addEventListener('change:fullName', callback);
+            record.lastName = 'Boutros-Gali';
+
+            expect(record.fullName).to.equal('BOUTROS BOUTROS-GALI');
+            expect(callback).not.to.have.been.called;
+          },
+
+        },
+
         /*'setters': {},
         'getters': {},*/
 
@@ -75,9 +133,17 @@ define(function (require) {
             expect(function () { new Record({ race: 4 }); }).to.throw();
         },
 
+        'throws an error if the passed value is of the wrong type (alt. syntax)': function () {
+            Record = factory.create({
+              race: 'string',
+            });
+            expect(new Record({ race: 'human' }).race).to.equal('human');
+            expect(function () { new Record({ race: 4 }); }).to.throw();
+        },
+
         'allows values to be unset and undefined': function () {
             Record = factory.create({
-              race: { type: 'string', },
+              race: 'string',
             });
             expect(new Record().race).to.equal(undefined);
             expect(new Record({ race: undefined }).race).to.equal(undefined);

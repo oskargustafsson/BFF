@@ -7,15 +7,26 @@ define([
 ) {
   'use strict';
 
-  function makeSetter(record, propName, propSchema) {
+  function makeSetter(propName, propSchema) {
     var evName = 'change:' + propName;
 
+    var nDependers = (propSchema.dependers || []).length;
+    if (nDependers > 0) {
+      var oldDependerValues = new Array(nDependers);
+      var dependerEvents = new Array(nDependers);
+      for (var i = 0; i < nDependers; ++i) {
+        dependerEvents[i] = 'change:' + propSchema.dependers[i];
+      }
+    }
+
+    // TODO: make two different setter functions (in outer scope) and select (+bind)
+    // one of the depending of whether the propery has any dependers
     function setter(val) {
       // If there is a custom setter, use it to transform the value
-      propSchema.setter && (val = propSchema.setter(val));
+      propSchema.setter && (val = propSchema.setter.call(this, val));
 
       // Input validation
-      if (record.runtimeChecks) {
+      if (this.runtimeChecks) {
         var type = typeof val;
         if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
           throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
@@ -26,37 +37,71 @@ define([
         }
       }
 
-      var oldVal = record[propName];
-      if (val === oldVal) { return; }
+      for (var i = 0; i < nDependers; ++i) {
+        oldDependerValues[i] = this[propSchema.dependers[i]];
+      }
 
-      record.__properties[propName] = val;
-      record.emit(evName, [ val, oldVal ]);
+      var oldVal = this[propName];
+      this.__properties[propName] = val;
+      var newVal = this[propName];
+
+      if (newVal === oldVal) { return; }
+
+      this.emit(evName, [ val, oldVal, this ]);
+
+      for (i = 0; i < nDependers; ++i) {
+        var depender = propSchema.dependers[i];
+        var newDependerValue = this[depender];
+        var oldDependerValue = oldDependerValues[i];
+        newDependerValue === oldDependerValue ||
+            this.emit(dependerEvents[i], [ newDependerValue, oldDependerValue, this ]);
+      }
     }
 
     return setter;
   }
 
-  function makeGetter(record, propName) {
-    return function getter() { return record.__properties[propName]; };
+  function makeGetter(propName, propSchema) {
+    return propSchema.getter ?
+        function getter() { return propSchema.getter.call(this, this.__properties[propName]); } :
+        function getter() { return this.__properties[propName]; };
   }
 
   function Record(schema, properties) {
     this.__properties = {};
+    this.__listeners = {}; // Used by the Event Emitter mixin. TODO make up better solution
 
     properties = properties || {};
 
     var property, propertySchema;
+
+    // Set up dependers and remove dependencies
+    for (property in schema) {
+      propertySchema = (schema[property] || {});
+
+      if (!propertySchema.dependencies) { continue; }
+
+      while (propertySchema.dependencies.length) {
+        var dependency = propertySchema.dependencies.pop();
+        var dependencySchema = schema[dependency] = schema[dependency] || {};
+        dependencySchema.dependers = dependencySchema.dependers || [];
+        dependencySchema.dependers.push(property);
+      }
+      delete propertySchema.dependencies;
+    }
+
     for (property in schema) {
       propertySchema = schema[property] || {};
+      typeof propertySchema === 'string' && (propertySchema = { type: propertySchema });
 
       var descriptor = {
         enumerable: true,
       };
       if (propertySchema.getter !== false) {
-        descriptor.get = propertySchema.getter || makeGetter(this, property);
+        descriptor.get = makeGetter(property, propertySchema);
       }
       if (propertySchema.setter !== false) {
-        descriptor.set = makeSetter(this, property, propertySchema);
+        descriptor.set = makeSetter(property, propertySchema);
       }
       Object.defineProperty(this, property, descriptor);
     }
