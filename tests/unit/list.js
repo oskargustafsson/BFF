@@ -11,6 +11,11 @@ define(function (require) {
 
   chai.use(sinonChai);
 
+  // TESTS
+  // Can listen to item events (if they expose addEventListener & removeEventListener)
+  // Can have properties, just like Records, including dependencies
+  // List properties should trigger events when changed
+
   registerSuite(function () {
 
     return {
@@ -28,6 +33,36 @@ define(function (require) {
         expect(list2[1]).to.equal(3);
       },
 
+      '"push" method': {
+
+        'is chainable': function () {
+          var list = new List();
+          expect(list.push(4)).to.equal(list);
+        },
+
+        'emits one event per added item': function () {
+          var list = new List('a', 'b');
+          var spy = sinon.spy();
+
+          list.addEventListener('itemAdded', spy);
+          list.push('c');
+
+          expect(list[2]).to.equal('c');
+          expect(spy).to.have.been.calledOnce;
+          expect(spy).to.have.been.calledWith('c', 2, list);
+
+          list.push('d', 'e');
+
+          expect(spy).to.have.been.calledThrice;
+          expect(list[3]).to.equal('d');
+          expect(spy).to.have.been.calledWith('d', 3, list);
+          expect(list[4]).to.equal('e');
+          expect(spy).to.have.been.calledWith('e', 4, list);
+        },
+
+      },
+
+
       'emits an event when an item is set': function () {
         var list = new List('a', 'b');
         var spy = sinon.spy();
@@ -37,13 +72,13 @@ define(function (require) {
 
         expect(list[0]).to.equal('c');
         expect(spy).to.have.been.calledOnce;
-        expect(spy).to.have.been.calledWith('c', 'a', 0);
+        expect(spy).to.have.been.calledWith('c', 'a', 0, list);
 
         list[1] = 'd';
 
         expect(list[1]).to.equal('d');
         expect(spy).to.have.been.calledTwice;
-        expect(spy).to.have.been.calledWith('d', 'b', 1);
+        expect(spy).to.have.been.calledWith('d', 'b', 1, list);
       },
 
       '"length" property': {
@@ -56,12 +91,12 @@ define(function (require) {
           list.push('a');
 
           expect(spy).to.have.been.calledOnce;
-          expect(spy).to.have.been.calledWith(1, 0);
+          expect(spy).to.have.been.calledWith(1, 0, list);
 
           list.push('b');
 
           expect(spy).to.have.been.calledTwice;
-          expect(spy).to.have.been.calledWith(2, 1);
+          expect(spy).to.have.been.calledWith(2, 1, list);
         },
 
       },
@@ -96,7 +131,7 @@ define(function (require) {
           expect(list.last).to.equal(7);
         },
 
-      }
+      },
 
     };
 

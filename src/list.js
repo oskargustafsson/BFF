@@ -9,21 +9,21 @@ define([
 ) {
   'use strict';
 
-  function makeSetter(list, index) {
+  function makeSetter(index) {
 
     function setter(val) {
-      var oldVal = list[index];
+      var oldVal = this[index];
       if (val === oldVal) { return; }
 
-      list.__array[index] = val;
-      list.emit('itemChanged', [ val, oldVal, index ]);
+      this.__array[index] = val;
+      this.emit('itemChanged', [ val, oldVal, index, this ]);
     }
 
     return setter;
   }
 
-  function makeGetter(list, index) {
-    return function getter() { return list.__array[index]; };
+  function makeGetter(index) {
+    return function getter() { return this.__array[index]; };
   }
 
   function delegate(funcName) {
@@ -49,7 +49,7 @@ define([
     return function () {
       var oldLength = this.length;
       var ret = this.__array[funcName].apply(this.__array, arguments);
-      this.length === oldLength || this.emit('change:length', [ this.length, oldLength ]);
+      this.length === oldLength || this.emit('change:length', [ this.length, oldLength, this ]);
       return ret;
     };
   }
@@ -63,8 +63,8 @@ define([
       if (diff > 0) {
         for (i = prevLength; i < length; ++i) {
           Object.defineProperty(this, i + '', {
-            get: makeGetter(this, i),
-            set: makeSetter(this, i),
+            get: makeGetter(i),
+            set: makeSetter(i),
           });
         }
       } else {
@@ -79,7 +79,21 @@ define([
     }
   }
 
-  [ 'push', 'pop', 'shift', 'unshift', 'splice' ].forEach(function (funcName) {
+  List.prototype.push = function () {
+    var nItems = arguments.length;
+    if (nItems === 0) { return this; }
+    var oldLength = this.length;
+    this.__array.push.apply(this.__array, arguments);
+
+    for (var i = 0; i < nItems; ++i) {
+      this.emit('itemAdded', [ arguments[i], oldLength + i, this ]);
+    }
+    this.emit('change:length', [ this.length, oldLength, this ]);
+
+    return this;
+  };
+
+  [ 'pop', 'shift', 'unshift', 'splice' ].forEach(function (funcName) {
     List.prototype[funcName] = delegateLengthMutator(funcName);
   });
 
