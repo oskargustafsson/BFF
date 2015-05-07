@@ -7,6 +7,17 @@ define([
 ) {
   'use strict';
 
+  function validateInput(val, propName, propSchema) {
+    var type = typeof val;
+    if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
+      throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
+          ' and can not be assigned a value of type ' + (typeof val);
+    }
+    if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
+      throw 'Property ' + propName + ' is not allowed to be ' + val;
+    }
+  }
+
   function makeSetter(propName, propSchema) {
     var evName = 'change:' + propName;
 
@@ -26,16 +37,7 @@ define([
       propSchema.setter && (val = propSchema.setter.call(this, val));
 
       // Input validation
-      if (this.runtimeChecks) {
-        var type = typeof val;
-        if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
-          throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
-              ' and can not be assigned a value of type ' + (typeof val);
-        }
-        if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
-          throw 'Property ' + propName + ' is not allowed to be ' + val;
-        }
-      }
+      validateInput(val, propName, propSchema);
 
       for (var i = 0; i < nDependers; ++i) {
         oldDependerValues[i] = this[propSchema.dependers[i]];
@@ -74,10 +76,11 @@ define([
     properties = properties || {};
 
     var property, propertySchema;
+    var propertiesUnion = {};
 
     // Set up dependers and remove dependencies
     for (property in schema) {
-      propertySchema = (schema[property] || {});
+      propertySchema = schema[property] = schema[property] || {};
 
       if (!propertySchema.dependencies) { continue; }
 
@@ -91,8 +94,8 @@ define([
     }
 
     for (property in schema) {
-      propertySchema = schema[property] || {};
-      typeof propertySchema === 'string' && (propertySchema = { type: propertySchema });
+      propertySchema = schema[property];
+      typeof propertySchema === 'string' && (propertySchema = schema[property] = { type: propertySchema });
 
       var descriptor = {
         enumerable: true,
@@ -104,22 +107,25 @@ define([
         descriptor.set = makeSetter(property, propertySchema);
       }
       Object.defineProperty(this, property, descriptor);
+
+      propertiesUnion[property] = propertySchema.defaultValue;
     }
 
     Object.preventExtensions(this);
 
-    var propertiesUnion = {};
-    for (property in schema) {
-      var schemaInfo = schema[property] || {};
-      if (schemaInfo.setter !== false) {
-        propertiesUnion[property] = schemaInfo.defaultValue;
-      }
-    }
     for (property in properties) {
+      if (!schema.hasOwnProperty(property)) {
+        throw 'Cannot assign undeclared property ' + property;
+      }
       propertiesUnion[property] = properties[property];
     }
+
+    // Silently assign initial values
     for (property in propertiesUnion) {
-      this[property] = propertiesUnion[property];
+      var val = propertiesUnion[property];
+      schema[property].setter && (val = schema[property].setter.call(this, val));
+      validateInput(val, property, schema[property]);
+      this.__properties[property] = val;
     }
   }
 

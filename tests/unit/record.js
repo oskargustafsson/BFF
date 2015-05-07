@@ -42,30 +42,6 @@ define(function (require) {
           }).to.throw();
         },
 
-        'can be read only': function () {
-          Record = factory.create({
-            MAX_LEVEL: {
-              getter: function () { return 99; },
-              setter: false,
-            },
-          });
-          var record = new Record();
-          expect(record.MAX_LEVEL).to.equal(99);
-          expect(function () { record.MAX_LEVEL = 98; }).to.throw();
-          expect(function () { new Record({ MAX_LEVEL: 98 }); }).to.throw();
-        },
-
-        'can be set only': function () {
-          Record = factory.create({
-            password: {
-              getter: false,
-            },
-          });
-          var record = new Record();
-          record.password = 'bananahammock';
-          expect(record.password).to.equal(undefined);
-        },
-
         'dependencies': {
 
           'causes events to be triggered on dependent properties': function () {
@@ -118,8 +94,117 @@ define(function (require) {
 
         },
 
-        /*'setters': {},
-        'getters': {},*/
+        'getters': {
+
+          'can be explicitly disabled': function () {
+            // TODO: figure out what this would ever be used for...
+            Record = factory.create({
+              password: { getter: false, },
+            });
+            var record = new Record();
+            record.password = 'bananahammock';
+            expect(record.password).to.equal(undefined);
+          },
+
+
+          'are applied before a property value is returned': function () {
+            Record = factory.create({
+              date: {
+                type: 'number', // Input type
+                getter: function (value) {
+                  return new Date(value);
+                },
+              },
+            });
+            var record = new Record({ date: 1431019735165 });
+            expect(record.date.getMilliseconds()).to.equal(165);
+          },
+
+          'have access to other properties': function () {
+            Record = factory.create({
+              currencySymbol: 'string',
+              amount: {
+                type: 'number',
+                getter: function (value) {
+                  return value + ' ' + this.currencySymbol;
+                },
+              },
+            });
+            var record = new Record({
+              currencySymbol: '€',
+              amount: 8,
+            });
+            expect(record.amount).to.equal('8 €');
+          },
+
+          'can stop a change event from being triggered': function () {
+            Record = factory.create({
+              username: {
+                type: 'string',
+                defaultValue: '',
+                getter: function (value) {
+                  return value.toLowerCase();
+                },
+              },
+            });
+            var record = new Record({ username: 'Freudipus', });
+            var callback = sinon.spy();
+
+            record.addEventListener('change:username', callback);
+            record.username = 'django';
+
+            expect(callback).to.have.been.calledOnce;
+            expect(callback).to.have.been.calledWith('django', 'freudipus', record);
+
+            record.username = 'DjangO';
+
+            expect(callback).to.have.been.calledOnce;
+          },
+
+        },
+
+        'setters': {
+
+          'can be explicitly disabled': function () {
+            Record = factory.create({
+              MAX_LEVEL: {
+                getter: function () { return 99; },
+                setter: false,
+              },
+            });
+            var record = new Record();
+            expect(record.MAX_LEVEL).to.equal(99);
+            expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+          },
+
+          'even if disabled, allows you to specify an initial value': function () {
+            Record = factory.create({
+              MAX_LEVEL: {
+                defaultValue: 99,
+                setter: false,
+              },
+            });
+            var record = new Record();
+            expect(record.MAX_LEVEL).to.equal(99);
+            expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+          },
+
+          'even if disabled, allows you to pass an initial value to the constructor': function () {
+            Record = factory.create({
+              MAX_LEVEL: {
+                setter: false,
+              },
+            });
+            var record = new Record({ MAX_LEVEL: 99 });
+            expect(record.MAX_LEVEL).to.equal(99);
+            expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+          },
+
+          'are applied before a property is assigned': function () {
+
+          },
+
+        },
 
       },
 
@@ -130,7 +215,9 @@ define(function (require) {
               race: { type: 'string', },
             });
             expect(new Record({ race: 'human' }).race).to.equal('human');
-            expect(function () { new Record({ race: 4 }); }).to.throw();
+            expect(function () {
+              new Record({ race: 4 });
+            }).to.throw();
         },
 
         'throws an error if the passed value is of the wrong type (alt. syntax)': function () {
@@ -138,7 +225,9 @@ define(function (require) {
               race: 'string',
             });
             expect(new Record({ race: 'human' }).race).to.equal('human');
-            expect(function () { new Record({ race: 4 }); }).to.throw();
+            expect(function () {
+              new Record({ race: 4 });
+            }).to.throw();
         },
 
         'allows values to be unset and undefined': function () {
