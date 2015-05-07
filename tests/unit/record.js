@@ -42,6 +42,40 @@ define(function (require) {
           }).to.throw();
         },
 
+        'triggers change events when changed': function () {
+          Record = factory.create({ race: undefined });
+          var record = new Record();
+          var callback = sinon.spy();
+
+          record.addEventListener('change:race', callback);
+          record.race = 'human';
+
+          expect(callback).to.have.been.calledOnce;
+          expect(callback).to.have.been.calledWith('human', undefined, record);
+
+          record.race = 'dancer';
+
+          expect(callback).to.have.been.calledTwice;
+          expect(callback).to.have.been.calledWith('dancer', 'human', record);
+        },
+
+        'does not trigger change events if the assigned value is equal to the current': function () {
+          Record = factory.create({
+            race: { defaultValue: 'human', },
+          });
+          var record = new Record();
+          var callback = sinon.spy();
+
+          record.addEventListener('change:race', callback);
+          record.race = 'human';
+
+          expect(callback).not.to.have.been.called;
+
+          record.race = 'human';
+
+          expect(callback).not.to.have.been.called;
+        },
+
         'dependencies': {
 
           'causes events to be triggered on dependent properties': function () {
@@ -348,15 +382,96 @@ define(function (require) {
 
       },
 
-      //'emits an event when a value is changed'
-      //'does not emit an event if the assigned value is identical to the current one'
-      //'emits an event when a dependency causes the value to change'
-      //'does not emit an event if a dependency is changed but does not cause the value to change'
+      '"toJSON" method returns a plain object representation of the record': function () {
+        Record = factory.create({
+          firstName: 'string',
+          lastName: 'string',
+          fullName: {
+            type: 'string',
+            setter: false,
+            getter: function () {
+              return this.firstName + ' ' + this.lastName;
+            },
+          },
+          age: 'number',
+        });
+        var record = new Record({
+          firstName: 'Boutros',
+          lastName: 'Boutros-Gali',
+          age: 46,
+        });
 
-      // To test:
-      // Dependencies
-      // Getters & setters (e.g. to lowercase)
-      // Serialization (toObject, toJson, toString)
+        var jsonObj = record.toJSON();
+
+        expect(Object.keys(jsonObj).length).to.equal(4);
+        expect(jsonObj.firstName).to.equal('Boutros');
+        expect(jsonObj.lastName).to.equal('Boutros-Gali');
+        expect(jsonObj.fullName).to.equal('Boutros Boutros-Gali');
+        expect(jsonObj.age).to.equal(46);
+
+        expect(jsonObj.firstName).to.equal(record.firstName);
+        expect(jsonObj.lastName).to.equal(record.lastName);
+        expect(jsonObj.fullName).to.equal(record.fullName);
+        expect(jsonObj.age).to.equal(record.age);
+      },
+
+      '"toString" method returns a string containing all properties and their respective values': function () {
+        Record = factory.create({
+          firstName: 'string',
+          lastName: 'string',
+          fullName: {
+            type: 'string',
+            setter: false,
+            getter: function () {
+              return this.firstName + ' ' + this.lastName;
+            },
+          },
+          age: 'number',
+        });
+        var record = new Record({
+          firstName: 'Donky',
+          lastName: 'Kong',
+          age: 4,
+        });
+
+        var str = record.toString();
+
+        expect(str).to.contain('firstName');
+        expect(str).to.contain('Donky');
+        expect(str).to.contain('lastName');
+        expect(str).to.contain('Kong');
+        expect(str).to.contain('fullName');
+        expect(str).to.contain('Donky Kong');
+        expect(str).to.contain('age');
+        expect(str).to.contain('4');
+      },
+
+      '"toJSONString" method to return a valid JSON string representation of the record': function () {
+        Record = factory.create({
+          firstName: 'string',
+          lastName: 'string',
+          fullName: {
+            type: 'string',
+            setter: false,
+            getter: function () {
+              return this.firstName + ' ' + this.lastName;
+            },
+          },
+          age: 'number',
+        });
+        var record = new Record({
+          firstName: 'Donky',
+          lastName: 'Kong',
+          age: 4,
+        });
+
+        var jsonStr = record.toJSONString();
+
+        var parsedObj = JSON.parse(jsonStr);
+
+        expect(parsedObj).to.deep.equal(record.toJSON());
+        expect(parsedObj).to.deep.equal(JSON.parse(JSON.stringify(parsedObj)));
+      },
 
     };
 

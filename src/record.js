@@ -131,12 +131,16 @@ define([
 
   // toJSON() actually returns an object, which is a bit misleading. For compatibility reasons.
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior
-  Record.prototype.toJSON = Record.prototype.toObject = function () {
-    return JSON.parse(this.toString());
+  Record.prototype.toJSON = function () {
+    return JSON.parse(this.toJSONString());
   };
 
   Record.prototype.toJSONString = Record.prototype.toString = function () {
-    return JSON.stringify(this.__properties);
+    var obj = {};
+    for (var property in this.__properties) {
+      obj[property] = this[property];
+    }
+    return JSON.stringify(obj);
   };
 
   mixin(Record, eventEmitter);
