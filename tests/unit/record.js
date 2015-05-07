@@ -106,7 +106,6 @@ define(function (require) {
             expect(record.password).to.equal(undefined);
           },
 
-
           'are applied before a property value is returned': function () {
             Record = factory.create({
               date: {
@@ -200,8 +199,58 @@ define(function (require) {
             expect(function () { record.MAX_LEVEL = 98; }).to.throw();
           },
 
-          'are applied before a property is assigned': function () {
+          'are applied before a property value is assigned': function () {
+            Record = factory.create({
+              date: {
+                type: 'object', // Stored type
+                setter: function (value) {
+                  return new Date(value);
+                },
+              },
+            });
+            var record = new Record({ date: 1431019735165 });
+            expect(record.date.getMilliseconds()).to.equal(165);
+          },
 
+          'have access to other properties': function () {
+            Record = factory.create({
+              currencySymbol: 'string',
+              amount: {
+                type: 'string',
+                setter: function (value) {
+                  return value + ' ' + this.currencySymbol;
+                },
+              },
+            });
+            var record = new Record({
+              currencySymbol: '€',
+              amount: 8,
+            });
+            expect(record.amount).to.equal('8 €');
+          },
+
+          'can stop a change event from being triggered': function () {
+            Record = factory.create({
+              username: {
+                type: 'string',
+                defaultValue: '',
+                setter: function (value) {
+                  return value.toLowerCase();
+                },
+              },
+            });
+            var record = new Record({ username: 'Freudipus', });
+            var callback = sinon.spy();
+
+            record.addEventListener('change:username', callback);
+            record.username = 'django';
+
+            expect(callback).to.have.been.calledOnce;
+            expect(callback).to.have.been.calledWith('django', 'freudipus', record);
+
+            record.username = 'DjangO';
+
+            expect(callback).to.have.been.calledOnce;
           },
 
         },

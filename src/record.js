@@ -10,8 +10,8 @@ define([
   function validateInput(val, propName, propSchema) {
     var type = typeof val;
     if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
-      throw 'Property ' + propName + ' is of type ' + (typeof propSchema.type) +
-          ' and can not be assigned a value of type ' + (typeof val);
+      throw 'Property ' + propName + ' is of type ' + propSchema.type +
+          ' and can not be assigned a value of type ' + type;
     }
     if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
       throw 'Property ' + propName + ' is not allowed to be ' + val;
