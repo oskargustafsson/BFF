@@ -54,7 +54,7 @@ define([
     };
   }
 
-  function List() {
+  function List(schema, items) {
     this.__array = new Array();
 
     this.listenTo(this, 'change:length', function (length, prevLength) {
@@ -74,9 +74,23 @@ define([
       }
     });
 
-    if (arguments.length) {
-      this.push.apply(this, arguments);
+    if (arguments.length === 1 && schema instanceof Array) {
+      items = schema;
+      schema = undefined;
     }
+    schema = schema || {};
+    items = items || [];
+
+    if (typeof schema !== 'object') {
+      throw 'Schema argument must be an object';
+    }
+    if (!(items instanceof Array)) {
+      throw 'Items argument must be an array';
+    }
+
+    // TODO: add the properties defined in schema
+
+    items.length && this.push.apply(this, items);
   }
 
   List.prototype.push = function () {

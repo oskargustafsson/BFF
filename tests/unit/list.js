@@ -23,11 +23,11 @@ define(function (require) {
       name: 'List',
 
       'adds elements passed to its constructor': function () {
-        var list1 = new List('3');
+        var list1 = new List([ '3' ]);
         expect(list1.length).to.equal(1);
         expect(list1[0]).to.equal('3');
 
-        var list2 = new List('3', 3);
+        var list2 = new List([ '3', 3 ]);
         expect(list2.length).to.equal(2);
         expect(list2[0]).to.equal('3');
         expect(list2[1]).to.equal(3);
@@ -41,7 +41,7 @@ define(function (require) {
         },
 
         'emits one event per added item': function () {
-          var list = new List('a', 'b');
+          var list = new List([ 'a', 'b' ]);
           var spy = sinon.spy();
 
           list.addEventListener('itemAdded', spy);
@@ -64,7 +64,7 @@ define(function (require) {
 
 
       'emits an event when an item is set': function () {
-        var list = new List('a', 'b');
+        var list = new List([ 'a', 'b' ]);
         var spy = sinon.spy();
 
         list.addEventListener('itemChanged', spy);
@@ -104,12 +104,12 @@ define(function (require) {
       '"first" property': {
 
         'can be read': function () {
-          var list = new List(4, 5, 6);
+          var list = new List([ 4, 5, 6 ]);
           expect(list.first).to.equal(4);
         },
 
         'can be set': function () {
-          var list = new List(4, 5, 6);
+          var list = new List([ 4, 5, 6 ]);
           list.first = 7;
           expect(list[0]).to.equal(7);
           expect(list.first).to.equal(7);
@@ -120,12 +120,12 @@ define(function (require) {
       '"last" property': {
 
         'can be read': function () {
-          var list = new List(4, 5, 6);
+          var list = new List([ 4, 5, 6 ]);
           expect(list.last).to.equal(6);
         },
 
         'can be set': function () {
-          var list = new List(4, 5, 6);
+          var list = new List([ 4, 5, 6 ]);
           list.last = 7;
           expect(list[2]).to.equal(7);
           expect(list.last).to.equal(7);
