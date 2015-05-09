@@ -4,6 +4,10 @@ define(function () {
   return {
 
     emit: function (eventName, eventArguments) {
+      if (typeof eventName !== 'string') {
+        throw '"eventName" argument must be a string';
+      }
+
       if (!this.__listeners) { return; }
 
       var listenersForEvent = this.__listeners[eventName];
@@ -16,8 +20,11 @@ define(function () {
     },
 
     addEventListener: function (eventName, callback) {
+      if (typeof eventName !== 'string') {
+        throw '"eventName" argument must be a string';
+      }
       if (typeof callback !== 'function') {
-        throw 'Second argument must be a function'; // Catch a common cause of errors
+        throw '"callback" argument must be a function'; // Catch a common cause of errors
       }
 
       var listeners = this.__listeners || (this.__listeners = {});
@@ -31,8 +38,11 @@ define(function () {
     },
 
     removeEventListener: function (eventName, callback) {
+      if (typeof eventName !== 'string') {
+        throw '"eventName" argument must be a string';
+      }
       if (arguments.length === 2 && typeof callback !== 'function') {
-        throw 'Second argument must be a function'; // Catch a common cause of errors
+        throw '"callback" argument must be a function'; // Catch a common cause of errors
       }
 
       if (!this.__listeners) { return; } // No listeners at all? We are done.
