@@ -64,7 +64,9 @@ define([
       var i;
       if (diff > 0) {
         for (i = prevLength; i < length; ++i) {
-          Object.defineProperty(this, i + '', {
+          Object.defineProperty(this, i, {
+            enumerable: true,
+            configurable: true,
             get: makeGetter(i),
             set: makeSetter(i),
           });
@@ -109,7 +111,17 @@ define([
     return this;
   };
 
-  [ 'pop', 'shift', 'unshift', 'splice' ].forEach(function (funcName) {
+  List.prototype.pop = function () {
+    var oldLength = this.length;
+    var poppedItem = this.__array.pop.apply(this.__array, arguments);
+
+    this.emit('itemRemoved', [ poppedItem, this.length, this ]);
+    this.emit('change:length', [ this.length, oldLength, this ]);
+
+    return poppedItem;
+  };
+
+  [ 'shift', 'unshift', 'splice' ].forEach(function (funcName) {
     List.prototype[funcName] = delegateLengthMutator(funcName);
   });
 

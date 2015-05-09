@@ -40,24 +40,60 @@ define(function (require) {
           expect(list.push(4)).to.equal(list);
         },
 
-        'emits one event per added item': function () {
+        'emits one itemAdded event per added item and one change:length event': function () {
           var list = new List([ 'a', 'b' ]);
-          var spy = sinon.spy();
+          var itemAddedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemAdded', spy);
+          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
           list.push('c');
 
           expect(list[2]).to.equal('c');
-          expect(spy).to.have.been.calledOnce;
-          expect(spy).to.have.been.calledWith('c', 2, list);
+          expect(itemAddedCallback).to.have.been.calledOnce;
+          expect(itemAddedCallback).to.have.been.calledWith('c', 2, list);
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledWith(3, 2, list);
 
           list.push('d', 'e');
 
-          expect(spy).to.have.been.calledThrice;
+          expect(itemAddedCallback).to.have.been.calledThrice;
           expect(list[3]).to.equal('d');
-          expect(spy).to.have.been.calledWith('d', 3, list);
+          expect(itemAddedCallback).to.have.been.calledWith('d', 3, list);
           expect(list[4]).to.equal('e');
-          expect(spy).to.have.been.calledWith('e', 4, list);
+          expect(itemAddedCallback).to.have.been.calledWith('e', 4, list);
+          expect(lengthChangedCallback).to.have.been.calledTwice
+          expect(lengthChangedCallback).to.have.been.calledWith(5, 3, list);
+        },
+
+      },
+
+      '"pop" method': {
+
+        'mirrors Array.pop behavior': function () {
+          var list = new List([ 'item1', 'item2' ]);
+
+          expect(list.length).to.equal(2);
+          expect(list.pop()).to.equal('item2');
+          expect(list.length).to.equal(1);
+          expect(list.pop()).to.equal('item1');
+          expect(list.length).to.equal(0);
+        },
+
+        'emits an event when an item is removed': function () {
+          var list = new List([ 'a', 'b' ]);
+          var itemRemovedCallback = sinon.spy();
+
+          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.pop();
+
+          expect(itemRemovedCallback).to.have.been.calledOnce;
+          expect(itemRemovedCallback).to.have.been.calledWith('b', 1, list);
+
+          list.pop();
+
+          expect(itemRemovedCallback).to.have.been.calledTwice;
+          expect(itemRemovedCallback).to.have.been.calledWith('a', 0, list);
         },
 
       },
@@ -94,20 +130,11 @@ define(function (require) {
 
       '"length" property': {
 
-        'triggers a change:length event whenever it is changed': function () {
-          var list = new List();
-          var spy = sinon.spy();
-
-          list.addEventListener('change:length', spy);
-          list.push('a');
-
-          expect(spy).to.have.been.calledOnce;
-          expect(spy).to.have.been.calledWith(1, 0, list);
-
-          list.push('b');
-
-          expect(spy).to.have.been.calledTwice;
-          expect(spy).to.have.been.calledWith(2, 1, list);
+        'is read-only': function () {
+          var list = new List([ 1, 2, 4 ]);
+          expect(function () {
+            list.length = 2;
+          }).to.throw();
         },
 
       },
