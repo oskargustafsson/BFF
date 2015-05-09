@@ -16,7 +16,9 @@ define([
       if (val === oldVal) { return; }
 
       this.__array[index] = val;
-      this.emit('itemChanged', [ val, oldVal, index, this ]);
+      this.emit('itemRemoved', [ oldVal, index, this ]);
+      this.emit('itemReplaced', [ val, oldVal, index, this ]);
+      this.emit('itemAdded', [ val, index, this ]);
     }
 
     return setter;
