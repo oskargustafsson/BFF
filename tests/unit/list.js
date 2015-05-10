@@ -167,6 +167,19 @@ define(function (require) {
           expect(lengthChangedCallback).to.have.been.calledWith(0, 1, list);
         },
 
+        'does not emit events if no element has been removed': function () {
+          var list = new List();
+          var itemRemovedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
+
+          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.pop();
+
+          expect(itemRemovedCallback).not.to.have.been.called;
+          expect(lengthChangedCallback).not.to.have.been.called;
+        },
+
       },
 
     '"shift" method': {
@@ -201,6 +214,101 @@ define(function (require) {
           expect(itemRemovedCallback).to.have.been.calledWith('b', 0, list);
           expect(lengthChangedCallback).to.have.been.calledTwice;
           expect(lengthChangedCallback).to.have.been.calledWith(0, 1, list);
+        },
+
+        'does not emit events if no element has been removed': function () {
+          var list = new List();
+          var itemRemovedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
+
+          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.shift();
+
+          expect(itemRemovedCallback).not.to.have.been.called;
+          expect(lengthChangedCallback).not.to.have.been.called;
+        },
+
+      },
+
+    '"splice" method': {
+
+        'is chainable': function () {
+          var list = new List([ 'a', 'b' ]);
+          expect(list.splice(0, 1)).to.equal(list);
+        },
+
+        'mirrors Array.shift behavior': function () {
+          var list = new List([ 'a', 'b', 'c', 'd' ]);
+
+          list.splice(1, 2, 'd');
+          expect(list.length).to.equal(3);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal('d');
+          expect(list[2]).to.equal('d');
+        },
+
+        'emits events': function () {
+          var list = new List([ 'a', 'b', 'c', 'd' ]);
+          var itemRemovedCallback = sinon.spy();
+          var itemAddedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
+
+          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.splice(1, 2, 'x', 'y', 'z');
+
+          expect(list.length).to.equal(5);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal('x');
+          expect(list[2]).to.equal('y');
+          expect(list[3]).to.equal('z');
+          expect(list[4]).to.equal('d');
+
+          expect(itemRemovedCallback).to.have.been.calledTwice;
+          expect(itemRemovedCallback).to.have.been.calledWith('b', 1, list);
+          expect(itemRemovedCallback).to.have.been.calledWith('c', 2, list);
+          expect(itemAddedCallback).to.have.been.calledThrice;
+          expect(itemAddedCallback).to.have.been.calledWith('x', 1, list);
+          expect(itemAddedCallback).to.have.been.calledWith('y', 2, list);
+          expect(itemAddedCallback).to.have.been.calledWith('z', 3, list);
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledWith(5, 4, list);
+        },
+
+        'does not emit events if nothing changed': function () {
+          var list = new List([ 'a', 'b', 'c', 'd' ]);
+          var itemRemovedCallback = sinon.spy();
+          var itemAddedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
+
+          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.splice(0, 0);
+
+          expect(itemRemovedCallback).not.to.have.been.called;
+          expect(itemAddedCallback).not.to.have.been.called;
+          expect(lengthChangedCallback).not.to.have.been.called;
+
+          list.splice(0, 1);
+
+          expect(itemRemovedCallback).to.have.been.calledOnce;
+          expect(itemAddedCallback).not.to.have.been.called;
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+
+          list.splice(0, 0, 'x');
+
+          expect(itemRemovedCallback).to.have.been.calledOnce;
+          expect(itemAddedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledTwice;
+
+          list.splice(0, 1, 'y');
+
+          expect(itemRemovedCallback).to.have.been.calledTwice;
+          expect(itemAddedCallback).to.have.been.calledTwice;
+          expect(lengthChangedCallback).to.have.been.calledTwice;
         },
 
       },

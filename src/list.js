@@ -47,15 +47,6 @@ define([
     };
   }
 
-  function delegateLengthMutator(funcName) {
-    return function () {
-      var oldLength = this.length;
-      var ret = this.__array[funcName].apply(this.__array, arguments);
-      this.length === oldLength || this.emit('change:length', [ this.length, oldLength, this ]);
-      return ret;
-    };
-  }
-
   function List(schema, items) {
     this.__array = new Array();
 
@@ -127,6 +118,8 @@ define([
 
   List.prototype.pop = function () {
     var oldLength = this.length;
+    if (oldLength === 0) { return; }
+
     var poppedItem = this.__array.pop.apply(this.__array, arguments);
 
     this.emit('itemRemoved', [ poppedItem, this.length, this ]);
@@ -137,6 +130,8 @@ define([
 
   List.prototype.shift = function () {
     var oldLength = this.length;
+    if (oldLength === 0) { return; }
+
     var poppedItem = this.__array.shift.apply(this.__array, arguments);
 
     this.emit('itemRemoved', [ poppedItem, 0, this ]);
@@ -145,9 +140,24 @@ define([
     return poppedItem;
   };
 
-  [ 'splice' ].forEach(function (funcName) {
-    List.prototype[funcName] = delegateLengthMutator(funcName);
-  });
+  List.prototype.splice = function (start, deleteCount) {
+    var oldLength = this.length;
+    var deletedItems = this.__array.splice.apply(this.__array, arguments);
+
+    if (start < 0) {
+      start = oldLength + start;
+    }
+
+    for (var i = 0; i < deleteCount; ++i) {
+      this.emit('itemRemoved', [ deletedItems[i], start + i, this ]);
+    }
+    for (i = 2; i < arguments.length; ++i) {
+      this.emit('itemAdded', [ arguments[i], start + (i - 2), this ]);
+    }
+    this.length === oldLength || this.emit('change:length', [ this.length, oldLength, this ]);
+
+    return this;
+  };
 
   [ 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduce', 'reduceRight' ].forEach(function (funcName) {
     List.prototype[funcName] = delegate(funcName);
