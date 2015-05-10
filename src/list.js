@@ -111,6 +111,20 @@ define([
     return this;
   };
 
+  List.prototype.unshift = function () {
+    var nItems = arguments.length;
+    if (nItems === 0) { return this; }
+    var oldLength = this.length;
+    this.__array.unshift.apply(this.__array, arguments);
+
+    for (var i = 0; i < nItems; ++i) {
+      this.emit('itemAdded', [ arguments[i], i, this ]);
+    }
+    this.emit('change:length', [ this.length, oldLength, this ]);
+
+    return this;
+  };
+
   List.prototype.pop = function () {
     var oldLength = this.length;
     var poppedItem = this.__array.pop.apply(this.__array, arguments);
@@ -121,7 +135,17 @@ define([
     return poppedItem;
   };
 
-  [ 'shift', 'unshift', 'splice' ].forEach(function (funcName) {
+  List.prototype.shift = function () {
+    var oldLength = this.length;
+    var poppedItem = this.__array.shift.apply(this.__array, arguments);
+
+    this.emit('itemRemoved', [ poppedItem, 0, this ]);
+    this.emit('change:length', [ this.length, oldLength, this ]);
+
+    return poppedItem;
+  };
+
+  [ 'splice' ].forEach(function (funcName) {
     List.prototype[funcName] = delegateLengthMutator(funcName);
   });
 

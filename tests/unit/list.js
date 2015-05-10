@@ -92,7 +92,42 @@ define(function (require) {
           expect(itemAddedCallback).to.have.been.calledWith('d', 3, list);
           expect(list[4]).to.equal('e');
           expect(itemAddedCallback).to.have.been.calledWith('e', 4, list);
-          expect(lengthChangedCallback).to.have.been.calledTwice
+          expect(lengthChangedCallback).to.have.been.calledTwice;
+          expect(lengthChangedCallback).to.have.been.calledWith(5, 3, list);
+        },
+
+      },
+
+      '"unshift" method': {
+
+        'is chainable': function () {
+          var list = new List();
+          expect(list.unshift(4)).to.equal(list);
+        },
+
+        'emits one itemAdded event per added item and one change:length event': function () {
+          var list = new List([ 'd', 'e' ]);
+          var itemAddedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
+
+          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.unshift('c');
+
+          expect(list[0]).to.equal('c');
+          expect(itemAddedCallback).to.have.been.calledOnce;
+          expect(itemAddedCallback).to.have.been.calledWith('c', 0, list);
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledWith(3, 2, list);
+
+          list.unshift('a', 'b');
+
+          expect(itemAddedCallback).to.have.been.calledThrice;
+          expect(list[0]).to.equal('a');
+          expect(itemAddedCallback).to.have.been.calledWith('a', 0, list);
+          expect(list[1]).to.equal('b');
+          expect(itemAddedCallback).to.have.been.calledWith('b', 1, list);
+          expect(lengthChangedCallback).to.have.been.calledTwice;
           expect(lengthChangedCallback).to.have.been.calledWith(5, 3, list);
         },
 
@@ -128,6 +163,42 @@ define(function (require) {
 
           expect(itemRemovedCallback).to.have.been.calledTwice;
           expect(itemRemovedCallback).to.have.been.calledWith('a', 0, list);
+          expect(lengthChangedCallback).to.have.been.calledTwice;
+          expect(lengthChangedCallback).to.have.been.calledWith(0, 1, list);
+        },
+
+      },
+
+    '"shift" method': {
+
+        'mirrors Array.shift behavior': function () {
+          var list = new List([ 'item1', 'item2' ]);
+
+          expect(list.length).to.equal(2);
+          expect(list.shift()).to.equal('item1');
+          expect(list.length).to.equal(1);
+          expect(list.shift()).to.equal('item2');
+          expect(list.length).to.equal(0);
+        },
+
+        'emits events': function () {
+          var list = new List([ 'a', 'b' ]);
+          var itemRemovedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
+
+          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.shift();
+
+          expect(itemRemovedCallback).to.have.been.calledOnce;
+          expect(itemRemovedCallback).to.have.been.calledWith('a', 0, list);
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledWith(1, 2, list);
+
+          list.shift();
+
+          expect(itemRemovedCallback).to.have.been.calledTwice;
+          expect(itemRemovedCallback).to.have.been.calledWith('b', 0, list);
           expect(lengthChangedCallback).to.have.been.calledTwice;
           expect(lengthChangedCallback).to.have.been.calledWith(0, 1, list);
         },
