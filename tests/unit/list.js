@@ -33,6 +33,36 @@ define(function (require) {
         expect(list2[1]).to.equal(3);
       },
 
+      'emits events when an item is set': function () {
+        var list = new List([ 'a', 'b' ]);
+        var removedCallback = sinon.spy();
+        var replacedCallback = sinon.spy();
+        var addedCallback = sinon.spy();
+
+        list.addEventListener('itemRemoved', removedCallback);
+        list.addEventListener('itemReplaced', replacedCallback);
+        list.addEventListener('itemAdded', addedCallback);
+        list[0] = 'c';
+
+        expect(list[0]).to.equal('c');
+        expect(removedCallback).to.have.been.calledOnce;
+        expect(removedCallback).to.have.been.calledWith('a', 0, list);
+        expect(replacedCallback).to.have.been.calledOnce;
+        expect(replacedCallback).to.have.been.calledWith('c', 'a', 0, list);
+        expect(addedCallback).to.have.been.calledOnce;
+        expect(addedCallback).to.have.been.calledWith('c', 0, list);
+
+        list[1] = 'd';
+
+        expect(list[1]).to.equal('d');
+        expect(removedCallback).to.have.been.calledTwice;
+        expect(removedCallback).to.have.been.calledWith('b', 1, list);
+        expect(replacedCallback).to.have.been.calledTwice;
+        expect(replacedCallback).to.have.been.calledWith('d', 'b', 1, list);
+        expect(addedCallback).to.have.been.calledTwice;
+        expect(addedCallback).to.have.been.calledWith('d', 1, list);
+      },
+
       '"push" method': {
 
         'is chainable': function () {
@@ -80,52 +110,28 @@ define(function (require) {
           expect(list.length).to.equal(0);
         },
 
-        'emits an event when an item is removed': function () {
+        'emits events': function () {
           var list = new List([ 'a', 'b' ]);
           var itemRemovedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
 
           list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
           list.pop();
 
           expect(itemRemovedCallback).to.have.been.calledOnce;
           expect(itemRemovedCallback).to.have.been.calledWith('b', 1, list);
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledWith(1, 2, list);
 
           list.pop();
 
           expect(itemRemovedCallback).to.have.been.calledTwice;
           expect(itemRemovedCallback).to.have.been.calledWith('a', 0, list);
+          expect(lengthChangedCallback).to.have.been.calledTwice;
+          expect(lengthChangedCallback).to.have.been.calledWith(0, 1, list);
         },
 
-      },
-
-      'emits events when an item is set': function () {
-        var list = new List([ 'a', 'b' ]);
-        var removedCallback = sinon.spy();
-        var replacedCallback = sinon.spy();
-        var addedCallback = sinon.spy();
-
-        list.addEventListener('itemRemoved', removedCallback);
-        list.addEventListener('itemReplaced', replacedCallback);
-        list.addEventListener('itemAdded', addedCallback);
-        list[0] = 'c';
-
-        expect(list[0]).to.equal('c');
-        expect(removedCallback).to.have.been.calledOnce;
-        expect(removedCallback).to.have.been.calledWith('a', 0, list);
-        expect(replacedCallback).to.have.been.calledOnce;
-        expect(replacedCallback).to.have.been.calledWith('c', 'a', 0, list);
-        expect(addedCallback).to.have.been.calledOnce;
-        expect(addedCallback).to.have.been.calledWith('c', 0, list);
-
-        list[1] = 'd';
-
-        expect(list[1]).to.equal('d');
-        expect(removedCallback).to.have.been.calledTwice;
-        expect(removedCallback).to.have.been.calledWith('b', 1, list);
-        expect(replacedCallback).to.have.been.calledTwice;
-        expect(replacedCallback).to.have.been.calledWith('d', 'b', 1, list);
-        expect(addedCallback).to.have.been.calledTwice;
-        expect(addedCallback).to.have.been.calledWith('d', 1, list);
       },
 
       '"length" property': {
