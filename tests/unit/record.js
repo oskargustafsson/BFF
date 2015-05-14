@@ -51,21 +51,53 @@ define(function (require) {
           }).to.throw();
         },*/
 
-        'triggers change events when changed': function () {
-          Record = factory.create({ race: undefined });
+        'triggers "prechange" and "change" events when a property is changed': function () {
+          Record = factory.create({ race: undefined, name: undefined });
           var record = new Record();
-          var callback = sinon.spy();
+          var prechangeCallback = sinon.spy();
+          var prechangeNameCallback = sinon.spy();
+          var changeCallback = sinon.spy();
+          var changeNameCallback = sinon.spy();
 
-          record.addEventListener('change:race', callback);
+          record.addEventListener('prechange', prechangeCallback);
+          record.addEventListener('prechange:race', prechangeNameCallback);
+          record.addEventListener('change', changeCallback);
+          record.addEventListener('change:race', changeNameCallback);
           record.race = 'human';
 
-          expect(callback).to.have.been.calledOnce;
-          expect(callback).to.have.been.calledWith('human', undefined, record);
+          expect(prechangeCallback).to.have.been.calledOnce;
+          expect(prechangeCallback).to.have.been.calledWith('race', undefined, record);
+          expect(prechangeNameCallback).to.have.been.calledOnce;
+          expect(prechangeNameCallback).to.have.been.calledWith(undefined, record);
+          expect(changeCallback).to.have.been.calledOnce;
+          expect(changeCallback).to.have.been.calledWith('race', 'human', undefined, record);
+          expect(changeNameCallback).to.have.been.calledOnce;
+          expect(changeNameCallback).to.have.been.calledWith('human', undefined, record);
+
+          expect(prechangeCallback).to.have.been.calledBefore(changeCallback);
+          expect(prechangeCallback).to.have.been.calledBefore(changeNameCallback);
+          expect(prechangeNameCallback).to.have.been.calledBefore(changeCallback);
+          expect(prechangeNameCallback).to.have.been.calledBefore(changeNameCallback);
 
           record.race = 'dancer';
 
-          expect(callback).to.have.been.calledTwice;
-          expect(callback).to.have.been.calledWith('dancer', 'human', record);
+          expect(prechangeCallback).to.have.been.calledTwice;
+          expect(prechangeCallback).to.have.been.calledWith('race', 'human', record);
+          expect(prechangeNameCallback).to.have.been.calledTwice;
+          expect(prechangeNameCallback).to.have.been.calledWith('human', record);
+          expect(changeCallback).to.have.been.calledTwice;
+          expect(changeCallback).to.have.been.calledWith('race', 'dancer', 'human', record);
+          expect(changeNameCallback).to.have.been.calledTwice;
+          expect(changeNameCallback).to.have.been.calledWith('dancer', 'human', record);
+
+          record.name = 'bob';
+
+          expect(prechangeCallback).to.have.been.calledThrice;
+          expect(prechangeCallback).to.have.been.calledWith('name', undefined, record);
+          expect(prechangeNameCallback).to.have.been.calledTwice;
+          expect(changeCallback).to.have.been.calledThrice;
+          expect(changeCallback).to.have.been.calledWith('name', 'bob', undefined, record);
+          expect(changeNameCallback).to.have.been.calledTwice;
         },
 
         'does not trigger change events if the assigned value is equal to the current': function () {

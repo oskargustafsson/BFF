@@ -7,6 +7,9 @@ define([
 ) {
   'use strict';
 
+  var PRECHANGE_EVENT = 'prechange';
+  var CHANGE_EVENT = 'change';
+
   function validateInput(val, propName, propSchema) {
     var type = typeof val;
     if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
@@ -19,7 +22,8 @@ define([
   }
 
   function makeSetter(propName, propSchema) {
-    var evName = 'change:' + propName;
+    var MY_PRECHANGE_EVENT = 'prechange:' + propName;
+    var MY_CHANGE_EVENT = 'change:' + propName;
 
     var nDependers = (propSchema.dependers || []).length;
     if (nDependers > 0) {
@@ -44,12 +48,17 @@ define([
       }
 
       var oldVal = this[propName];
+
+      this.emit(PRECHANGE_EVENT, [ propName, oldVal, this ]);
+      this.emit(MY_PRECHANGE_EVENT, [ oldVal, this ]);
+
       this.__private.values[propName] = val;
       var newVal = this[propName];
 
       if (newVal === oldVal) { return; }
 
-      this.emit(evName, [ val, oldVal, this ]);
+      this.emit(CHANGE_EVENT, [ propName, val, oldVal, this ]);
+      this.emit(MY_CHANGE_EVENT, [ val, oldVal, this ]);
 
       for (i = 0; i < nDependers; ++i) {
         var depender = propSchema.dependers[i];
