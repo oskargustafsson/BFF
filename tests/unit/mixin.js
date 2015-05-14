@@ -160,7 +160,7 @@ define(function (require) {
 
         'can be an object whose values are solver functions or default solver string ids': function () {
           var solvers = {
-            'string': function (target, source, prop) { return target[prop] = 'hodor'; },
+            'string': function (target, source, prop) { target[prop] = 'hodor'; },
             'array': 'merge',
           };
 
@@ -229,7 +229,7 @@ define(function (require) {
           mixin(target, source, solvers, defaultSolvers.aSolver);
 
           expect(target.stringProp).to.equal('bbb');
-          expect(target.numProp).to.equal(-333);
+          expect(target.numProp).to.equal( -333);
           expect(spy).to.have.been.calledOnce;
           expect(spy).to.have.been.calledWith(target, source, 'numProp');
         },

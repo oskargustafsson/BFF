@@ -10,8 +10,7 @@ define([
   'use strict';
 
   function makeSetter(index) {
-
-    function setter(val) {
+    return function setter(val) {
       var oldVal = this[index];
       if (val === oldVal) { return; }
 
@@ -19,9 +18,7 @@ define([
       this.emit('itemRemoved', [ oldVal, index, this ]);
       this.emit('itemReplaced', [ val, oldVal, index, this ]);
       this.emit('itemAdded', [ val, index, this ]);
-    }
-
-    return setter;
+    };
   }
 
   function makeGetter(index) {
@@ -48,7 +45,7 @@ define([
   }
 
   function List(schema, items) {
-    this.__array = new Array();
+    this.__array = [];
 
     this.listenTo(this, 'change:length', function (length, prevLength) {
       var diff = length - prevLength;
@@ -201,7 +198,7 @@ define([
     start = (start >= 0) ? start : Math.max(0, length + start);
 
     // Handle negative value for "end"
-    var upTo = (typeof end == 'number') ? Math.min(end, length) : length;
+    var upTo = (typeof end === 'number') ? Math.min(end, length) : length;
     end < 0 && (upTo = length + end);
 
     // Actual expected size of the slice
