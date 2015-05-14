@@ -8,6 +8,9 @@ define(function () {
   function getSolverFunction(val) { return getType(val) === 'function' ? val : SOLVERS[val]; }
 
   function mixin(target, source, onConflict, defaultOnConflict) {
+    if (!(target instanceof Object)) { throw '"target" argument must be an object'; }
+    if (!(source instanceof Object)) { throw '"source" argument must be an object'; }
+
     target = target.prototype || target;
 
     var isOnConflictObject = getType(onConflict) === 'object';

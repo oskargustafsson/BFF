@@ -25,7 +25,7 @@ define(function (require) {
           expect(new Record({ race: 'human' }).race).to.equal('human');
         },
 
-        'can be after creation': function () {
+        'can be set after creation': function () {
           Record = factory.create({ race: undefined });
           var record = new Record();
           expect(record.race).to.equal(undefined);
@@ -33,6 +33,7 @@ define(function (require) {
           expect(record.race).to.equal('human');
         },
 
+        /* this functionality is disabled, for now
         'can not be set unless declared': function () {
           Record = factory.create();
           expect(function () { new Record({ race: 'human' }); }).to.throw();
@@ -40,7 +41,7 @@ define(function (require) {
             var record = new Record();
             record.race = 'human';
           }).to.throw();
-        },
+        },*/
 
         'triggers change events when changed': function () {
           Record = factory.create({ race: undefined });

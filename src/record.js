@@ -32,7 +32,7 @@ define([
 
     // TODO: make two different setter functions (in outer scope) and select (+bind)
     // one of the depending of whether the propery has any dependers
-    function setter(val) {
+    return function setter(val) {
       // If there is a custom setter, use it to transform the value
       propSchema.setter && (val = propSchema.setter.call(this, val));
 
@@ -58,9 +58,7 @@ define([
         newDependerValue === oldDependerValue ||
             this.emit(dependerEvents[i], [ newDependerValue, oldDependerValue, this ]);
       }
-    }
-
-    return setter;
+    };
   }
 
   function makeGetter(propName, propSchema) {
@@ -74,6 +72,7 @@ define([
     this.__listeners = {}; // Used by the Event Emitter mixin. TODO make up better solution
 
     properties = properties || {};
+    schema = schema || {};
 
     var property, propertySchema;
     var propertiesUnion = {};
@@ -111,7 +110,8 @@ define([
       propertiesUnion[property] = propertySchema.defaultValue;
     }
 
-    Object.preventExtensions(this);
+    // Disabled, for now
+    // Object.preventExtensions(this);
 
     for (property in properties) {
       if (!schema.hasOwnProperty(property)) {

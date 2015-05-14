@@ -42,7 +42,17 @@ define(function (require) {
         mixin(target, source);
 
         expect(target.prototype).to.equal(undefined);
+        expect(target.hasOwnProperty('numProp')).to.equal(true);
         expect(target.numProp).to.equal(source.numProp);
+      },
+
+      'returns the target object': function () {
+        var source = {};
+        var target = {};
+
+        var ret = mixin(target, source);
+
+        expect(ret).to.equal(target);
       },
 
       'throws an error if trying to mixin an existing prop': function () {

@@ -8,16 +8,8 @@ define([
   function RecordConstructorFactory() {}
 
   RecordConstructorFactory.prototype.create = function (schema) {
-
-    Record.prototype.runtimeChecks = this.runtimeChecks;
-
-    var Constructor = Record.bind(null, schema);
-
-    return Constructor;
-
+    return Record.bind(null, schema);
   };
-
-  RecordConstructorFactory.prototype.runtimeChecks = true;
 
   return new RecordConstructorFactory(); // Singleton-ish
 
