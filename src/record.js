@@ -44,7 +44,7 @@ define([
       }
 
       var oldVal = this[propName];
-      this.__private.properties[propName] = val;
+      this.__private.values[propName] = val;
       var newVal = this[propName];
 
       if (newVal === oldVal) { return; }
@@ -63,15 +63,15 @@ define([
 
   function makeGetter(propName, propSchema) {
     return propSchema.getter ?
-        function getter() { return propSchema.getter.call(this, this.__private.properties[propName]); } :
-        function getter() { return this.__private.properties[propName]; };
+        function getter() { return propSchema.getter.call(this, this.__private.values[propName]); } :
+        function getter() { return this.__private.values[propName]; };
   }
 
-  function Record(schema, properties) {
+  function Record(schema, values) {
     Object.defineProperty(this, '__private', { writable: true, value: {}, });
-    this.__private.properties = {};
+    this.__private.values = {};
 
-    properties = properties || {};
+    values = values || {};
     schema = schema || {};
 
     var property, propertySchema;
@@ -113,11 +113,11 @@ define([
     // Disabled, for now
     // Object.preventExtensions(this);
 
-    for (property in properties) {
+    for (property in values) {
       if (!schema.hasOwnProperty(property)) {
         throw 'Cannot assign undeclared property ' + property;
       }
-      propertiesUnion[property] = properties[property];
+      propertiesUnion[property] = values[property];
     }
 
     // Silently assign initial values
@@ -125,7 +125,7 @@ define([
       var val = propertiesUnion[property];
       schema[property].setter && (val = schema[property].setter.call(this, val));
       validateInput(val, property, schema[property]);
-      this.__private.properties[property] = val;
+      this.__private.values[property] = val;
     }
   }
 
@@ -137,7 +137,7 @@ define([
 
   Record.prototype.toJSONString = Record.prototype.toString = function () {
     var obj = {};
-    for (var property in this.__private.properties) {
+    for (var property in this.__private.values) {
       obj[property] = this[property];
     }
     return JSON.stringify(obj);
