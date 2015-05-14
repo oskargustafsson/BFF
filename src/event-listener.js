@@ -25,7 +25,8 @@ define(function () {
         throw 'Third argument must be a function'; // Catch a common cause of errors
       }
 
-      var listeningTo = this.__listeningTo || (this.__listeningTo = {});
+      this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
+      var listeningTo = this.__private.listeningTo || (this.__private.listeningTo = {});
       var listeningToEvent = listeningTo[eventName] || (listeningTo[eventName] = []);
 
       callback = callback.bind(context || this);
@@ -40,16 +41,16 @@ define(function () {
         throw 'First argument is not an event emitter';
       }
 
-      if (!this.__listeningTo) { return; } // Not listening to anything? We are done.
+      if (!this.__private || !this.__private.listeningTo) { return; } // Not listening to anything? We are done.
 
-      var eventNames = eventName ? {} : this.__listeningTo;
+      var eventNames = eventName ? {} : this.__private.listeningTo;
       eventName && (eventNames[eventName] = undefined);
 
-      for (var eventName in eventNames) {
-        var listeningToList = this.__listeningTo[eventName];
+      for (eventName in eventNames) {
+        var listeningToList = this.__private.listeningTo[eventName];
         if (!listeningToList) { continue; }
         filterList(listeningToList, eventName, eventEmitter);
-        listeningToList.length || (this.__listeningTo[eventName] = undefined);
+        listeningToList.length || (this.__private.listeningTo[eventName] = undefined);
       }
     },
 

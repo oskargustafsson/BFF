@@ -1,9 +1,11 @@
 define([
   './mixin',
   './event-emitter',
+  './event-listener',
 ], function (
   mixin,
-  eventEmitter
+  eventEmitter,
+  eventListener
 ) {
   'use strict';
 
@@ -25,15 +27,6 @@ define([
     var MY_PRECHANGE_EVENT = 'prechange:' + propName;
     var MY_CHANGE_EVENT = 'change:' + propName;
 
-    var nDependers = (propSchema.dependers || []).length;
-    if (nDependers > 0) {
-      var oldDependerValues = new Array(nDependers);
-      var dependerEvents = new Array(nDependers);
-      for (var i = 0; i < nDependers; ++i) {
-        dependerEvents[i] = 'change:' + propSchema.dependers[i];
-      }
-    }
-
     // TODO: make two different setter functions (in outer scope) and select (+bind)
     // one of the depending of whether the propery has any dependers
     return function setter(val) {
@@ -42,10 +35,6 @@ define([
 
       // Input validation
       validateInput(val, propName, propSchema);
-
-      for (var i = 0; i < nDependers; ++i) {
-        oldDependerValues[i] = this[propSchema.dependers[i]];
-      }
 
       var oldVal = this[propName];
 
@@ -59,14 +48,6 @@ define([
 
       this.emit(CHANGE_EVENT, [ propName, val, oldVal, this ]);
       this.emit(MY_CHANGE_EVENT, [ val, oldVal, this ]);
-
-      for (i = 0; i < nDependers; ++i) {
-        var depender = propSchema.dependers[i];
-        var newDependerValue = this[depender];
-        var oldDependerValue = oldDependerValues[i];
-        newDependerValue === oldDependerValue ||
-            this.emit(dependerEvents[i], [ newDependerValue, oldDependerValue, this ]);
-      }
     };
   }
 
@@ -76,9 +57,30 @@ define([
         function getter() { return this.__private.values[propName]; };
   }
 
+  var triggerDependerPrechangeEvents = function (dependerPropNames) {
+    for (var i = 0; i < dependerPropNames.length; ++i) {
+      var dependerPropName = dependerPropNames[i];
+      var value = this[dependerPropName];
+      this.emit(PRECHANGE_EVENT, [ dependerPropName, value, this ]);
+      this.emit(PRECHANGE_EVENT + ':' + dependerPropName, [ value, this ]); // TODO: optimize
+    }
+  };
+
+  var triggerDependerChangeEvents = function (dependerPropNames) {
+    for (var i = 0; i < dependerPropNames.length; ++i) {
+      var dependerPropName = dependerPropNames[i];
+      var prevValue = this.__private.previousValues[dependerPropName];
+      var value = this[dependerPropName];
+      if (value === prevValue) { continue; }
+      this.emit(CHANGE_EVENT, [ dependerPropName, value, prevValue, this ]);
+      this.emit(CHANGE_EVENT + ':' + dependerPropName, [ value, prevValue, this ]); // TODO: optimize
+    }
+  };
+
   function Record(schema, values) {
     Object.defineProperty(this, '__private', { writable: true, value: {}, });
     this.__private.values = {};
+    this.__private.previousValues = {};
 
     values = values || {};
     schema = schema || {};
@@ -116,8 +118,19 @@ define([
       }
       Object.defineProperty(this, property, descriptor);
 
+      if (propertySchema.dependers) {
+        this.listenTo(this, 'prechange:' + property,
+            triggerDependerPrechangeEvents.bind(this, propertySchema.dependers));
+        this.listenTo(this, 'change:' + property,
+            triggerDependerChangeEvents.bind(this, propertySchema.dependers));
+      }
+
       propertiesUnion[property] = propertySchema.defaultValue;
     }
+
+    this.listenTo(this, PRECHANGE_EVENT, function (propName, value) {
+      this.__private.previousValues[propName] = value;
+    });
 
     // Disabled, for now
     // Object.preventExtensions(this);
@@ -153,6 +166,7 @@ define([
   };
 
   mixin(Record, eventEmitter);
+  mixin(Record, eventListener);
 
   return Record;
 

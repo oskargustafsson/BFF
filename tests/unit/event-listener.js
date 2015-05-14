@@ -56,7 +56,7 @@ define(function (require) {
 
         listener.listenTo(emitter, 'kwanzaa', callback);
         listener.listenTo(emitter, 'kwanzaa', callback2);
-        expect(listener.__listeningTo.kwanzaa.length).to.equal(2);
+        expect(listener.__private.listeningTo.kwanzaa.length).to.equal(2);
 
         emitter.emit('kwanzaa');
         expect(callback).to.have.been.calledOnce;
@@ -105,13 +105,13 @@ define(function (require) {
 
         listener.listenTo(emitter, 'kwanzaa', callback);
         listener.listenTo(emitter, 'kwanzaa', callback2);
-        expect(listener.__listeningTo.kwanzaa.length).to.equal(2);
+        expect(listener.__private.listeningTo.kwanzaa.length).to.equal(2);
 
         listener.stopListening();
 
         emitter.emit('kwanzaa');
 
-        expect(listener.__listeningTo.kwanzaa).to.equal(undefined);
+        expect(listener.__private.listeningTo.kwanzaa).to.equal(undefined);
         expect(callback).to.not.have.been.called;
         expect(callback2).to.not.have.been.called;
       },
@@ -129,8 +129,8 @@ define(function (require) {
         listener.listenTo(emitter1, 'hanukkah', callback2);
         listener.listenTo(emitter2, 'kwanzaa', callback3);
         listener.listenTo(emitter2, 'hanukkah', callback4);
-        expect(listener.__listeningTo.kwanzaa.length).to.equal(2);
-        expect(listener.__listeningTo.hanukkah.length).to.equal(2);
+        expect(listener.__private.listeningTo.kwanzaa.length).to.equal(2);
+        expect(listener.__private.listeningTo.hanukkah.length).to.equal(2);
 
         listener.stopListening(undefined, 'kwanzaa');
 
@@ -139,8 +139,8 @@ define(function (require) {
         emitter2.emit('kwanzaa');
         emitter2.emit('hanukkah');
 
-        expect(listener.__listeningTo.kwanzaa).to.equal(undefined);
-        expect(listener.__listeningTo.hanukkah.length).to.equal(2);
+        expect(listener.__private.listeningTo.kwanzaa).to.equal(undefined);
+        expect(listener.__private.listeningTo.hanukkah.length).to.equal(2);
         expect(callback1).to.not.have.been.called;
         expect(callback2).to.have.been.calledOnce;
         expect(callback3).to.not.have.been.called;
@@ -160,8 +160,8 @@ define(function (require) {
         listener.listenTo(emitter1, 'hanukkah', callback2);
         listener.listenTo(emitter2, 'kwanzaa', callback3);
         listener.listenTo(emitter2, 'hanukkah', callback4);
-        expect(listener.__listeningTo.kwanzaa.length).to.equal(2);
-        expect(listener.__listeningTo.hanukkah.length).to.equal(2);
+        expect(listener.__private.listeningTo.kwanzaa.length).to.equal(2);
+        expect(listener.__private.listeningTo.hanukkah.length).to.equal(2);
 
         listener.stopListening(emitter1);
 
@@ -170,8 +170,8 @@ define(function (require) {
         emitter2.emit('kwanzaa');
         emitter2.emit('hanukkah');
 
-        expect(listener.__listeningTo.kwanzaa.length).to.equal(1);
-        expect(listener.__listeningTo.hanukkah.length).to.equal(1);
+        expect(listener.__private.listeningTo.kwanzaa.length).to.equal(1);
+        expect(listener.__private.listeningTo.hanukkah.length).to.equal(1);
         expect(callback1).to.not.have.been.called;
         expect(callback2).to.not.have.been.called;
         expect(callback3).to.have.been.calledOnce;
@@ -191,8 +191,8 @@ define(function (require) {
         listener.listenTo(emitter1, 'hanukkah', callback2);
         listener.listenTo(emitter2, 'kwanzaa', callback3);
         listener.listenTo(emitter2, 'hanukkah', callback4);
-        expect(listener.__listeningTo.kwanzaa.length).to.equal(2);
-        expect(listener.__listeningTo.hanukkah.length).to.equal(2);
+        expect(listener.__private.listeningTo.kwanzaa.length).to.equal(2);
+        expect(listener.__private.listeningTo.hanukkah.length).to.equal(2);
 
         listener.stopListening(emitter1, 'kwanzaa');
 
@@ -201,8 +201,8 @@ define(function (require) {
         emitter2.emit('kwanzaa');
         emitter2.emit('hanukkah');
 
-        expect(listener.__listeningTo.kwanzaa.length).to.equal(1);
-        expect(listener.__listeningTo.hanukkah.length).to.equal(2);
+        expect(listener.__private.listeningTo.kwanzaa.length).to.equal(1);
+        expect(listener.__private.listeningTo.hanukkah.length).to.equal(2);
         expect(callback1).to.not.have.been.called;
         expect(callback2).to.have.been.calledOnce;
         expect(callback3).to.have.been.calledOnce;

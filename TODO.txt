@@ -1,6 +1,7 @@
 Add input validation (of calling arguments) to all exposed functions
 Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
 Docblocks
+Only trigger 'prechange' events if there will actually be a change
 
 MODEL
 -----

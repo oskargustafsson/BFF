@@ -119,7 +119,7 @@ define(function (require) {
 
         'dependencies': {
 
-          'causes events to be triggered on dependent properties': function () {
+          'causes "prechange" and "change" events to be triggered on dependent properties': function () {
             Record = factory.create({
               firstName: { type: 'string', defaultValue: 'Boutros' },
               lastName: { type: 'string', defaultValue: 'Gali' },
@@ -132,15 +132,46 @@ define(function (require) {
               },
             });
             var record = new Record();
-            var callback = sinon.spy();
+            var prechangeCallback = sinon.spy();
+            var fullNamePrechangeCallback = sinon.spy();
+            var changeCallback = sinon.spy();
+            var fullNameChangeCallback = sinon.spy();
 
             expect(record.fullName).to.equal('Boutros Gali');
 
-            record.addEventListener('change:fullName', callback);
+            record.addEventListener('prechange', prechangeCallback);
+            record.addEventListener('prechange:fullName', fullNamePrechangeCallback);
+            record.addEventListener('change', changeCallback);
+            record.addEventListener('change:fullName', fullNameChangeCallback);
             record.lastName = 'Boutros-Gali';
 
             expect(record.fullName).to.equal('Boutros Boutros-Gali');
-            expect(callback).to.have.been.calledWith('Boutros Boutros-Gali', 'Boutros Gali', record);
+            expect(prechangeCallback).to.have.been.calledTwice;
+            expect(prechangeCallback).to.have.been.calledWith('lastName', 'Gali', record);
+            expect(prechangeCallback).to.have.been.calledWith('fullName', 'Boutros Gali', record);
+            expect(fullNamePrechangeCallback).to.have.been.calledOnce;
+            expect(fullNamePrechangeCallback).to.have.been.calledWith('Boutros Gali', record);
+            expect(changeCallback).to.have.been.calledTwice;
+            expect(changeCallback).to.have.been.calledWith('lastName', 'Boutros-Gali', 'Gali', record);
+            expect(changeCallback).to.have.been.calledWith('fullName', 'Boutros Boutros-Gali', 'Boutros Gali', record);
+            expect(fullNameChangeCallback).to.have.been.calledOnce;
+            expect(fullNameChangeCallback).to.have.been.calledWith('Boutros Boutros-Gali', 'Boutros Gali', record);
+
+            record.firstName = 'Boutros Boutros';
+
+            expect(record.fullName).to.equal('Boutros Boutros Boutros-Gali');
+            expect(prechangeCallback).to.have.callCount(4);
+            expect(prechangeCallback).to.have.been.calledWith('firstName', 'Boutros', record);
+            expect(prechangeCallback).to.have.been.calledWith('fullName', 'Boutros Boutros-Gali', record);
+            expect(fullNamePrechangeCallback).to.have.been.calledTwice;
+            expect(fullNamePrechangeCallback).to.have.been.calledWith('Boutros Boutros-Gali', record);
+            expect(changeCallback).to.have.callCount(4);
+            expect(changeCallback).to.have.been.calledWith('firstName', 'Boutros Boutros', 'Boutros', record);
+            expect(changeCallback).to.have.been.calledWith(
+                'fullName', 'Boutros Boutros Boutros-Gali', 'Boutros Boutros-Gali', record);
+            expect(fullNameChangeCallback).to.have.been.calledTwice;
+            expect(fullNameChangeCallback).to.have.been.calledWith(
+                'Boutros Boutros Boutros-Gali', 'Boutros Boutros-Gali', record);
           },
 
           'does not trigger an event if the dependent does not actually change': function () {
