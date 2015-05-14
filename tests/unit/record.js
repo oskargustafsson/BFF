@@ -33,6 +33,14 @@ define(function (require) {
           expect(record.race).to.equal('human');
         },
 
+        'are enumerable, and nothing else is': function () {
+          Record = factory.create({ prop1: undefined, prop2: undefined });
+          var record = new Record({ prop1: 'a' });
+          expect(Object.keys(record)).to.contain('prop1');
+          expect(Object.keys(record)).to.contain('prop2');
+          expect(Object.keys(record).length).to.equal(2);
+        },
+
         /* this functionality is disabled, for now
         'can not be set unless declared': function () {
           Record = factory.create();

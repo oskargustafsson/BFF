@@ -1,5 +1,4 @@
 Add input validation (of calling arguments) to all exposed functions
-Make "private" props non-enumerable, e.g. Object.defineProperty(this, '__listeners', { value: {}, writable: true, });
 Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
 Docblocks
 

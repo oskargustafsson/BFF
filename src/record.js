@@ -44,7 +44,7 @@ define([
       }
 
       var oldVal = this[propName];
-      this.__properties[propName] = val;
+      this.__private.properties[propName] = val;
       var newVal = this[propName];
 
       if (newVal === oldVal) { return; }
@@ -63,13 +63,13 @@ define([
 
   function makeGetter(propName, propSchema) {
     return propSchema.getter ?
-        function getter() { return propSchema.getter.call(this, this.__properties[propName]); } :
-        function getter() { return this.__properties[propName]; };
+        function getter() { return propSchema.getter.call(this, this.__private.properties[propName]); } :
+        function getter() { return this.__private.properties[propName]; };
   }
 
   function Record(schema, properties) {
-    this.__properties = {};
-    this.__listeners = {}; // Used by the Event Emitter mixin. TODO make up better solution
+    Object.defineProperty(this, '__private', { writable: true, value: {}, });
+    this.__private.properties = {};
 
     properties = properties || {};
     schema = schema || {};
@@ -125,7 +125,7 @@ define([
       var val = propertiesUnion[property];
       schema[property].setter && (val = schema[property].setter.call(this, val));
       validateInput(val, property, schema[property]);
-      this.__properties[property] = val;
+      this.__private.properties[property] = val;
     }
   }
 
@@ -137,7 +137,7 @@ define([
 
   Record.prototype.toJSONString = Record.prototype.toString = function () {
     var obj = {};
-    for (var property in this.__properties) {
+    for (var property in this.__private.properties) {
       obj[property] = this[property];
     }
     return JSON.stringify(obj);

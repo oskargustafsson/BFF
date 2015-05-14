@@ -22,7 +22,7 @@ define(function (require) {
         var emitter = mixin({}, eventEmitter);
         emitter.addEventListener('kwanzaa', function () {});
         emitter.addEventListener('kwanzaa', function () {});
-        expect(emitter.__listeners.kwanzaa.length).to.equal(2);
+        expect(emitter.__private.listeners.kwanzaa.length).to.equal(2);
       },
 
       'can not add the same listener twice': function () {
@@ -48,14 +48,14 @@ define(function (require) {
 
         emitter.addEventListener('kwanzaa', callback);
         emitter.addEventListener('kwanzaa', callback2);
-        expect(emitter.__listeners.kwanzaa.length).to.equal(2);
+        expect(emitter.__private.listeners.kwanzaa.length).to.equal(2);
 
         emitter.emit('kwanzaa');
         expect(callback).have.been.calledOnce;
         expect(callback2).have.been.calledOnce;
 
         emitter.removeEventListener('kwanzaa');
-        expect(emitter.__listeners.kwanzaa).to.equal(undefined);
+        expect(emitter.__private.listeners.kwanzaa).to.equal(undefined);
 
         emitter.emit('kwanzaa');
         expect(callback).have.been.calledOnce;
@@ -75,7 +75,7 @@ define(function (require) {
         expect(callback2).have.been.calledOnce;
 
         emitter.removeEventListener('kwanzaa', callback);
-        expect(emitter.__listeners.kwanzaa.length).to.equal(1);
+        expect(emitter.__private.listeners.kwanzaa.length).to.equal(1);
 
         emitter.emit('kwanzaa');
         expect(callback).have.been.calledOnce;

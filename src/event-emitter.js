@@ -8,9 +8,10 @@ define(function () {
         throw '"eventName" argument must be a string';
       }
 
-      if (!this.__listeners) { return; }
+      if (!this.__private) { return; }
+      if (!this.__private.listeners) { return; }
 
-      var listenersForEvent = this.__listeners[eventName];
+      var listenersForEvent = this.__private.listeners[eventName];
       if (!listenersForEvent) { return; }
 
       var length = listenersForEvent.length;
@@ -27,7 +28,8 @@ define(function () {
         throw '"callback" argument must be a function'; // Catch a common cause of errors
       }
 
-      var listeners = this.__listeners || (this.__listeners = {});
+      this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
+      var listeners = this.__private.listeners || (this.__private.listeners = {});
       var listenersForEvent = listeners[eventName] || (listeners[eventName] = []);
 
       if (listenersForEvent.indexOf(callback) !== -1) {
@@ -45,9 +47,10 @@ define(function () {
         throw '"callback" argument must be a function'; // Catch a common cause of errors
       }
 
-      if (!this.__listeners) { return; } // No listeners at all? We are done.
+      if (!this.__private) { return; } // No listeners at all? We are done.
+      if (!this.__private.listeners) { return; }
 
-      var listenersForEvent = this.__listeners[eventName];
+      var listenersForEvent = this.__private.listeners[eventName];
       if (!listenersForEvent) { return; } // No listeners for this event? We are done.
 
       if (callback) {
@@ -55,10 +58,10 @@ define(function () {
         if (pos === -1) { return; }
         listenersForEvent.splice(pos, 1);
         if (listenersForEvent.length === 0) {
-          this.__listeners[eventName] = undefined;
+          this.__private.listeners[eventName] = undefined;
         }
       } else {
-        this.__listeners[eventName] = undefined;
+        this.__private.listeners[eventName] = undefined;
       }
     },
 
