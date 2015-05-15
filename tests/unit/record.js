@@ -210,11 +210,80 @@ define(function (require) {
             expect(changeCallback).not.to.have.been.called;
           },
 
-          'can be several levels deep': function () {
-            // TODO test to have a dependency chain like a->b->c
-            // Also, make sure the prechange event is only triggered when the property will actually be changed,
-            // to avoid unnecessary overhead and infinite cyclic loops ( oldVal !== getter(setter(val)) )
-          }
+        },
+
+        'second-level dependencies': {
+
+          'emits "prechange" and "change" event when a property in its dependency chain is changed': function  () {
+            Record = factory.create({
+              first: { type: 'string', defaultValue: 'a' },
+              second: {
+                setter: false,
+                getter: function () {
+                  return this.first + this.first;
+                },
+                dependencies: [ 'first' ],
+              },
+              third: {
+                setter: false,
+                getter: function () {
+                  return this.second + this.second;
+                },
+                dependencies: [ 'second' ],
+              },
+            });
+            var record = new Record();
+            expect(record.first).to.equal('a');
+            expect(record.second).to.equal('aa');
+            expect(record.third).to.equal('aaaa');
+
+            var prechangeCallback = sinon.spy();
+            var firstPrechangeCallback = sinon.spy();
+            var secondPrechangeCallback = sinon.spy();
+            var thirdPrechangeCallback = sinon.spy();
+            var changeCallback = sinon.spy();
+            var firstChangeCallback = sinon.spy();
+            var secondChangeCallback = sinon.spy();
+            var thirdChangeCallback = sinon.spy();
+
+            record.addEventListener('prechange', prechangeCallback);
+            record.addEventListener('prechange:first', firstPrechangeCallback);
+            record.addEventListener('prechange:second', secondPrechangeCallback);
+            record.addEventListener('prechange:third', thirdPrechangeCallback);
+            record.addEventListener('change', changeCallback);
+            record.addEventListener('change:first', firstChangeCallback);
+            record.addEventListener('change:second', secondChangeCallback);
+            record.addEventListener('change:third', thirdChangeCallback);
+            record.first = 'b';
+
+            expect(record.first).to.equal('b');
+            expect(record.second).to.equal('bb');
+            expect(record.third).to.equal('bbbb');
+
+            expect(prechangeCallback).to.have.been.calledThrice;
+            expect(prechangeCallback).to.have.been.calledWith('first', 'a', 'first', 'b', record);
+            expect(prechangeCallback).to.have.been.calledWith('second', 'aa', 'first', 'b', record);
+            expect(prechangeCallback).to.have.been.calledWith('third', 'aaaa', 'first', 'b', record);
+
+            expect(firstPrechangeCallback).to.have.been.calledOnce;
+            expect(firstPrechangeCallback).to.have.been.calledWith('a', 'first', 'b', record);
+            expect(secondPrechangeCallback).to.have.been.calledOnce;
+            expect(secondPrechangeCallback).to.have.been.calledWith('aa', 'first', 'b', record);
+            expect(thirdPrechangeCallback).to.have.been.calledOnce;
+            expect(thirdPrechangeCallback).to.have.been.calledWith('aaaa', 'first', 'b', record);
+
+            expect(changeCallback).to.have.been.calledThrice;
+            expect(changeCallback).to.have.been.calledWith('first', 'b', 'a', record);
+            expect(changeCallback).to.have.been.calledWith('second', 'bb', 'aa', record);
+            expect(changeCallback).to.have.been.calledWith('third', 'bbbb', 'aaaa', record);
+
+            expect(firstChangeCallback).to.have.been.calledOnce;
+            expect(firstChangeCallback).to.have.been.calledWith('b', 'a', record);
+            expect(secondChangeCallback).to.have.been.calledOnce;
+            expect(secondChangeCallback).to.have.been.calledWith('bb', 'aa', record);
+            expect(thirdChangeCallback).to.have.been.calledOnce;
+            expect(thirdChangeCallback).to.have.been.calledWith('bbbb', 'aaaa', record);
+          },
 
         },
 
