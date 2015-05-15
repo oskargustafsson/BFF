@@ -39,9 +39,9 @@ define(function (require) {
         var replacedCallback = sinon.spy();
         var addedCallback = sinon.spy();
 
-        list.addEventListener('itemRemoved', removedCallback);
-        list.addEventListener('itemReplaced', replacedCallback);
-        list.addEventListener('itemAdded', addedCallback);
+        list.addEventListener('item:removed', removedCallback);
+        list.addEventListener('item:replaced', replacedCallback);
+        list.addEventListener('item:added', addedCallback);
         list[0] = 'c';
 
         expect(list[0]).to.equal('c');
@@ -75,7 +75,7 @@ define(function (require) {
           var itemAddedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('item:added', itemAddedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.push('c');
 
@@ -110,7 +110,7 @@ define(function (require) {
           var itemAddedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('item:added', itemAddedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.unshift('c');
 
@@ -150,7 +150,7 @@ define(function (require) {
           var itemRemovedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('item:removed', itemRemovedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.pop();
 
@@ -172,7 +172,7 @@ define(function (require) {
           var itemRemovedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('item:removed', itemRemovedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.pop();
 
@@ -199,7 +199,7 @@ define(function (require) {
           var itemRemovedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('item:removed', itemRemovedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.shift();
 
@@ -221,7 +221,7 @@ define(function (require) {
           var itemRemovedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemRemoved', itemRemovedCallback);
+          list.addEventListener('item:removed', itemRemovedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.shift();
 
@@ -254,8 +254,8 @@ define(function (require) {
           var itemAddedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemRemoved', itemRemovedCallback);
-          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('item:removed', itemRemovedCallback);
+          list.addEventListener('item:added', itemAddedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.splice(1, 2, 'x', 'y', 'z');
 
@@ -283,8 +283,8 @@ define(function (require) {
           var itemAddedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
 
-          list.addEventListener('itemRemoved', itemRemovedCallback);
-          list.addEventListener('itemAdded', itemAddedCallback);
+          list.addEventListener('item:removed', itemRemovedCallback);
+          list.addEventListener('item:added', itemAddedCallback);
           list.addEventListener('change:length', lengthChangedCallback);
           list.splice(0, 0);
 

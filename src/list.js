@@ -9,15 +9,19 @@ define([
 ) {
   'use strict';
 
+  var ITEM_ADDED_EVENT = 'item:added';
+  var ITEM_REPLACED_EVENT = 'item:replaced';
+  var ITEM_REMOVED_EVENT = 'item:removed';
+
   function makeSetter(index) {
     return function setter(val) {
       var oldVal = this[index];
       if (val === oldVal) { return; }
 
       this.__array[index] = val;
-      this.emit('itemRemoved', [ oldVal, index, this ]);
-      this.emit('itemReplaced', [ val, oldVal, index, this ]);
-      this.emit('itemAdded', [ val, index, this ]);
+      this.emit(ITEM_REMOVED_EVENT, [ oldVal, index, this ]);
+      this.emit(ITEM_REPLACED_EVENT, [ val, oldVal, index, this ]);
+      this.emit(ITEM_ADDED_EVENT, [ val, index, this ]);
     };
   }
 
@@ -92,7 +96,7 @@ define([
     this.__array.push.apply(this.__array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
-      this.emit('itemAdded', [ arguments[i], oldLength + i, this ]);
+      this.emit(ITEM_ADDED_EVENT, [ arguments[i], oldLength + i, this ]);
     }
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -106,7 +110,7 @@ define([
     this.__array.unshift.apply(this.__array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
-      this.emit('itemAdded', [ arguments[i], i, this ]);
+      this.emit(ITEM_ADDED_EVENT, [ arguments[i], i, this ]);
     }
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -119,7 +123,7 @@ define([
 
     var poppedItem = this.__array.pop.apply(this.__array, arguments);
 
-    this.emit('itemRemoved', [ poppedItem, this.length, this ]);
+    this.emit(ITEM_REMOVED_EVENT, [ poppedItem, this.length, this ]);
     this.emit('change:length', [ this.length, oldLength, this ]);
 
     return poppedItem;
@@ -131,7 +135,7 @@ define([
 
     var poppedItem = this.__array.shift.apply(this.__array, arguments);
 
-    this.emit('itemRemoved', [ poppedItem, 0, this ]);
+    this.emit(ITEM_REMOVED_EVENT, [ poppedItem, 0, this ]);
     this.emit('change:length', [ this.length, oldLength, this ]);
 
     return poppedItem;
@@ -146,10 +150,10 @@ define([
     }
 
     for (var i = 0; i < deleteCount; ++i) {
-      this.emit('itemRemoved', [ deletedItems[i], start + i, this ]);
+      this.emit(ITEM_REMOVED_EVENT, [ deletedItems[i], start + i, this ]);
     }
     for (i = 2; i < arguments.length; ++i) {
-      this.emit('itemAdded', [ arguments[i], start + (i - 2), this ]);
+      this.emit(ITEM_ADDED_EVENT, [ arguments[i], start + (i - 2), this ]);
     }
     this.length === oldLength || this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -240,7 +244,7 @@ define([
   };
 
   // TODO: make functions chainable
-  // TODO: itemAdded and itemRemoved events
+  // TODO: itemAdded and item:removed events
   // TODO: implement some lodash funcs like union and intersection
 
   Object.defineProperties(List.prototype, {
