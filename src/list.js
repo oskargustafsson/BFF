@@ -9,9 +9,14 @@ define([
 ) {
   'use strict';
 
+  var ADDED_EVENT = 'added';
+  var REPLACED_EVENT = 'replaced';
+  var REMOVED_EVENT = 'removed';
   var ITEM_ADDED_EVENT = 'item:added';
   var ITEM_REPLACED_EVENT = 'item:replaced';
   var ITEM_REMOVED_EVENT = 'item:removed';
+
+  function isEmitter(obj) { return !!(obj && obj.emit); }
 
   function makeSetter(index) {
     return function setter(val) {
@@ -19,9 +24,20 @@ define([
       if (val === oldVal) { return; }
 
       this.__array[index] = val;
-      this.emit(ITEM_REMOVED_EVENT, [ oldVal, index, this ]);
-      this.emit(ITEM_REPLACED_EVENT, [ val, oldVal, index, this ]);
-      this.emit(ITEM_ADDED_EVENT, [ val, index, this ]);
+
+      if (isEmitter(oldVal)) {
+        oldVal.emit(REMOVED_EVENT, [ index, this ]);
+      } else {
+        this.emit(ITEM_REMOVED_EVENT, [ oldVal, index, this ]);
+      }
+
+      if (isEmitter(val)) {
+        val.emit(REPLACED_EVENT, [ oldVal, index, this ]);
+        val.emit(ADDED_EVENT, [ index, this ]);
+      } else {
+        this.emit(ITEM_REPLACED_EVENT, [ val, oldVal, index, this ]);
+        this.emit(ITEM_ADDED_EVENT, [ val, index, this ]);
+      }
     };
   }
 
@@ -96,7 +112,10 @@ define([
     this.__array.push.apply(this.__array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
-      this.emit(ITEM_ADDED_EVENT, [ arguments[i], oldLength + i, this ]);
+      var val = arguments[i];
+      isEmitter(val) ?
+          val.emit(ADDED_EVENT, [ oldLength + i, this ]) :
+          this.emit(ITEM_ADDED_EVENT, [ val, oldLength + i, this ]);
     }
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -110,7 +129,10 @@ define([
     this.__array.unshift.apply(this.__array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
-      this.emit(ITEM_ADDED_EVENT, [ arguments[i], i, this ]);
+      var val = arguments[i];
+      isEmitter(val) ?
+          val.emit(ADDED_EVENT, [ i, this ]) :
+          this.emit(ITEM_ADDED_EVENT, [ val, i, this ]);
     }
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -123,7 +145,9 @@ define([
 
     var poppedItem = this.__array.pop.apply(this.__array, arguments);
 
-    this.emit(ITEM_REMOVED_EVENT, [ poppedItem, this.length, this ]);
+    isEmitter(poppedItem) ?
+        poppedItem.emit(REMOVED_EVENT, [ this.length, this ]) :
+        this.emit(ITEM_REMOVED_EVENT, [ poppedItem, this.length, this ]);
     this.emit('change:length', [ this.length, oldLength, this ]);
 
     return poppedItem;
@@ -135,7 +159,9 @@ define([
 
     var poppedItem = this.__array.shift.apply(this.__array, arguments);
 
-    this.emit(ITEM_REMOVED_EVENT, [ poppedItem, 0, this ]);
+    isEmitter(poppedItem) ?
+        poppedItem.emit(REMOVED_EVENT, [ 0, this ]) :
+        this.emit(ITEM_REMOVED_EVENT, [ poppedItem, 0, this ]);
     this.emit('change:length', [ this.length, oldLength, this ]);
 
     return poppedItem;
@@ -149,11 +175,18 @@ define([
       start = oldLength + start;
     }
 
+    var item;
     for (var i = 0; i < deleteCount; ++i) {
-      this.emit(ITEM_REMOVED_EVENT, [ deletedItems[i], start + i, this ]);
+      item = deletedItems[i];
+      isEmitter(item) ?
+          item.emit(REMOVED_EVENT, [ start + i, this ]) :
+          this.emit(ITEM_REMOVED_EVENT, [ item, start + i, this ]);
     }
     for (i = 2; i < arguments.length; ++i) {
-      this.emit(ITEM_ADDED_EVENT, [ arguments[i], start + (i - 2), this ]);
+      item = arguments[i];
+      isEmitter(item) ?
+          item.emit(ADDED_EVENT, [ item, start + (i - 2), this ]) :
+          this.emit(ITEM_ADDED_EVENT, [ item, start + (i - 2), this ]);
     }
     this.length === oldLength || this.emit('change:length', [ this.length, oldLength, this ]);
 

@@ -9,8 +9,7 @@
           return count + (item.completed ? 1 : 0);
         }, 0);
       },
-      dependencies: [ 'length' ],
-      itemDependencies: [ 'completed' ],
+      dependencies: [ 'length', 'item:completed' ],
     },
   });
 
