@@ -54,6 +54,11 @@ define(function () {
       }
     },
 
+    getListeningTo: function () {
+      if (!this.__private) { return {}; }
+      return this.__private.listeningTo;
+    },
+
   };
 
 });

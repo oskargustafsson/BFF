@@ -5,7 +5,7 @@ define([
 ], function (
   mixin,
   eventEmitter,
-  eventListner
+  eventListener
 ) {
   'use strict';
 
@@ -16,7 +16,14 @@ define([
   var ITEM_REPLACED_EVENT = 'item:replaced';
   var ITEM_REMOVED_EVENT = 'item:removed';
 
-  function isEmitter(obj) { return !!(obj && obj.emit); }
+  var ITEM_EVENT_PREFIX = /^item:/;
+
+  function isEmitter(obj) { return !!(obj && obj.emit); } // Quack!
+
+  var reemitItemEvent = function (eventName, item) {
+    var eventArgs = [ item ].concat(arguments);
+    this.emit(eventName, eventArgs);
+  };
 
   function makeSetter(index) {
     return function setter(val) {
@@ -84,6 +91,19 @@ define([
           delete this[i];
         }
       }
+    });
+
+    this.listenTo(this, 'item:added', function (item) {
+      if (!isEmitter(item)) { return; }
+
+      var listeningTo = this.getListeningTo();
+      for (var eventName in listeningTo) {
+        this.listenTo(item, eventName, reemitItemEvent.bind(this, 'item:' + eventName, item));
+      }
+    });
+
+    this.listenTo(this, 'item:removed', function (item) {
+      isEmitter(item) && this.stopListening(item);
     });
 
     if (arguments.length === 1 && schema instanceof Array) {
@@ -294,8 +314,26 @@ define([
     }
   });
 
-  mixin(List, eventEmitter);
-  mixin(List, eventListner);
+  List.prototype.addEventListener = function (eventName) {
+    if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }
+
+    var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
+    var length = this.length;
+    for (var i = 0; i < length; ++i) {
+      var item = this[i];
+      isEmitter(item) && this.listenTo(item, strippedEventName, reemitItemEvent.bind(this, eventName, item));
+    }
+  };
+
+  List.prototype.removeEventListener = function (eventName) {
+    if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }
+
+    var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
+    this.stopListening(undefined, strippedEventName);
+  };
+
+  mixin(List, eventEmitter, { 'function': 'merge' });
+  mixin(List, eventListener);
 
   return List;
 

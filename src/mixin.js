@@ -61,8 +61,8 @@ define(function () {
         break;
       case 'function':
         target[prop] = function () {
-          targetProp.apply(null, arguments);
-          sourceProp.apply(null, arguments);
+          targetProp.apply(this, arguments);
+          sourceProp.apply(this, arguments);
         };
         break;
       case 'string':
