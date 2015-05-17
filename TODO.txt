@@ -1,11 +1,44 @@
-Add input validation (of calling arguments) to all exposed functions
-Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
-Docblocks
-Only trigger 'prechange' events if there will actually be a change
+General
+-------
+- Add CommonJS support
+- Add input validation (of calling arguments) to all exposed functions
+- Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
+- Docblocks
+- Grunt integration of
+  - Conditional runtime checks (part of build system)
+  - Run Intern tests suites
+  - JSHint & JSCS
 
-MODEL
+List
+----
+- Add the item itself to "added", "removed" and "replaced" events arguments
+- Add custom properties (no setters, just getters)
+- Add dependencies to properties
+- Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
+- Option to mixin lodash functions
+- Throw error message if user tries to assign to list[-1] or list[list.length]
+- Explore if there is a way to check if the user assigns outside of the array and throw an error.
+  - Using Proxies? (FF + IE12)
+  - Listening for internal Array "length" changes?
+
+Record
+------
+- Refactor toJSON, to not use .__private
+- Use Object.defineProperties instead of Object.defineProperty
+
+Event emitter
+-------------
+- Don't accept arguments as an array, arguments should be able to be passed like .emit('eventName', arg1, arg2, arg3).
+  - Speed test different solutions: BackboneJS solution v.s. custEmit.call.apply(Function.prototype, arguments) (this === 'eventName')
+
+Controller
+----------
+- A way to easily toggle classes. E.g. option to .bind prop like this: "classes.className", which should get a boolean value.
+
+Mixin
 -----
-Trigger three events on set; change:propname, change and *
-Break out event into mixin
-Use Object.defineProperties instead of Object.defineProperty
-Check that properties not in the schema are not passed to the constructor (e.g. { namee: 'O' })
+- Rename to "extend" and don't automatically apply to prototype
+
+ListConstructorFactory
+----------------------
+- Create?

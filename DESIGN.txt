@@ -1,0 +1,3 @@
+Events
+------
+- All events should contain an argument that is a reference to the object that the event is related to. E.g. the "added" event should have an argument that is the added item. This argument should always be last.
