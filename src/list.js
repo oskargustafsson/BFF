@@ -18,12 +18,19 @@ define([
 
   var ITEM_EVENT_PREFIX = /^item:/;
 
-  function isEmitter(obj) { return !!(obj && obj.emit); } // Quack!
+  function isEmitter(obj) { return !!(obj && obj.addEventListener); } // Quack!
 
-  var reemitItemEvent = function (eventName, item) {
-    var eventArgs = [ item ].concat(arguments);
-    this.emit(eventName, eventArgs);
+  var reemitItemEvent = function (itemName) {
+    // TODO: performance
+    this.emit(itemName, Array.prototype.slice.call(arguments, 1));
   };
+
+  function onItemAdded(self, item, index) {
+    var args = [ item, index, self ];
+    isEmitter(item) && item.emit(ADDED_EVENT, args);
+    // Manually reemit event, as we are not yet listening to the item
+    self.emit(ITEM_ADDED_EVENT, args);
+  }
 
   function makeSetter(index) {
     return function setter(val) {
@@ -32,18 +39,14 @@ define([
 
       this.__array[index] = val;
 
-      if (isEmitter(oldVal)) {
-        oldVal.emit(REMOVED_EVENT, [ index, this ]);
-      } else {
-        this.emit(ITEM_REMOVED_EVENT, [ oldVal, index, this ]);
-      }
+      onItemAdded(this, val, index);
 
-      if (isEmitter(val)) {
-        val.emit(REPLACED_EVENT, [ oldVal, index, this ]);
-        val.emit(ADDED_EVENT, [ index, this ]);
+      if (isEmitter(oldVal)) {
+        oldVal.emit(REPLACED_EVENT, [ val, oldVal, index, this ]);
+        oldVal.emit(REMOVED_EVENT, [ oldVal, index, this ]);
       } else {
         this.emit(ITEM_REPLACED_EVENT, [ val, oldVal, index, this ]);
-        this.emit(ITEM_ADDED_EVENT, [ val, index, this ]);
+        this.emit(ITEM_REMOVED_EVENT, [ oldVal, index, this ]);
       }
     };
   }
@@ -98,7 +101,10 @@ define([
 
       var listeningTo = this.getListeningTo();
       for (var eventName in listeningTo) {
-        this.listenTo(item, eventName, reemitItemEvent.bind(this, 'item:' + eventName, item));
+        if (!ITEM_EVENT_PREFIX.test(eventName)) { continue; }
+        var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
+        if (!listeningTo[strippedEventName]) { continue; }
+        this.listenTo(item, strippedEventName, reemitItemEvent.bind(this, eventName));
       }
     });
 
@@ -132,10 +138,7 @@ define([
     this.__array.push.apply(this.__array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
-      var val = arguments[i];
-      isEmitter(val) ?
-          val.emit(ADDED_EVENT, [ oldLength + i, this ]) :
-          this.emit(ITEM_ADDED_EVENT, [ val, oldLength + i, this ]);
+      onItemAdded(this, arguments[i], oldLength + i);
     }
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -149,10 +152,7 @@ define([
     this.__array.unshift.apply(this.__array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
-      var val = arguments[i];
-      isEmitter(val) ?
-          val.emit(ADDED_EVENT, [ i, this ]) :
-          this.emit(ITEM_ADDED_EVENT, [ val, i, this ]);
+      onItemAdded(this, arguments[i], i);
     }
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -166,7 +166,7 @@ define([
     var poppedItem = this.__array.pop.apply(this.__array, arguments);
 
     isEmitter(poppedItem) ?
-        poppedItem.emit(REMOVED_EVENT, [ this.length, this ]) :
+        poppedItem.emit(REMOVED_EVENT, [ poppedItem, this.length, this ]) :
         this.emit(ITEM_REMOVED_EVENT, [ poppedItem, this.length, this ]);
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -180,7 +180,7 @@ define([
     var poppedItem = this.__array.shift.apply(this.__array, arguments);
 
     isEmitter(poppedItem) ?
-        poppedItem.emit(REMOVED_EVENT, [ 0, this ]) :
+        poppedItem.emit(REMOVED_EVENT, [ poppedItem, 0, this ]) :
         this.emit(ITEM_REMOVED_EVENT, [ poppedItem, 0, this ]);
     this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -188,6 +188,7 @@ define([
   };
 
   List.prototype.splice = function (start, deleteCount) {
+    var i;
     var oldLength = this.length;
     var deletedItems = this.__array.splice.apply(this.__array, arguments);
 
@@ -195,18 +196,16 @@ define([
       start = oldLength + start;
     }
 
+    for (i = 2; i < arguments.length; ++i) {
+      onItemAdded(this, arguments[i], start + (i - 2));
+    }
+
     var item;
-    for (var i = 0; i < deleteCount; ++i) {
+    for (i = 0; i < deleteCount; ++i) {
       item = deletedItems[i];
       isEmitter(item) ?
-          item.emit(REMOVED_EVENT, [ start + i, this ]) :
+          item.emit(REMOVED_EVENT, [ item, start + i, this ]) :
           this.emit(ITEM_REMOVED_EVENT, [ item, start + i, this ]);
-    }
-    for (i = 2; i < arguments.length; ++i) {
-      item = arguments[i];
-      isEmitter(item) ?
-          item.emit(ADDED_EVENT, [ item, start + (i - 2), this ]) :
-          this.emit(ITEM_ADDED_EVENT, [ item, start + (i - 2), this ]);
     }
     this.length === oldLength || this.emit('change:length', [ this.length, oldLength, this ]);
 
@@ -321,7 +320,7 @@ define([
     var length = this.length;
     for (var i = 0; i < length; ++i) {
       var item = this[i];
-      isEmitter(item) && this.listenTo(item, strippedEventName, reemitItemEvent.bind(this, eventName, item));
+      isEmitter(item) && this.listenTo(item, strippedEventName, reemitItemEvent.bind(this, eventName));
     }
   };
 

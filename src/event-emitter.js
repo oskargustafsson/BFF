@@ -16,7 +16,7 @@ define(function () {
 
       var length = listenersForEvent.length;
       for (var i = 0; i < length; ++i) {
-        listenersForEvent[i].apply(this, eventArguments);
+        listenersForEvent[i].apply(null, eventArguments);
       }
     },
 
@@ -57,12 +57,10 @@ define(function () {
         var pos = listenersForEvent.indexOf(callback);
         if (pos === -1) { return; }
         listenersForEvent.splice(pos, 1);
-        if (listenersForEvent.length === 0) {
-          this.__private.listeners[eventName] = undefined;
-        }
       } else {
-        this.__private.listeners[eventName] = undefined;
+        listenersForEvent.length = 0;
       }
+      listenersForEvent.length === 0 && (delete this.__private.listeners[eventName]);
     },
 
   };

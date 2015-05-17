@@ -44,13 +44,13 @@ define(function () {
       if (!this.__private || !this.__private.listeningTo) { return; } // Not listening to anything? We are done.
 
       var eventNames = eventName ? {} : this.__private.listeningTo;
-      eventName && (eventNames[eventName] = undefined);
+      eventName && (eventNames[eventName] = true);
 
       for (eventName in eventNames) {
         var listeningToList = this.__private.listeningTo[eventName];
         if (!listeningToList) { continue; }
         filterList(listeningToList, eventName, eventEmitter);
-        listeningToList.length || (this.__private.listeningTo[eventName] = undefined);
+        listeningToList.length || (delete this.__private.listeningTo[eventName]);
       }
     },
 

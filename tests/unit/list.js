@@ -8,6 +8,8 @@ define(function (require) {
   var expect = require('intern/chai!expect');
 
   var List = require('src/list');
+  var mixin = require('src/mixin');
+  var eventEmitter = require('src/event-emitter');
 
   chai.use(sinonChai);
 
@@ -33,34 +35,80 @@ define(function (require) {
         expect(list2[1]).to.equal(3);
       },
 
-      'emits events when an item is set': function () {
-        var list = new List([ 'a', 'b' ]);
-        var removedCallback = sinon.spy();
-        var replacedCallback = sinon.spy();
-        var addedCallback = sinon.spy();
+      'setting using [] syntax': {
 
-        list.addEventListener('item:removed', removedCallback);
-        list.addEventListener('item:replaced', replacedCallback);
-        list.addEventListener('item:added', addedCallback);
-        list[0] = 'c';
+        'emits "item:added", "item:replaced" and "item:removed" events': function () {
+          var list = new List([ 'a', 'b' ]);
+          var removedCallback = sinon.spy();
+          var replacedCallback = sinon.spy();
+          var addedCallback = sinon.spy();
 
-        expect(list[0]).to.equal('c');
-        expect(removedCallback).to.have.been.calledOnce;
-        expect(removedCallback).to.have.been.calledWith('a', 0, list);
-        expect(replacedCallback).to.have.been.calledOnce;
-        expect(replacedCallback).to.have.been.calledWith('c', 'a', 0, list);
-        expect(addedCallback).to.have.been.calledOnce;
-        expect(addedCallback).to.have.been.calledWith('c', 0, list);
+          list.addEventListener('item:removed', removedCallback);
+          list.addEventListener('item:replaced', replacedCallback);
+          list.addEventListener('item:added', addedCallback);
+          list[0] = 'c';
 
-        list[1] = 'd';
+          expect(list[0]).to.equal('c');
+          expect(removedCallback).to.have.been.calledOnce;
+          expect(removedCallback).to.have.been.calledWith('a', 0, list);
+          expect(replacedCallback).to.have.been.calledOnce;
+          expect(replacedCallback).to.have.been.calledWith('c', 'a', 0, list);
+          expect(addedCallback).to.have.been.calledOnce;
+          expect(addedCallback).to.have.been.calledWith('c', 0, list);
 
-        expect(list[1]).to.equal('d');
-        expect(removedCallback).to.have.been.calledTwice;
-        expect(removedCallback).to.have.been.calledWith('b', 1, list);
-        expect(replacedCallback).to.have.been.calledTwice;
-        expect(replacedCallback).to.have.been.calledWith('d', 'b', 1, list);
-        expect(addedCallback).to.have.been.calledTwice;
-        expect(addedCallback).to.have.been.calledWith('d', 1, list);
+          list[1] = 'd';
+
+          expect(list[1]).to.equal('d');
+          expect(removedCallback).to.have.been.calledTwice;
+          expect(removedCallback).to.have.been.calledWith('b', 1, list);
+          expect(replacedCallback).to.have.been.calledTwice;
+          expect(replacedCallback).to.have.been.calledWith('d', 'b', 1, list);
+          expect(addedCallback).to.have.been.calledTwice;
+          expect(addedCallback).to.have.been.calledWith('d', 1, list);
+        },
+
+        'triggers "added", "replaced" and "removed" events on items, if they are event emitters': function () {
+          var emitterItem1 = mixin({}, eventEmitter);
+          var emitterItem2 = mixin({}, eventEmitter);
+          var list = new List([ emitterItem1, 'a' ]);
+
+          var item1RemovedCallback = sinon.spy();
+          var item1ReplacedCallback = sinon.spy();
+          var item2AddedCallback = sinon.spy();
+
+          var listItem1RemovedCallback = sinon.spy();
+          var listItem1ReplacedCallback = sinon.spy();
+          var listItem2AddedCallback = sinon.spy();
+
+          emitterItem1.addEventListener('removed', item1RemovedCallback);
+          emitterItem1.addEventListener('replaced', item1ReplacedCallback);
+          emitterItem2.addEventListener('added', item2AddedCallback);
+          list.addEventListener('item:removed', listItem1RemovedCallback);
+          list.addEventListener('item:replaced', listItem1ReplacedCallback);
+          list.addEventListener('item:added', listItem2AddedCallback);
+          list[0] = emitterItem2;
+
+          expect(item1RemovedCallback).to.have.been.calledOnce;
+          expect(item1RemovedCallback).to.have.been.calledWith(emitterItem1, 0, list);
+          expect(item1ReplacedCallback).to.have.been.calledOnce;
+          expect(item1ReplacedCallback).to.have.been.calledWith(emitterItem2, emitterItem1, 0, list);
+          expect(item2AddedCallback).to.have.been.calledOnce;
+          expect(item2AddedCallback).to.have.been.calledWith(emitterItem2, 0, list);
+
+          expect(listItem1RemovedCallback).to.have.been.calledOnce;
+          expect(listItem1RemovedCallback).to.have.been.calledWith(emitterItem1, 0, list);
+          expect(listItem1ReplacedCallback).to.have.been.calledOnce;
+          expect(listItem1ReplacedCallback).to.have.been.calledWith(emitterItem2, emitterItem1, 0, list);
+          expect(listItem2AddedCallback).to.have.been.calledOnce;
+          expect(listItem2AddedCallback).to.have.been.calledWith(emitterItem2, 0, list);
+
+          // TODO: test that listners are added to emitterEvent2
+          // list[0] = emitterItem1 ...
+        },
+
+        // 'stops reemitting events after the item has been removed from the list': function () {},
+        // 'reemits item events and prefixes them with "item:"': function () {},
+
       },
 
       '"push" method': {
