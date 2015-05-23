@@ -20,16 +20,17 @@ define([
 
   function isEmitter(obj) { return !!(obj && obj.addEventListener); } // Quack!
 
-  var reemitItemEvent = function (itemName) {
-    // TODO: performance
-    this.emit(itemName, Array.prototype.slice.call(arguments, 1));
-  };
-
   function onItemAdded(self, item, index) {
     var args = [ item, index, self ];
     isEmitter(item) && item.emit(ADDED_EVENT, args);
     // Manually reemit event, as we are not yet listening to the item
     self.emit(ITEM_ADDED_EVENT, args);
+  }
+
+  function reemitItemEvent(self, item, strippedEventName, eventName) {
+    self.listenTo(item, strippedEventName, function () {
+      self.emit(eventName, arguments);
+    });
   }
 
   function makeSetter(index) {
@@ -104,7 +105,7 @@ define([
         if (!ITEM_EVENT_PREFIX.test(eventName)) { continue; }
         var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
         if (!listeningTo[strippedEventName]) { continue; }
-        this.listenTo(item, strippedEventName, reemitItemEvent.bind(this, eventName));
+        reemitItemEvent(this, item, strippedEventName, eventName);
       }
     });
 
@@ -320,7 +321,7 @@ define([
     var length = this.length;
     for (var i = 0; i < length; ++i) {
       var item = this[i];
-      isEmitter(item) && this.listenTo(item, strippedEventName, reemitItemEvent.bind(this, eventName));
+      isEmitter(item) && reemitItemEvent(this, item, strippedEventName, eventName);
     }
   };
 
