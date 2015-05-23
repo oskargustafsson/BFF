@@ -11,15 +11,17 @@ General
 
 List
 ----
-- Add the item itself to "added", "removed" and "replaced" events arguments
 - Add custom properties (no setters, just getters)
 - Add dependencies to properties
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
 - Option to mixin lodash functions
+  - or just implement some lodash funcs like union and intersection
 - Throw error message if user tries to assign to list[-1] or list[list.length]
 - Explore if there is a way to check if the user assigns outside of the array and throw an error.
   - Using Proxies? (FF + IE12)
   - Listening for internal Array "length" changes?
+- Unit tests for all the extra functions
+- Modify functions so that they stay closer to their Array counterparts (sacrifice chainability)
 
 Record
 ------
@@ -29,7 +31,7 @@ Record
 Event emitter
 -------------
 - Don't accept arguments as an array, arguments should be able to be passed like .emit('eventName', arg1, arg2, arg3).
-  - Speed test different solutions: BackboneJS solution v.s. custEmit.call.apply(Function.prototype, arguments) (this === 'eventName')
+  - Speed test different solutions: BackboneJS solution vs. custEmit.call.apply(Function.prototype, arguments) (this === 'eventName'), vs. closure to store eventName
 
 Controller
 ----------

@@ -15,16 +15,56 @@ define([
   var ITEM_ADDED_EVENT = 'item:added';
   var ITEM_REPLACED_EVENT = 'item:replaced';
   var ITEM_REMOVED_EVENT = 'item:removed';
+  var LENGTH_CHANGED_EVENT = 'change:length';
 
   var ITEM_EVENT_PREFIX = /^item:/;
 
   function isEmitter(obj) { return !!(obj && obj.addEventListener); } // Quack!
 
   function onItemAdded(self, item, index) {
-    var args = [ item, index, self ];
-    isEmitter(item) && item.emit(ADDED_EVENT, args);
-    // Manually reemit event, as we are not yet listening to the item
-    self.emit(ITEM_ADDED_EVENT, args);
+    var itemAddedArgs = [ item, index, self ];
+
+    if (!isEmitter(item)) {
+      self.emit(ITEM_ADDED_EVENT, itemAddedArgs);
+      return;
+    }
+
+    var eventNames = self.__private.listeningToItemEvents;
+    var nEventNames = eventNames.length;
+    for (var i = 0; i < nEventNames; ++i) {
+      var eventName = eventNames[i];
+      var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
+      reemitItemEvent(self, item, strippedEventName, eventName);
+    }
+
+    item.emit(ADDED_EVENT, itemAddedArgs);
+  }
+
+  function onItemRemoved(self, item, index) {
+    var itemRemovedArgs = [ item, index, self ];
+
+    if (!isEmitter(item)) {
+      self.emit(ITEM_REMOVED_EVENT, itemRemovedArgs);
+      return;
+    }
+
+    item.emit(REMOVED_EVENT, itemRemovedArgs);
+    self.stopListening(item);
+  }
+
+  function onItemReplaced(self, newItem, oldItem, index) {
+    if (newItem === oldItem) { return; }
+
+    var itemReplacedArgs = [ newItem, oldItem, index, self ];
+
+    isEmitter(oldItem) ?
+      oldItem.emit(REPLACED_EVENT, itemReplacedArgs) :
+      self.emit(ITEM_REPLACED_EVENT, itemReplacedArgs);
+  }
+
+  function onLengthChanged(self, oldLength) {
+    if (self.length === oldLength) { return; }
+    self.emit(LENGTH_CHANGED_EVENT, [ self.length, oldLength, self ]);
   }
 
   function reemitItemEvent(self, item, strippedEventName, eventName) {
@@ -34,22 +74,7 @@ define([
   }
 
   function makeSetter(index) {
-    return function setter(val) {
-      var oldVal = this[index];
-      if (val === oldVal) { return; }
-
-      this.__private.array[index] = val;
-
-      onItemAdded(this, val, index);
-
-      if (isEmitter(oldVal)) {
-        oldVal.emit(REPLACED_EVENT, [ val, oldVal, index, this ]);
-        oldVal.emit(REMOVED_EVENT, [ oldVal, index, this ]);
-      } else {
-        this.emit(ITEM_REPLACED_EVENT, [ val, oldVal, index, this ]);
-        this.emit(ITEM_REMOVED_EVENT, [ oldVal, index, this ]);
-      }
-    };
+    return function setter(val) { this.splice(index, 1, val); };
   }
 
   function makeGetter(index) {
@@ -78,8 +103,9 @@ define([
   function List(schema, items) {
     Object.defineProperty(this, '__private', { writable: true, value: {}, });
     this.__private.array = [];
+    this.__private.listeningToItemEvents = [];
 
-    this.listenTo(this, 'change:length', function (length, prevLength) {
+    this.listenTo(this, LENGTH_CHANGED_EVENT, function (length, prevLength) {
       var diff = length - prevLength;
       var i;
       if (diff > 0) {
@@ -96,22 +122,6 @@ define([
           delete this[i];
         }
       }
-    });
-
-    this.listenTo(this, 'item:added', function (item) {
-      if (!isEmitter(item)) { return; }
-
-      var listeningTo = this.getListeningTo();
-      for (var eventName in listeningTo) {
-        if (!ITEM_EVENT_PREFIX.test(eventName)) { continue; }
-        var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
-        if (!listeningTo[strippedEventName]) { continue; }
-        reemitItemEvent(this, item, strippedEventName, eventName);
-      }
-    });
-
-    this.listenTo(this, 'item:removed', function (item) {
-      isEmitter(item) && this.stopListening(item);
     });
 
     if (arguments.length === 1 && schema instanceof Array) {
@@ -142,7 +152,7 @@ define([
     for (var i = 0; i < nItems; ++i) {
       onItemAdded(this, arguments[i], oldLength + i);
     }
-    this.emit('change:length', [ this.length, oldLength, this ]);
+    onLengthChanged(this, oldLength);
 
     return this;
   };
@@ -156,7 +166,7 @@ define([
     for (var i = 0; i < nItems; ++i) {
       onItemAdded(this, arguments[i], i);
     }
-    this.emit('change:length', [ this.length, oldLength, this ]);
+    onLengthChanged(this, oldLength);
 
     return this;
   };
@@ -167,10 +177,8 @@ define([
 
     var poppedItem = this.__private.array.pop.apply(this.__private.array, arguments);
 
-    isEmitter(poppedItem) ?
-        poppedItem.emit(REMOVED_EVENT, [ poppedItem, this.length, this ]) :
-        this.emit(ITEM_REMOVED_EVENT, [ poppedItem, this.length, this ]);
-    this.emit('change:length', [ this.length, oldLength, this ]);
+    onItemRemoved(this, poppedItem, this.length);
+    onLengthChanged(this, oldLength);
 
     return poppedItem;
   };
@@ -181,35 +189,30 @@ define([
 
     var poppedItem = this.__private.array.shift.apply(this.__private.array, arguments);
 
-    isEmitter(poppedItem) ?
-        poppedItem.emit(REMOVED_EVENT, [ poppedItem, 0, this ]) :
-        this.emit(ITEM_REMOVED_EVENT, [ poppedItem, 0, this ]);
-    this.emit('change:length', [ this.length, oldLength, this ]);
+    onItemRemoved(this, poppedItem, 0);
+    onLengthChanged(this, oldLength);
 
     return poppedItem;
   };
 
-  List.prototype.splice = function (start, deleteCount) {
+  List.prototype.splice = function (start, nItemsToRemove) {
     var i;
     var oldLength = this.length;
+    var nItemsToAdd = arguments.length - 2;
+    var nItemsToReplace = Math.min(nItemsToAdd, nItemsToRemove);
+    var nItemsAffected = Math.max(nItemsToAdd, nItemsToRemove);
+
     var deletedItems = this.__private.array.splice.apply(this.__private.array, arguments);
 
-    if (start < 0) {
-      start = oldLength + start;
+    start < 0 && (start = oldLength + start);
+
+    for (i = 0; i < nItemsAffected; ++i) {
+      i < nItemsToAdd && onItemAdded(this, arguments[i + 2], start + i);
+      i < nItemsToReplace && onItemReplaced(this, arguments[i + 2], deletedItems[i], start + i);
+      i < nItemsToRemove && onItemRemoved(this, deletedItems[i], start + i);
     }
 
-    for (i = 2; i < arguments.length; ++i) {
-      onItemAdded(this, arguments[i], start + (i - 2));
-    }
-
-    var item;
-    for (i = 0; i < deleteCount; ++i) {
-      item = deletedItems[i];
-      isEmitter(item) ?
-          item.emit(REMOVED_EVENT, [ item, start + i, this ]) :
-          this.emit(ITEM_REMOVED_EVENT, [ item, start + i, this ]);
-    }
-    this.length === oldLength || this.emit('change:length', [ this.length, oldLength, this ]);
+    onLengthChanged(this, oldLength);
 
     return this;
   };
@@ -218,7 +221,6 @@ define([
     List.prototype[funcName] = delegate(funcName);
   });
 
-  // TODO: splice should be chainable
   [ 'forEach', 'sort', 'reverse' ].forEach(function (funcName) {
     List.prototype[funcName] = delegateChainable(funcName);
   });
@@ -241,9 +243,9 @@ define([
     return this;
   };
 
-  List.prototype.pushArray = List.prototype.concatMut = function (array) {
-    array.forEach(this.push, this);
-    return this;
+  List.prototype.pushArray = List.prototype.concatMut = function (items) {
+    items.length && this.push.apply(this, items);
+    return this.length;
   };
 
   List.prototype.sliceMut = function (begin, end) {
@@ -297,10 +299,6 @@ define([
     return index !== -1 && index >= fromIndex;
   };
 
-  // TODO: make functions chainable
-  // TODO: itemAdded and item:removed events
-  // TODO: implement some lodash funcs like union and intersection
-
   Object.defineProperties(List.prototype, {
     length: {
       get: function () { return this.__private.array.length; },
@@ -318,6 +316,8 @@ define([
   List.prototype.addEventListener = function (eventName) {
     if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }
 
+    this.__private.listeningToItemEvents.push(eventName);
+
     var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
     var length = this.length;
     for (var i = 0; i < length; ++i) {
@@ -328,6 +328,9 @@ define([
 
   List.prototype.removeEventListener = function (eventName) {
     if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }
+
+    var pos = this.__private.listeningToItemEvents.indexOf(eventName);
+    pos === -1 || this.__private.listeningToItemEvents.splice(pos, 1);
 
     var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
     this.stopListening(undefined, strippedEventName);
