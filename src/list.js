@@ -38,7 +38,7 @@ define([
       var oldVal = this[index];
       if (val === oldVal) { return; }
 
-      this.__array[index] = val;
+      this.__private.array[index] = val;
 
       onItemAdded(this, val, index);
 
@@ -53,30 +53,31 @@ define([
   }
 
   function makeGetter(index) {
-    return function getter() { return this.__array[index]; };
+    return function getter() { return this.__private.array[index]; };
   }
 
   function delegate(funcName) {
     return function () {
-      return this.__array[funcName].apply(this.__array, arguments);
+      return this.__private.array[funcName].apply(this.__private.array, arguments);
     };
   }
 
   function delegateCreator(funcName) {
     return function () {
-      return new List(this.__array[funcName].apply(this.__array, arguments));
+      return new List(this.__private.array[funcName].apply(this.__private.array, arguments));
     };
   }
 
   function delegateChainable(funcName) {
     return function () {
-      this.__array[funcName].apply(this.__array, arguments);
+      this.__private.array[funcName].apply(this.__private.array, arguments);
       return this;
     };
   }
 
   function List(schema, items) {
-    this.__array = [];
+    Object.defineProperty(this, '__private', { writable: true, value: {}, });
+    this.__private.array = [];
 
     this.listenTo(this, 'change:length', function (length, prevLength) {
       var diff = length - prevLength;
@@ -136,7 +137,7 @@ define([
     var nItems = arguments.length;
     if (nItems === 0) { return this; }
     var oldLength = this.length;
-    this.__array.push.apply(this.__array, arguments);
+    this.__private.array.push.apply(this.__private.array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
       onItemAdded(this, arguments[i], oldLength + i);
@@ -150,7 +151,7 @@ define([
     var nItems = arguments.length;
     if (nItems === 0) { return this; }
     var oldLength = this.length;
-    this.__array.unshift.apply(this.__array, arguments);
+    this.__private.array.unshift.apply(this.__private.array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
       onItemAdded(this, arguments[i], i);
@@ -164,7 +165,7 @@ define([
     var oldLength = this.length;
     if (oldLength === 0) { return; }
 
-    var poppedItem = this.__array.pop.apply(this.__array, arguments);
+    var poppedItem = this.__private.array.pop.apply(this.__private.array, arguments);
 
     isEmitter(poppedItem) ?
         poppedItem.emit(REMOVED_EVENT, [ poppedItem, this.length, this ]) :
@@ -178,7 +179,7 @@ define([
     var oldLength = this.length;
     if (oldLength === 0) { return; }
 
-    var poppedItem = this.__array.shift.apply(this.__array, arguments);
+    var poppedItem = this.__private.array.shift.apply(this.__private.array, arguments);
 
     isEmitter(poppedItem) ?
         poppedItem.emit(REMOVED_EVENT, [ poppedItem, 0, this ]) :
@@ -191,7 +192,7 @@ define([
   List.prototype.splice = function (start, deleteCount) {
     var i;
     var oldLength = this.length;
-    var deletedItems = this.__array.splice.apply(this.__array, arguments);
+    var deletedItems = this.__private.array.splice.apply(this.__private.array, arguments);
 
     if (start < 0) {
       start = oldLength + start;
@@ -292,7 +293,7 @@ define([
   };
 
   List.prototype.includes = function (item, fromIndex) {
-    var index = this.__array.indexOf(item);
+    var index = this.__private.array.indexOf(item);
     return index !== -1 && index >= fromIndex;
   };
 
@@ -302,7 +303,7 @@ define([
 
   Object.defineProperties(List.prototype, {
     length: {
-      get: function () { return this.__array.length; },
+      get: function () { return this.__private.array.length; },
     },
     first: {
       get: function () { return this[0]; },
