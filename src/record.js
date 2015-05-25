@@ -99,7 +99,7 @@ define([
   };
 
   function Record(schema, values) {
-    Object.defineProperty(this, '__private', { writable: true, value: {}, });
+    this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
     this.__private.values = {};
     this.__private.previousValues = {};
 

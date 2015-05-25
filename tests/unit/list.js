@@ -35,6 +35,52 @@ define(function (require) {
         expect(list2[1]).to.equal(3);
       },
 
+      'schema': {
+
+        'allows specifying properties with custom getters': function () {
+          var schema = {
+            nDone: {
+              getter: function () {
+                return this.reduce(function (nDone, item) {
+                  return nDone + (item.done ? 1 : 0);
+                }, 0);
+              }
+            }
+          };
+          var list = new List(schema, [
+            { id: 1, done: false },
+            { id: 2, done: true },
+            { id: 3, done: false },
+          ]);
+
+          expect(list.nDone).to.equal(1);
+
+          list[2].done = true;
+
+          expect(list.nDone).to.equal(2);
+        },
+
+        'throws an error if some attribute lacks a getter': function () {
+          expect(function () {
+            new List({
+              nDone: {}
+            });
+          }).to.throw();
+        },
+
+        'throws an error if some attribute has a setter': function () {
+          expect(function () {
+            new List({
+              nDone: {
+                getter: function () {},
+                setter: function () {},
+              }
+            });
+          }).to.throw();
+        },
+
+      },
+
       'setting using [] syntax': {
 
         'emits "item:added", "item:replaced" and "item:removed" events': function () {

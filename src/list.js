@@ -2,10 +2,12 @@ define([
   './mixin',
   './event-emitter',
   './event-listener',
+  './record',
 ], function (
   mixin,
   eventEmitter,
-  eventListener
+  eventListener,
+  Record
 ) {
   'use strict';
 
@@ -101,7 +103,7 @@ define([
   }
 
   function List(schema, items) {
-    Object.defineProperty(this, '__private', { writable: true, value: {}, });
+    this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
     this.__private.array = [];
     this.__private.listeningToItemEvents = [];
 
@@ -138,7 +140,15 @@ define([
       throw 'Items argument must be an array';
     }
 
-    // TODO: add the properties defined in schema
+    for (var propName in schema) {
+      var propertySchema = schema[propName];
+
+      if (!propertySchema.getter) { throw 'List property ' + propName + ' must have a custom getter function'; }
+      if (propertySchema.setter) { throw 'List property ' + propName + ' may not have a setter'; }
+
+      propertySchema.setter = false;
+    }
+    arguments.length === 2 && Record.call(this, schema);
 
     items.length && this.push.apply(this, items);
   }
