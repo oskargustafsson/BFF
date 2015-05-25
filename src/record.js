@@ -106,12 +106,12 @@ define([
     values = values || {};
     schema = schema || {};
 
-    var property, propertySchema;
+    var propName, propertySchema;
     var propertiesUnion = {};
 
     // Set up dependers and remove dependencies
-    for (property in schema) {
-      propertySchema = schema[property] = schema[property] || {};
+    for (propName in schema) {
+      propertySchema = schema[propName] = schema[propName] || {};
 
       if (!propertySchema.dependencies) { continue; }
 
@@ -119,52 +119,52 @@ define([
         var dependency = propertySchema.dependencies.pop();
         var dependencySchema = schema[dependency] = schema[dependency] || {};
         dependencySchema.dependers = dependencySchema.dependers || [];
-        dependencySchema.dependers.push(property);
+        dependencySchema.dependers.push(propName);
       }
       delete propertySchema.dependencies;
     }
 
-    for (property in schema) {
-      propertySchema = schema[property];
-      typeof propertySchema === 'string' && (propertySchema = schema[property] = { type: propertySchema });
+    for (propName in schema) {
+      propertySchema = schema[propName];
+      typeof propertySchema === 'string' && (propertySchema = schema[propName] = { type: propertySchema });
 
       var descriptor = {
         enumerable: true,
       };
       if (propertySchema.getter !== false) {
-        descriptor.get = makeGetter(property, propertySchema);
+        descriptor.get = makeGetter(propName, propertySchema);
       }
       if (propertySchema.setter !== false) {
-        descriptor.set = makeSetter(property, propertySchema);
+        descriptor.set = makeSetter(propName, propertySchema);
       }
-      Object.defineProperty(this, property, descriptor);
+      Object.defineProperty(this, propName, descriptor);
 
       if (propertySchema.dependers) {
-        this.listenTo(this, 'prechange:' + property,
+        this.listenTo(this, 'prechange:' + propName,
             triggerDependerPrechangeEvents.bind(this, propertySchema.dependers));
-        this.listenTo(this, 'change:' + property,
+        this.listenTo(this, 'change:' + propName,
             triggerDependerChangeEvents.bind(this, propertySchema.dependers));
       }
 
-      propertiesUnion[property] = propertySchema.defaultValue;
+      propertiesUnion[propName] = propertySchema.defaultValue;
     }
 
     // Disabled, for now
     // Object.preventExtensions(this);
 
-    for (property in values) {
-      if (!schema.hasOwnProperty(property)) {
-        throw 'Cannot assign undeclared property ' + property;
+    for (propName in values) {
+      if (!schema.hasOwnProperty(propName)) {
+        throw 'Cannot assign undeclared property ' + propName;
       }
-      propertiesUnion[property] = values[property];
+      propertiesUnion[propName] = values[propName];
     }
 
     // Silently assign initial values
-    for (property in propertiesUnion) {
-      var val = propertiesUnion[property];
-      schema[property].setter && (val = schema[property].setter.call(this, val));
-      validateInput(val, property, schema[property]);
-      this.__private.values[property] = val;
+    for (propName in propertiesUnion) {
+      var val = propertiesUnion[propName];
+      schema[propName].setter && (val = schema[propName].setter.call(this, val));
+      validateInput(val, propName, schema[propName]);
+      this.__private.values[propName] = val;
     }
   }
 
@@ -175,9 +175,11 @@ define([
   };
 
   Record.prototype.toJSONString = Record.prototype.toString = function () {
+    var keys = Object.keys(this);
     var obj = {};
-    for (var property in this.__private.values) {
-      obj[property] = this[property];
+    for (var i = 0; i < keys.length; ++i) {
+      var propName = keys[i];
+      obj[propName] = this[propName];
     }
     return JSON.stringify(obj);
   };
