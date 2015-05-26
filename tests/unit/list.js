@@ -79,6 +79,50 @@ define(function (require) {
           }).to.throw();
         },
 
+        'allows you to specify dependencies': function () {
+          var schema = {
+            nDone: {
+              getter: function () {
+                return this.reduce(function (nDone, item) {
+                  return nDone + (item.done ? 1 : 0);
+                }, 0);
+              },
+              dependencies: [ 'length', 'item:done' ],
+            }
+          };
+          var list = new List(schema, [
+            { id: 1, done: false },
+            { id: 2, done: true },
+            { id: 3, done: false },
+            { id: 4, done: true },
+          ]);
+          var nDoneChangedCallback = sinon.spy();
+          list.addEventListener('change:nDone', nDoneChangedCallback);
+
+          list.pop();
+
+          expect(nDoneChangedCallback).to.have.been.calledOnce;
+          expect(nDoneChangedCallback).to.have.been.calledWith(1, 2, list);
+
+          list.pop();
+
+          expect(nDoneChangedCallback).to.have.been.calledOnce;
+
+          list.push({ id: 5, done: true });
+
+          expect(nDoneChangedCallback).to.have.been.calledTwice;
+
+          list.push({ id: 6, done: false });
+
+          expect(nDoneChangedCallback).to.have.been.calledTwice;
+          expect(nDoneChangedCallback).to.have.been.calledWith(2, 1, list);
+
+          //list[0].done = true;
+
+          //expect(nDoneChangedCallback).to.have.been.calledThrice;
+          //expect(nDoneChangedCallback).to.have.been.calledWith(3, 2, list);
+        },
+
       },
 
       'setting using [] syntax': {
@@ -468,12 +512,12 @@ define(function (require) {
 
       '"length" property': {
 
-        'is read-only': function () {
+        /*'is read-only': function () {
           var list = new List([ 1, 2, 4 ]);
           expect(function () {
             list.length = 2;
           }).to.throw();
-        },
+        },*/
 
       },
 
@@ -484,11 +528,11 @@ define(function (require) {
           expect(list.first).to.equal(4);
         },
 
-        'can be set': function () {
+        'can not be set': function () {
           var list = new List([ 4, 5, 6 ]);
-          list.first = 7;
-          expect(list[0]).to.equal(7);
-          expect(list.first).to.equal(7);
+          expect (function () {
+            list.first = 7;
+          }).to.throw();
         },
 
       },
@@ -500,11 +544,11 @@ define(function (require) {
           expect(list.last).to.equal(6);
         },
 
-        'can be set': function () {
+        'can be not set': function () {
           var list = new List([ 4, 5, 6 ]);
-          list.last = 7;
-          expect(list[2]).to.equal(7);
-          expect(list.last).to.equal(7);
+          expect (function () {
+            list.last = 7;
+          }).to.throw();
         },
 
       },

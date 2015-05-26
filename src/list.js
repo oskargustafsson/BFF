@@ -64,11 +64,6 @@ define([
       self.emit(ITEM_REPLACED_EVENT, itemReplacedArgs);
   }
 
-  function onLengthChanged(self, oldLength) {
-    if (self.length === oldLength) { return; }
-    self.emit(LENGTH_CHANGED_EVENT, [ self.length, oldLength, self ]);
-  }
-
   function reemitItemEvent(self, item, strippedEventName, eventName) {
     self.listenTo(item, strippedEventName, function () {
       self.emit(eventName, arguments);
@@ -148,7 +143,28 @@ define([
 
       propertySchema.setter = false;
     }
-    arguments.length === 2 && Record.call(this, schema);
+
+    mixin(schema, {
+      length: {
+        type: 'number',
+        defaultValue: 0,
+        setter: function (newLength) {
+          // TODO: Make sure this does work as expected
+          //if (newLength !== this.__private.array.length) { throw 'Length may not be changed'; }
+          return newLength;
+        },
+      },
+      first: {
+        getter: function () { return this[0]; },
+        setter: false,
+      },
+      last: {
+        getter: function () { return this[this.length - 1]; },
+        setter: false,
+      }
+    });
+
+    Record.call(this, schema);
 
     items.length && this.push.apply(this, items);
   }
@@ -162,7 +178,7 @@ define([
     for (var i = 0; i < nItems; ++i) {
       onItemAdded(this, arguments[i], oldLength + i);
     }
-    onLengthChanged(this, oldLength);
+    this.length = this.__private.array.length;
 
     return this;
   };
@@ -170,37 +186,34 @@ define([
   List.prototype.unshift = function () {
     var nItems = arguments.length;
     if (nItems === 0) { return this; }
-    var oldLength = this.length;
     this.__private.array.unshift.apply(this.__private.array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
       onItemAdded(this, arguments[i], i);
     }
-    onLengthChanged(this, oldLength);
+    this.length = this.__private.array.length;
 
     return this;
   };
 
   List.prototype.pop = function () {
-    var oldLength = this.length;
-    if (oldLength === 0) { return; }
+    if (this.length === 0) { return; }
 
+    this.length = this.__private.array.length - 1;
     var poppedItem = this.__private.array.pop.apply(this.__private.array, arguments);
 
     onItemRemoved(this, poppedItem, this.length);
-    onLengthChanged(this, oldLength);
 
     return poppedItem;
   };
 
   List.prototype.shift = function () {
-    var oldLength = this.length;
-    if (oldLength === 0) { return; }
+    if (this.length === 0) { return; }
 
+    this.length = this.__private.array.length - 1;
     var poppedItem = this.__private.array.shift.apply(this.__private.array, arguments);
 
     onItemRemoved(this, poppedItem, 0);
-    onLengthChanged(this, oldLength);
 
     return poppedItem;
   };
@@ -222,16 +235,20 @@ define([
       i < nItemsToRemove && onItemRemoved(this, deletedItems[i], start + i);
     }
 
-    onLengthChanged(this, oldLength);
+    this.length = this.__private.array.length;
 
     return this;
   };
 
-  [ 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduce', 'reduceRight' ].forEach(function (funcName) {
+  List.prototype.forEach = Array.prototype.forEach;
+  List.prototype.reduce = Array.prototype.reduce;
+
+  // TODO: do as above
+  [ 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduceRight' ].forEach(function (funcName) {
     List.prototype[funcName] = delegate(funcName);
   });
 
-  [ 'forEach', 'sort', 'reverse' ].forEach(function (funcName) {
+  [ 'sort', 'reverse' ].forEach(function (funcName) {
     List.prototype[funcName] = delegateChainable(funcName);
   });
 
@@ -308,20 +325,6 @@ define([
     var index = this.__private.array.indexOf(item);
     return index !== -1 && index >= fromIndex;
   };
-
-  Object.defineProperties(List.prototype, {
-    length: {
-      get: function () { return this.__private.array.length; },
-    },
-    first: {
-      get: function () { return this[0]; },
-      set: function (val) { this[0] = val; },
-    },
-    last: {
-      get: function () { return this[this.length - 1]; },
-      set: function (val) { this[this.length - 1] = val; },
-    }
-  });
 
   List.prototype.addEventListener = function (eventName) {
     if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }

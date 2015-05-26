@@ -108,6 +108,8 @@ define([
 
     var propName, propertySchema;
     var propertiesUnion = {};
+    var dependencies = {};
+    var dependencyPropName, dependency, i;
 
     // Set up dependers and remove dependencies
     for (propName in schema) {
@@ -115,13 +117,20 @@ define([
 
       if (!propertySchema.dependencies) { continue; }
 
-      while (propertySchema.dependencies.length) {
-        var dependency = propertySchema.dependencies.pop();
-        var dependencySchema = schema[dependency] = schema[dependency] || {};
-        dependencySchema.dependers = dependencySchema.dependers || [];
-        dependencySchema.dependers.push(propName);
+      for (i = 0; i < propertySchema.dependencies.length; ++i) {
+        dependencyPropName = propertySchema.dependencies[i];
+        dependency = dependencies[dependencyPropName] = dependencies[dependencyPropName] || {};
+        dependency.dependers = dependency.dependers || [];
+        dependency.dependers.push(propName);
       }
-      delete propertySchema.dependencies;
+    }
+
+    for (propName in dependencies) {
+      dependency = dependencies[propName];
+      this.listenTo(this, 'prechange:' + propName,
+          triggerDependerPrechangeEvents.bind(this, dependency.dependers));
+      this.listenTo(this, 'change:' + propName,
+          triggerDependerChangeEvents.bind(this, dependency.dependers));
     }
 
     for (propName in schema) {
@@ -138,13 +147,6 @@ define([
         descriptor.set = makeSetter(propName, propertySchema);
       }
       Object.defineProperty(this, propName, descriptor);
-
-      if (propertySchema.dependers) {
-        this.listenTo(this, 'prechange:' + propName,
-            triggerDependerPrechangeEvents.bind(this, propertySchema.dependers));
-        this.listenTo(this, 'change:' + propName,
-            triggerDependerChangeEvents.bind(this, propertySchema.dependers));
-      }
 
       propertiesUnion[propName] = propertySchema.defaultValue;
     }

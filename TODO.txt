@@ -25,7 +25,7 @@ List
 
 Record
 ------
-- Refactor toJSON, to not use .__private
+- Don't mutate the constructor arguments (e.g. schema)
 - Use Object.defineProperties instead of Object.defineProperty
 
 Event emitter
