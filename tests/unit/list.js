@@ -512,11 +512,20 @@ define(function (require) {
 
       '"length" property': {
 
-        /*'is read-only': function () {
-          var list = new List([ 1, 2, 4 ]);
-          expect(function () {
-            list.length = 2;
-          }).to.throw();
+        /*'can be set to decrease the size of the array': function () {
+          var list = new List([ 'a', 'b', 'c', 'd' ]);
+          var lengthChangedCallback = sinon.spy();
+          var itemRemovedCallback = sinon.spy();
+
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.addEventListener('item:removed', itemRemovedCallback);
+          list.length = 2;
+
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledWith(2, 4, list);
+          expect(itemRemovedCallback).to.have.been.calledTwice;
+          expect(itemRemovedCallback).to.have.been.calledWith('c', 2, list);
+          expect(itemRemovedCallback).to.have.been.calledWith('d', 3, list);
         },*/
 
       },
