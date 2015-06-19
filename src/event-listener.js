@@ -12,28 +12,37 @@ define(function () {
     }
   }
 
+  function listenTo(self, eventEmitter, eventName, callback, context) {
+    if (!eventEmitter.removeEventListener) {
+      throw 'First argument is not an event emitter';
+    }
+    if (typeof eventName !== 'string') {
+      throw 'Second argument is not a string';
+    }
+    if (typeof callback !== 'function') {
+      throw 'Third argument must be a function'; // Catch a common cause of errors
+    }
+
+    self.__private || Object.defineProperty(self, '__private', { writable: true, value: {}, });
+    var listeningTo = self.__private.listeningTo || (self.__private.listeningTo = {});
+    var listeningToEvent = listeningTo[eventName] || (listeningTo[eventName] = []);
+
+    callback = callback.bind(context || self);
+
+    listeningToEvent.push({ callback: callback, emitter: eventEmitter });
+
+    eventEmitter.addEventListener(eventName, callback);
+  }
+
   return {
 
-    listenTo: function (eventEmitter, eventName, callback, context) {
-      if (!eventEmitter.removeEventListener) {
-        throw 'First argument is not an event emitter';
+    listenTo: function (eventEmitters, eventName, callback, context) {
+      // Assume the arg is an array if it has a length. Can't use "instanceof Array" b/c NodeLists are not Arrays
+      eventEmitters = eventEmitters.length ? eventEmitters : [ eventEmitters ];
+
+      for (var i = 0; i < eventEmitters.length; ++i) {
+        listenTo(this, eventEmitters[i], eventName, callback, context);
       }
-      if (typeof eventName !== 'string') {
-        throw 'Second argument is not a string';
-      }
-      if (typeof callback !== 'function') {
-        throw 'Third argument must be a function'; // Catch a common cause of errors
-      }
-
-      this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
-      var listeningTo = this.__private.listeningTo || (this.__private.listeningTo = {});
-      var listeningToEvent = listeningTo[eventName] || (listeningTo[eventName] = []);
-
-      callback = callback.bind(context || this);
-
-      listeningToEvent.push({ callback: callback, emitter: eventEmitter });
-
-      eventEmitter.addEventListener(eventName, callback);
     },
 
     stopListening: function (eventEmitter, eventName) {

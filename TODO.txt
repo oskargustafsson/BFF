@@ -33,6 +33,10 @@ Event emitter
 - Don't accept arguments as an array, arguments should be able to be passed like .emit('eventName', arg1, arg2, arg3).
   - Speed test different solutions: BackboneJS solution vs. custEmit.call.apply(Function.prototype, arguments) (this === 'eventName'), vs. closure to store eventName
 
+Event listener
+--------------
+- Write UTs for listenTo(anArray, ...)
+
 Controller
 ----------
 - A way to easily toggle classes. E.g. option to .bind prop like this: "classes.className", which should get a boolean value.
