@@ -7,6 +7,9 @@ define(function () {
       if (typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
       }
+      if (arguments.length === 2 && eventArguments.length === undefined) {
+        throw '"eventArguments" argument must be an array';
+      }
 
       if (!this.__private) { return; }
       if (!this.__private.listeners) { return; }

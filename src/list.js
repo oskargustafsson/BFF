@@ -259,8 +259,8 @@ define([
   List.prototype.filterMut = function (predicate, thisArg) {
     var length = this.length;
     var removeCount = 0;
-    for (var i = length - 1; i >= 0; --i) {
-      if (predicate.call(thisArg, this[i], i, this)) {
+    for (var i = length - 1; i >= -1; --i) {
+      if (i > -1 && predicate.call(thisArg, this[i], i, this)) {
         removeCount++;
       } else if (removeCount) {
         this.splice(i + 1, removeCount);

@@ -11,6 +11,7 @@ General
 
 List
 ----
+- Add "remove" function, to remove an item in the List by passing it as the only parameter
 - Add custom properties (no setters, just getters)
 - Add dependencies to properties
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
@@ -22,14 +23,17 @@ List
   - Listening for internal Array "length" changes?
 - Unit tests for all the extra functions
 - Modify functions so that they stay closer to their Array counterparts (sacrifice chainability)
+- Rename pushArray to pushAll (it accepts a List as well as an Array)
 
 Record
 ------
 - Don't mutate the constructor arguments (e.g. schema)
 - Use Object.defineProperties instead of Object.defineProperty
+- BUG: forbiddenValues: [ undefined ] doesn't throw an error
 
 Event emitter
 -------------
+- Rename event dispatcher (and rename .emit() to .dispatchEvent()). More similar to the DOM API
 - Don't accept arguments as an array, arguments should be able to be passed like .emit('eventName', arg1, arg2, arg3).
   - Speed test different solutions: BackboneJS solution vs. custEmit.call.apply(Function.prototype, arguments) (this === 'eventName'), vs. closure to store eventName
 
