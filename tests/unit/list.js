@@ -222,7 +222,7 @@ define(function (require) {
         'reemits item events and prefixes them with "item:"': function () {
           var emitterItem1 = mixin({}, eventEmitter);
           var emitterItem2 = mixin({}, eventEmitter);
-          var list = new List([ emitterItem1, emitterItem2  ]);
+          var list = new List([ emitterItem1, emitterItem2 ]);
           var callback = sinon.spy();
 
           list.addEventListener('item:customEvent', callback);
@@ -235,6 +235,20 @@ define(function (require) {
 
           expect(callback).to.have.been.calledTwice;
           expect(callback).to.have.been.calledWith('arg2');
+        },
+
+        'reemits item events for items added after List creation': function () {
+          var emitterItem1 = mixin({}, eventEmitter);
+          var list = new List();
+          var callback = sinon.spy();
+
+          list.addEventListener('item:customEvent', callback);
+          list.push(emitterItem1);
+
+          emitterItem1.emit('customEvent', [ 'arg1', 2, { a: 'b' } ]);
+
+          expect(callback).to.have.been.calledOnce;
+          expect(callback).to.have.been.calledWith('arg1', 2, { a: 'b' });
         },
 
         'stops reemitting events after an item has been removed and starts again if it is added again': function () {

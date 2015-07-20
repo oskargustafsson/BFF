@@ -37,8 +37,10 @@ define(function () {
   return {
 
     listenTo: function (eventEmitters, eventName, callback, context) {
-      // Assume the arg is an array if it has a length. Can't use "instanceof Array" b/c NodeLists are not Arrays
-      eventEmitters = eventEmitters.length ? eventEmitters : [ eventEmitters ];
+      // Convenience functionality that allows you to listen to all items in an Array or NodeList
+      // BFF Lists have this kind of functionality built it, so don't handle that case here
+      eventEmitters = eventEmitters instanceof Array || eventEmitters instanceof NodeList ?
+          eventEmitters : [ eventEmitters ];
 
       for (var i = 0; i < eventEmitters.length; ++i) {
         listenTo(this, eventEmitters[i], eventName, callback, context);

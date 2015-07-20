@@ -24,8 +24,8 @@ define([
   }
 
   function makeSetter(propName, propSchema) {
-    var MY_PRECHANGE_EVENT = 'prechange:' + propName;
-    var MY_CHANGE_EVENT = 'change:' + propName;
+    var MY_PRECHANGE_EVENT = PRECHANGE_EVENT + ':' + propName;
+    var MY_CHANGE_EVENT = CHANGE_EVENT + ':' + propName;
 
     // TODO: make two different setter functions (in outer scope) and select (+bind)
     // one of the depending of whether the propery has any dependers
@@ -127,9 +127,9 @@ define([
 
     for (propName in dependencies) {
       dependency = dependencies[propName];
-      this.listenTo(this, 'prechange:' + propName,
+      this.listenTo(this,  PRECHANGE_EVENT + ':' + propName,
           triggerDependerPrechangeEvents.bind(this, dependency.dependers));
-      this.listenTo(this, 'change:' + propName,
+      this.listenTo(this,  CHANGE_EVENT + ':' + propName,
           triggerDependerChangeEvents.bind(this, dependency.dependers));
     }
 
