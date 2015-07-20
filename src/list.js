@@ -326,6 +326,10 @@ define([
     return index !== -1 && index >= fromIndex;
   };
 
+  List.prototype.toArray = function () {
+    return this.__private.array.slice();
+  };
+
   List.prototype.addEventListener = function (eventName) {
     if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }
 
