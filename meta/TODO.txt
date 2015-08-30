@@ -43,7 +43,3 @@ Controller
 
 Extend
 ------
-
-ListConstructorFactory
-----------------------
-- Create?
