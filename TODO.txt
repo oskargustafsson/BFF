@@ -5,6 +5,7 @@ General
 - Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
 - Docblocks
 - Grunt integration of
+  - Generate docs
   - Conditional runtime checks (part of build system)
   - Run Intern tests suites
   - JSHint & JSCS
@@ -12,6 +13,7 @@ General
 List
 ----
 - Add "remove" function, to remove an item in the List by passing it as the only parameter
+- Add "clear" function that removes all items
 - Add custom properties (no setters, just getters)
 - Add dependencies to properties
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
@@ -27,6 +29,7 @@ List
 
 Record
 ------
+- Bring back Object.preventExtensions()
 - Don't mutate the constructor arguments (e.g. schema)
 - Use Object.defineProperties instead of Object.defineProperty
 - BUG: forbiddenValues: [ undefined ] doesn't throw an error
