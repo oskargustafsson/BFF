@@ -8,7 +8,7 @@ define(function (require) {
   var expect = require('intern/chai!expect');
 
   var eventEmitter = require('src/event-emitter');
-  var mixin = require('src/mixin');
+  var extend = require('src/extend');
 
   chai.use(sinonChai);
 
@@ -19,14 +19,14 @@ define(function (require) {
       name: 'Event Emitter',
 
       'can add listeners': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         emitter.addEventListener('kwanzaa', function () {});
         emitter.addEventListener('kwanzaa', function () {});
         expect(emitter.__private.listeners.kwanzaa.length).to.equal(2);
       },
 
       'can not add the same listener twice': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         var callback = function () {};
         emitter.addEventListener('kwanzaa', callback);
         expect(function () {
@@ -35,14 +35,14 @@ define(function (require) {
       },
 
       'throws an error if the callback arg is not a function': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         expect(function () {
            emitter.addEventListener('kwanzaa').to.throw();
         });
       },
 
       'can remove all event listeners': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         var callback = sinon.spy();
         var callback2 = sinon.spy();
 
@@ -63,7 +63,7 @@ define(function (require) {
       },
 
       'can remove a specific event listener': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         var callback = sinon.spy();
         var callback2 = sinon.spy();
 
@@ -83,14 +83,14 @@ define(function (require) {
       },
 
       'throws an error if the callback to removeEventListener arg is not a function': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         expect(function () {
            emitter.removeEventListener('kwanzaa', undefined).to.throw();
         });
       },
 
       'calls all callbacks registered to an event': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
 
         var callback = sinon.spy();
         var callback2 = sinon.spy();
@@ -108,7 +108,7 @@ define(function (require) {
       },
 
       'calls callbacks in the order they were registered': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
 
         var callback = sinon.spy();
         var callback2 = sinon.spy();
@@ -129,14 +129,14 @@ define(function (require) {
       },
 
       'can emit events even if no one is listening': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         emitter.emit('kwanzaa');
         emitter.addEventListener('kwanzaa', function () {});
         emitter.emit('hanukkah');
       },
 
       'can remove event listeners even if they were never registered': function () {
-        var emitter = mixin({}, eventEmitter);
+        var emitter = extend({}, eventEmitter);
         emitter.removeEventListener('kwanzaa');
         emitter.addEventListener('kwanzaa', function () {});
         emitter.removeEventListener('kwanzaa');

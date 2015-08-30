@@ -7,11 +7,9 @@ define(function () {
   function getType(item) { return item === null ? 'null' : item instanceof Array ? 'array' : typeof item; }
   function getSolverFunction(val) { return getType(val) === 'function' ? val : SOLVERS[val]; }
 
-  function mixin(target, source, onConflict, defaultOnConflict) {
+  function extend(target, source, onConflict, defaultOnConflict) {
     if (!(target instanceof Object)) { throw '"target" argument must be an object'; }
     if (!(source instanceof Object)) { throw '"source" argument must be an object'; }
-
-    target = target.prototype || target;
 
     var isOnConflictObject = getType(onConflict) === 'object';
     defaultOnConflict = getSolverFunction(isOnConflictObject ? defaultOnConflict : onConflict) || SOLVERS.crash;
@@ -39,7 +37,7 @@ define(function () {
       target[prop] = source[prop];
     },
     crash: function crash(target, source, prop) {
-      throw 'Mixin target already has property ' + prop;
+      throw 'Extend target already has property ' + prop;
     },
     merge: function merge(target, source, prop, onConflict, defaultOnConflict) {
       var sourceProp = source[prop];
@@ -54,7 +52,7 @@ define(function () {
 
       switch (getType(targetProp)) {
       case 'object':
-        mixin(targetProp, sourceProp, onConflict, defaultOnConflict);
+        extend(targetProp, sourceProp, onConflict, defaultOnConflict);
         break;
       case 'array':
         target[prop] = targetProp.concat(sourceProp);
@@ -80,6 +78,6 @@ define(function () {
     },
   };
 
-  return mixin;
+  return extend;
 
 });

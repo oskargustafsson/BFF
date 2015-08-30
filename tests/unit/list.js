@@ -8,7 +8,7 @@ define(function (require) {
   var expect = require('intern/chai!expect');
 
   var List = require('src/list');
-  var mixin = require('src/mixin');
+  var extend = require('src/extend');
   var eventEmitter = require('src/event-emitter');
 
   chai.use(sinonChai);
@@ -158,8 +158,8 @@ define(function (require) {
         },
 
         'triggers "added", "replaced" and "removed" events on items, if they are event emitters': function () {
-          var emitterItem1 = mixin({}, eventEmitter);
-          var emitterItem2 = mixin({}, eventEmitter);
+          var emitterItem1 = extend({}, eventEmitter);
+          var emitterItem2 = extend({}, eventEmitter);
           var list = new List([ emitterItem1, 'a' ]);
 
           var item1AddedCallback = sinon.spy();
@@ -220,8 +220,8 @@ define(function (require) {
       'event proxying': {
 
         'reemits item events and prefixes them with "item:"': function () {
-          var emitterItem1 = mixin({}, eventEmitter);
-          var emitterItem2 = mixin({}, eventEmitter);
+          var emitterItem1 = extend({}, eventEmitter);
+          var emitterItem2 = extend({}, eventEmitter);
           var list = new List([ emitterItem1, emitterItem2 ]);
           var callback = sinon.spy();
 
@@ -238,7 +238,7 @@ define(function (require) {
         },
 
         'reemits item events for items added after List creation': function () {
-          var emitterItem1 = mixin({}, eventEmitter);
+          var emitterItem1 = extend({}, eventEmitter);
           var list = new List();
           var callback = sinon.spy();
 
@@ -252,7 +252,7 @@ define(function (require) {
         },
 
         'stops reemitting events after an item has been removed and starts again if it is added again': function () {
-          var emitterItem = mixin({}, eventEmitter);
+          var emitterItem = extend({}, eventEmitter);
           var list = new List([ emitterItem ]);
           var callback = sinon.spy();
 
@@ -444,12 +444,12 @@ define(function (require) {
 
     '"splice" method': {
 
-        'is chainable': function () {
-          var list = new List([ 'a', 'b' ]);
-          expect(list.splice(0, 1)).to.equal(list);
+        'returns the removed items': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          expect(list.splice(1, 2)).to.eql([ 'b', 'c' ]);
         },
 
-        'mirrors Array.shift behavior': function () {
+        'mirrors Array.splice behavior': function () {
           var list = new List([ 'a', 'b', 'c', 'd' ]);
 
           list.splice(1, 2, 'd');

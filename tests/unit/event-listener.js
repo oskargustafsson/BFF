@@ -9,7 +9,7 @@ define(function (require) {
 
   var eventEmitter = require('src/event-emitter');
   var eventListener = require('src/event-listener');
-  var mixin = require('src/mixin');
+  var extend = require('src/extend');
 
   chai.use(sinonChai);
 
@@ -20,15 +20,15 @@ define(function (require) {
       name: 'Event Listener',
 
       'throws an error when trying to listen to something that is not an Event Emitter': function () {
-        var listener = mixin({}, eventListener);
+        var listener = extend({}, eventListener);
         expect(function () {
           listener.listenTo({ notAnEventEmitter: true }, 'kwanzaa', function () {});
         }).to.throw();
       },
 
       'throws an error when listenTo is not getting an event name': function () {
-        var emitter = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var events = {
           easilyMisspelledEventName: 'kwanzaa'
         };
@@ -38,8 +38,8 @@ define(function (require) {
       },
 
       'throws an error when not getting a callback': function () {
-        var emitter = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var callbacks = {
           easilyMisspelledCallbackName: function () {},
         };
@@ -49,8 +49,8 @@ define(function (require) {
       },
 
       'can listen to events': function () {
-        var emitter = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var callback = sinon.spy();
         var callback2 = sinon.spy();
 
@@ -64,8 +64,8 @@ define(function (require) {
       },
 
       'sets the listener as context for the callback': function () {
-        var emitter = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var callback = function () {
           expect(this).to.equal(listener);
         };
@@ -75,8 +75,8 @@ define(function (require) {
       },
 
       'sets the context for the callback, if a context is provided': function () {
-        var emitter = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var context = 3;
         var callback = function () {
           expect(this).to.equal(context);
@@ -87,7 +87,7 @@ define(function (require) {
       },
 
       'throws an error when trying to stop listening to something that is not an Event Emitter': function () {
-        var listener = mixin({}, eventListener);
+        var listener = extend({}, eventListener);
         var notAnEmitter = { notAnEventEmitter: true };
         expect(function () {
           listener.stopListening(notAnEmitter, 'kwanzaa');
@@ -98,8 +98,8 @@ define(function (require) {
       },
 
       'can stop listening to all emitters and events': function () {
-        var emitter = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var callback = sinon.spy();
         var callback2 = sinon.spy();
 
@@ -117,9 +117,9 @@ define(function (require) {
       },
 
       'can stop listening to a specific event': function () {
-        var emitter1 = mixin({}, eventEmitter);
-        var emitter2 = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter1 = extend({}, eventEmitter);
+        var emitter2 = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var callback1 = sinon.spy();
         var callback2 = sinon.spy();
         var callback3 = sinon.spy();
@@ -148,9 +148,9 @@ define(function (require) {
       },
 
       'can stop listening to a specific emitter': function () {
-        var emitter1 = mixin({}, eventEmitter);
-        var emitter2 = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter1 = extend({}, eventEmitter);
+        var emitter2 = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var callback1 = sinon.spy();
         var callback2 = sinon.spy();
         var callback3 = sinon.spy();
@@ -179,9 +179,9 @@ define(function (require) {
       },
 
       'can stop listening to a specific emitter and event': function () {
-        var emitter1 = mixin({}, eventEmitter);
-        var emitter2 = mixin({}, eventEmitter);
-        var listener = mixin({}, eventListener);
+        var emitter1 = extend({}, eventEmitter);
+        var emitter2 = extend({}, eventEmitter);
+        var listener = extend({}, eventListener);
         var callback1 = sinon.spy();
         var callback2 = sinon.spy();
         var callback3 = sinon.spy();

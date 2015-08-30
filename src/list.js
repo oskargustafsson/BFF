@@ -1,11 +1,11 @@
 /** @module bff/list */
 define([
-  './mixin',
+  './extend',
   './event-emitter',
   './event-listener',
   './record',
 ], function (
-  mixin,
+  extend,
   eventEmitter,
   eventListener,
   Record
@@ -179,7 +179,7 @@ define([
       propertySchema.setter = false;
     }
 
-    mixin(schema, {
+    extend(schema, {
       length: {
         type: 'number',
         defaultValue: 0,
@@ -462,8 +462,8 @@ define([
     this.stopListening(undefined, strippedEventName);
   };
 
-  mixin(List, eventEmitter, { 'function': 'merge' });
-  mixin(List, eventListener);
+  extend(List.prototype, eventEmitter, { 'function': 'merge' });
+  extend(List.prototype, eventListener);
 
   return List;
 

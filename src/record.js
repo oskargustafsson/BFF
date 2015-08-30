@@ -1,9 +1,9 @@
 define([
-  './mixin',
+  './extend',
   './event-emitter',
   './event-listener',
 ], function (
-  mixin,
+  extend,
   eventEmitter,
   eventListener
 ) {
@@ -186,8 +186,8 @@ define([
     return JSON.stringify(obj);
   };
 
-  mixin(Record, eventEmitter);
-  mixin(Record, eventListener);
+  extend(Record.prototype, eventEmitter);
+  extend(Record.prototype, eventListener);
 
   return Record;
 

@@ -7,7 +7,7 @@ define(function (require) {
   var sinonChai = require('node_modules/sinon-chai/lib/sinon-chai');
   var expect = require('intern/chai!expect');
 
-  var mixin = require('src/mixin');
+  var extend = require('src/extend');
 
   chai.use(sinonChai);
 
@@ -15,15 +15,15 @@ define(function (require) {
 
     return {
 
-      name: 'Mixin',
+      name: 'Extend',
 
-      'adds properties to the prototype of the target': function () {
+      'adds properties to the target': function () {
         var source = { numProp: 123 };
         function Target () {}
 
         var targetInstance1 = new Target();
 
-        mixin(Target, source);
+        extend(Target.prototype, source);
 
         var targetInstance2 = new Target();
 
@@ -35,32 +35,21 @@ define(function (require) {
         expect(targetInstance2.numProp).to.equal(source.numProp);
       },
 
-      'adds properties directly to the target if it does not have a prototype': function () {
-        var source = { numProp: 123 };
-        var target = {};
-
-        mixin(target, source);
-
-        expect(target.prototype).to.equal(undefined);
-        expect(target.hasOwnProperty('numProp')).to.equal(true);
-        expect(target.numProp).to.equal(source.numProp);
-      },
-
       'returns the target object': function () {
         var source = {};
         var target = {};
 
-        var ret = mixin(target, source);
+        var ret = extend(target, source);
 
         expect(ret).to.equal(target);
       },
 
-      'throws an error if trying to mixin an existing prop': function () {
+      'throws an error if trying to extend an existing prop': function () {
         var source = { numProp: 123 };
         var target = { numProp: 456 };
 
         expect(function () {
-          mixin(target, source);
+          extend(target, source);
         }).to.throw();
       },
 
@@ -73,7 +62,7 @@ define(function (require) {
             var target = { numProp: 456, stringProp: 'bbb' };
 
             expect(function () {
-              mixin(target, source, 'crash');
+              extend(target, source, 'crash');
             }).to.throw();
           },
 
@@ -81,7 +70,7 @@ define(function (require) {
             var source = { numProp: 123, stringProp: 'aaa' };
             var target = { numProp: 456, stringProp: 'bbb' };
 
-            mixin(target, source, 'useTarget');
+            extend(target, source, 'useTarget');
 
             expect(target.numProp).to.equal(456);
             expect(target.stringProp).to.equal('bbb');
@@ -91,7 +80,7 @@ define(function (require) {
             var source = { numProp: 123, stringProp: 'aaa' };
             var target = { numProp: 456, stringProp: 'bbb' };
 
-            mixin(target, source, 'useSource');
+            extend(target, source, 'useSource');
 
             expect(target.numProp).to.equal(123);
             expect(target.stringProp).to.equal('aaa');
@@ -135,7 +124,7 @@ define(function (require) {
               undefinedProp: undefined,
             };
 
-            mixin(target, source, 'merge');
+            extend(target, source, 'merge');
 
             expect(target.objProp.objProp.numProp).to.equal(1007);
             expect(target.objProp.stringProp).to.equal('gstring');
@@ -175,7 +164,7 @@ define(function (require) {
             arrayProp: [ 1, 2 ],
           };
 
-          mixin(target, source, solvers);
+          extend(target, source, solvers);
 
           expect(target.stringProp).to.equal('hodor');
           expect(target.arrayProp).to.deep.equal([ 'a', 'b', 1, 2 ]);
@@ -200,7 +189,7 @@ define(function (require) {
             'string': 'useSource',
           };
 
-          mixin(target, source, solvers, 'useTarget');
+          extend(target, source, solvers, 'useTarget');
 
           expect(target.numProp).to.equal(123);
           expect(target.stringProp).to.equal('bbb');
@@ -226,7 +215,7 @@ define(function (require) {
 
           var spy = sinon.spy(defaultSolvers, 'aSolver');
 
-          mixin(target, source, solvers, defaultSolvers.aSolver);
+          extend(target, source, solvers, defaultSolvers.aSolver);
 
           expect(target.stringProp).to.equal('bbb');
           expect(target.numProp).to.equal( -333);

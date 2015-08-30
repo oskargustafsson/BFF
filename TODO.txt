@@ -49,9 +49,8 @@ Controller
 ----------
 - A way to easily toggle classes. E.g. option to .bind prop like this: "classes.className", which should get a boolean value.
 
-Mixin
------
-- Rename to "extend" and don't automatically apply to prototype
+Extend
+------
 
 ListConstructorFactory
 ----------------------
