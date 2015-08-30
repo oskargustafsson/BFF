@@ -70,6 +70,16 @@ module.exports = function (grunt) {
       },
     },
 
+    intern: {
+      someReleaseTarget: {
+        options: {
+          runType: 'client',
+          config: 'tests/intern',
+          reporters: [ 'Console' ],
+        },
+      },
+    },
+
     watch: {
       files: 'src/*.js',
       tasks: [ 'jsdoc' ],
@@ -84,8 +94,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-jscs');
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('intern');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', [ 'jshint', 'jscs', 'jsdoc', 'uglify' ]);
+  grunt.registerTask('test', [ 'intern' ]);
+  grunt.registerTask('default', [ 'jshint', 'jscs', 'jsdoc', 'uglify', 'test' ]);
 
 };

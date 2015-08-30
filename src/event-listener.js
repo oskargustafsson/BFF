@@ -57,8 +57,8 @@ define(function () {
     listenTo: function (eventEmitters, eventName, callback, context) {
       // Convenience functionality that allows you to listen to all items in an Array or NodeList
       // BFF Lists have this kind of functionality built it, so don't handle that case here
-      eventEmitters = eventEmitters instanceof Array || eventEmitters instanceof NodeList ?
-          eventEmitters : [ eventEmitters ];
+      eventEmitters = eventEmitters instanceof Array ||
+          (typeof NodeList !== 'undefined' && eventEmitters instanceof NodeList) ? eventEmitters : [ eventEmitters ];
 
       for (var i = 0; i < eventEmitters.length; ++i) {
         listenTo(this, eventEmitters[i], eventName, callback, context);

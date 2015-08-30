@@ -3,8 +3,6 @@ General
 - Add CommonJS support
 - Add input validation (of calling arguments) to all exposed functions
 - Docblocks
-- Grunt integration of
-  - Run Intern tests suites
 
 List
 ----
