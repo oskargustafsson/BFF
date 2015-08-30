@@ -206,8 +206,7 @@ define([
 
   /**
    * Add one or more items to the end of the List. Mirrors Array.push behavior.
-   * @func
-   * @arg {...any} items - Each item argument will be pushed onto the List.
+   * @arg {...any} item - Each item argument will be pushed onto the List.
    * @emits module:bff/list#change:length
    * @emits module:bff/list#item:added
    * @returns {module:bff/list} Self reference
@@ -226,6 +225,13 @@ define([
     return this;
   };
 
+  /**
+   * Add one or more items to the beginning of the List. Mirrors Array.unshift behavior.
+   * @arg {...any} item - Each item argument will be pushed onto the List.
+   * @emits module:bff/list#change:length
+   * @emits module:bff/list#item:added
+   * @returns {module:bff/list} Self reference
+   */
   List.prototype.unshift = function () {
     var nItems = arguments.length;
     if (nItems === 0) { return this; }
@@ -239,6 +245,12 @@ define([
     return this;
   };
 
+  /**
+   * Remove and return one item from the end of the List. Mirrors Array.pop behavior.
+   * @emits module:bff/list#change:length
+   * @emits module:bff/list#item:removed
+   * @returns {any} Removed item
+   */
   List.prototype.pop = function () {
     if (this.length === 0) { return; }
 
@@ -250,17 +262,39 @@ define([
     return poppedItem;
   };
 
+  /**
+   * Remove and return one item from the beginning of the List. Mirrors Array.shift behavior.
+   * @emits module:bff/list#change:length
+   * @emits module:bff/list#item:removed
+   * @returns {any} Removed item
+   */
   List.prototype.shift = function () {
     if (this.length === 0) { return; }
 
     this.length = this.__private.array.length - 1;
-    var poppedItem = this.__private.array.shift.apply(this.__private.array, arguments);
+    var shiftedItem = this.__private.array.shift.apply(this.__private.array, arguments);
 
-    onItemRemoved(this, poppedItem, 0);
+    onItemRemoved(this, shiftedItem, 0);
 
-    return poppedItem;
+    return shiftedItem;
   };
 
+  /**
+   * Changes the content of the List by removing existing elements and/or adding new elements. Mirrors Array.splice
+   * behavior.
+   * @arg {number} start - Index at which to start changing the array. If greater than the length of the array, actual
+   *     starting index will be set to the length of the array. If negative, will begin that many elements from the end.
+   * @arg {number} nItemsToRemove - An integer indicating the number of old array elements to remove. If nItemsToRemove
+   *     is greater than the number of elements left in the array starting at start, then all of the elements through
+   *     the end of the array will be deleted.
+   * @arg {...any} [itemToAdd] - Item that will be added to the array, starting at the index specified in the first
+   *     argument.
+   * @emits module:bff/list#change:length
+   * @emits module:bff/list#item:added
+   * @emits module:bff/list#item:replaced
+   * @emits module:bff/list#item:removed
+   * @returns {any[]} Array of removed items
+   */
   List.prototype.splice = function (start, nItemsToRemove) {
     var i;
     var oldLength = this.length;
@@ -280,10 +314,42 @@ define([
 
     this.length = this.__private.array.length;
 
-    return this;
+    return deletedItems;
   };
 
+  /**
+   * @callback module:bff/list~forEachCallback
+   * @param {any} item - Current List item.
+   * @param {number} index - Item position in List.
+   * @param {module:bff/list} list - List being iterated over.
+   */
+
+  /**
+   * Executes the given function once per List item. Mirrors Array.forEach behavior.
+   * @func
+   * @arg {module:bff/list~forEachCallback} callback - The function that will be called once per List item.
+   * @arg {any} thisArg - Value to use as "this" when executing callback.
+   * @returns {undefined}
+   */
   List.prototype.forEach = Array.prototype.forEach;
+
+  /**
+   * @callback module:bff/list~reduceCallback
+   * @param {any} previousItem - The value previously returned in the last invocation of the callback, or initialValue,
+   *     if supplied. Usually an aggregate of previous items.
+   * @param {any} item - Current List item being processed.
+   * @param {number} index - Item position in List.
+   * @param {module:bff/list} list - List being iterated over.
+   */
+
+  /**
+   * Applies a function against an accumulator and each value of the array (from left-to-right) to reduce it to a single
+   *     value. Mirrors Array.reduce behavior.
+   * @func
+   * @arg {module:bff/list~reduceCallback} callback - The function that will be called once per List item.
+   * @arg {any} initialVale - Value to use as the first argument to the first call of the callback.
+   * @returns {any} Aggregated value
+   */
   List.prototype.reduce = Array.prototype.reduce;
 
   // TODO: do as above
