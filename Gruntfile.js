@@ -4,19 +4,37 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
 
+    jshint: {
+      src: 'src/*.js',
+      options: {
+        jshintrc: true,
+      },
+    },
+
+    jscs: {
+      src: 'src/*.js',
+      options: {
+        config: true,
+      },
+    },
+
     jsdoc: {
-      dist: {
-        src: [ 'src/*.js' ],
-        options: {
-          destination: 'doc',
-          template: 'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
-          configure: 'jsdoc.conf.json',
-        },
+      src: 'src/*.js',
+      options: {
+        destination: 'doc',
+        template: 'node_modules/grunt-jsdoc/node_modules/ink-docstrap/template',
+        configure: 'jsdoc.conf.json',
       },
     },
 
     uglify: {
       dev: {
+        files: [ {
+          expand: true,
+          cwd: 'src',
+          src: '**/*.js',
+          dest: 'dist/dev',
+        } ],
         options: {
           beautify: true,
           mangle: false,
@@ -30,14 +48,14 @@ module.exports = function (grunt) {
             dead_code: true,
           },
         },
+      },
+      prod: {
         files: [ {
           expand: true,
           cwd: 'src',
           src: '**/*.js',
-          dest: 'dist/dev',
+          dest: 'dist/prod',
         } ],
-      },
-      prod: {
         options: {
           screwIE8: true,
           quoteStyle: 1,
@@ -49,31 +67,25 @@ module.exports = function (grunt) {
             dead_code: true,
           },
         },
-        files: [ {
-          expand: true,
-          cwd: 'src',
-          src: '**/*.js',
-          dest: 'dist/prod',
-        } ],
       },
     },
 
     watch: {
-      scripts: {
-        files: [ 'src/*.js' ],
-        tasks: [ 'jsdoc' ],
-        options: {
-          spawn: false,
-        },
+      files: 'src/*.js',
+      tasks: [ 'jsdoc' ],
+      options: {
+        spawn: false,
       },
     },
 
   });
 
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-jscs');
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', [ 'jsdoc', 'uglify' ]);
+  grunt.registerTask('default', [ 'jshint', 'jscs', 'jsdoc', 'uglify' ]);
 
 };

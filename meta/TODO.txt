@@ -5,7 +5,6 @@ General
 - Docblocks
 - Grunt integration of
   - Run Intern tests suites
-  - JSHint & JSCS
 
 List
 ----
