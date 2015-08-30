@@ -14,12 +14,9 @@ define(function () {
      * @arg {...any} [eventArguments] - Zero or more arguments that event listeners will be called with.
      * @returns {undefined}
      */
-    emit: function (eventName, eventArguments) {
+    emit: function (eventName) {
       if (typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
-      }
-      if (arguments.length === 2 && eventArguments.length === undefined) {
-        throw '"eventArguments" argument must be an array';
       }
 
       if (!this.__private) { return; }
@@ -30,7 +27,8 @@ define(function () {
 
       var length = listenersForEvent.length;
       for (var i = 0; i < length; ++i) {
-        listenersForEvent[i].apply(null, eventArguments);
+        var listener = listenersForEvent[i];
+        listener.call.apply(listener, arguments); // Call the listener without the first item in the "arguments" array
       }
     },
 

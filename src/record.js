@@ -47,14 +47,14 @@ define([
       // Switch the value back and do things for real
       this.__private.values[propName] = oldCanonicalVal;
 
-      this.emit(PRECHANGE_EVENT, [ propName, oldVal, propName, canonicalVal, this ]);
-      this.emit(MY_PRECHANGE_EVENT, [ oldVal, propName, canonicalVal, this ]);
+      this.emit(PRECHANGE_EVENT, propName, oldVal, propName, canonicalVal, this);
+      this.emit(MY_PRECHANGE_EVENT, oldVal, propName, canonicalVal, this);
 
       this.__private.values[propName] = canonicalVal;
 
       var newVal = this[propName];
-      this.emit(CHANGE_EVENT, [ propName, newVal, oldVal, this ]);
-      this.emit(MY_CHANGE_EVENT, [ newVal, oldVal, this ]);
+      this.emit(CHANGE_EVENT, propName, newVal, oldVal, this);
+      this.emit(MY_CHANGE_EVENT, newVal, oldVal, this);
     };
   }
 
@@ -80,8 +80,8 @@ define([
 
       if (noChange) { continue; }
 
-      this.emit(PRECHANGE_EVENT, [ propName, oldVal, triggeringPropName, canonicalVal, this ]);
-      this.emit(PRECHANGE_EVENT + ':' + propName, [ oldVal, triggeringPropName, canonicalVal, this ]); // TODO: optimize
+      this.emit(PRECHANGE_EVENT, propName, oldVal, triggeringPropName, canonicalVal, this);
+      this.emit(PRECHANGE_EVENT + ':' + propName, oldVal, triggeringPropName, canonicalVal, this);
     }
   };
 
@@ -93,8 +93,8 @@ define([
 
       if (value === prevValue) { continue; }
 
-      this.emit(CHANGE_EVENT, [ propName, value, prevValue, this ]);
-      this.emit(CHANGE_EVENT + ':' + propName, [ value, prevValue, this ]); // TODO: optimize
+      this.emit(CHANGE_EVENT, propName, value, prevValue, this);
+      this.emit(CHANGE_EVENT + ':' + propName, value, prevValue, this);
     }
   };
 

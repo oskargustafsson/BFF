@@ -98,7 +98,7 @@ define(function (require) {
         emitter.addEventListener('kwanzaa', callback);
         emitter.addEventListener('kwanzaa', callback2);
 
-        emitter.emit('kwanzaa', [ 'firstArg', 'secondArg' ]);
+        emitter.emit('kwanzaa', 'firstArg', 'secondArg');
 
         expect(callback).to.have.been.calledOnce;
         expect(callback).to.have.been.calledWith('firstArg', 'secondArg');

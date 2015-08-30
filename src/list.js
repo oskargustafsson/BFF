@@ -50,10 +50,8 @@ define([
   function isEmitter(obj) { return !!(obj && obj.addEventListener); } // Quack!
 
   function onItemAdded(self, item, index) {
-    var itemAddedArgs = [ item, index, self ];
-
     if (!isEmitter(item)) {
-      self.emit(ITEM_ADDED_EVENT, itemAddedArgs);
+      self.emit(ITEM_ADDED_EVENT, item, index, self);
       return;
     }
 
@@ -65,34 +63,30 @@ define([
       reemitItemEvent(self, item, strippedEventName, eventName);
     }
 
-    item.emit(ADDED_EVENT, itemAddedArgs);
+    item.emit(ADDED_EVENT, item, index, self);
   }
 
   function onItemRemoved(self, item, index) {
-    var itemRemovedArgs = [ item, index, self ];
-
     if (!isEmitter(item)) {
-      self.emit(ITEM_REMOVED_EVENT, itemRemovedArgs);
+      self.emit(ITEM_REMOVED_EVENT, item, index, self);
       return;
     }
 
-    item.emit(REMOVED_EVENT, itemRemovedArgs);
+    item.emit(REMOVED_EVENT, item, index, self);
     self.stopListening(item);
   }
 
   function onItemReplaced(self, newItem, oldItem, index) {
     if (newItem === oldItem) { return; }
 
-    var itemReplacedArgs = [ newItem, oldItem, index, self ];
-
     isEmitter(oldItem) ?
-      oldItem.emit(REPLACED_EVENT, itemReplacedArgs) :
-      self.emit(ITEM_REPLACED_EVENT, itemReplacedArgs);
+      oldItem.emit(REPLACED_EVENT, newItem, oldItem, index, self) :
+      self.emit(ITEM_REPLACED_EVENT, newItem, oldItem, index, self);
   }
 
   function reemitItemEvent(self, item, strippedEventName, eventName) {
     self.listenTo(item, strippedEventName, function () {
-      self.emit(eventName, arguments);
+      self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments))); // TODO: better solution
     });
   }
 

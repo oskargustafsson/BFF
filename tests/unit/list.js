@@ -226,12 +226,12 @@ define(function (require) {
           var callback = sinon.spy();
 
           list.addEventListener('item:customEvent', callback);
-          emitterItem1.emit('customEvent', [ 'arg1', 2, { a: 'b' } ]);
+          emitterItem1.emit('customEvent', 'arg1', 2, { a: 'b' });
 
           expect(callback).to.have.been.calledOnce;
           expect(callback).to.have.been.calledWith('arg1', 2, { a: 'b' });
 
-          emitterItem2.emit('customEvent', [ 'arg2' ]);
+          emitterItem2.emit('customEvent', 'arg2');
 
           expect(callback).to.have.been.calledTwice;
           expect(callback).to.have.been.calledWith('arg2');
@@ -245,7 +245,7 @@ define(function (require) {
           list.addEventListener('item:customEvent', callback);
           list.push(emitterItem1);
 
-          emitterItem1.emit('customEvent', [ 'arg1', 2, { a: 'b' } ]);
+          emitterItem1.emit('customEvent', 'arg1', 2, { a: 'b' });
 
           expect(callback).to.have.been.calledOnce;
           expect(callback).to.have.been.calledWith('arg1', 2, { a: 'b' });

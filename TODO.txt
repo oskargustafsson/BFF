@@ -37,9 +37,6 @@ Record
 
 Event emitter
 -------------
-- Rename event dispatcher (and rename .emit() to .dispatchEvent()). More similar to the DOM API
-- Don't accept arguments as an array, arguments should be able to be passed like .emit('eventName', arg1, arg2, arg3).
-  - Speed test different solutions: BackboneJS solution vs. custEmit.call.apply(Function.prototype, arguments) (this === 'eventName'), vs. closure to store eventName
 
 Event listener
 --------------
