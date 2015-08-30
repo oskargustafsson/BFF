@@ -26,6 +26,7 @@ List
 - Unit tests for all the extra functions
 - Modify functions so that they stay closer to their Array counterparts (sacrifice chainability)
 - Rename pushArray to pushAll (it accepts a List as well as an Array)
+- Make constructor accept a List a second arg (not just Array)
 
 Record
 ------

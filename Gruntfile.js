@@ -21,10 +21,21 @@ module.exports = function (grunt) {
       },
     },*/
 
+    watch: {
+      scripts: {
+        files: [ 'src/*.js' ],
+        tasks: [ 'jsdoc' ],
+        options: {
+          spawn: false,
+        },
+      },
+    },
+
   });
 
   grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('default', [ 'jsdoc' ]);
 

@@ -1,3 +1,4 @@
+/** @module bff/list */
 define([
   './mixin',
   './event-emitter',
@@ -14,9 +15,34 @@ define([
   var ADDED_EVENT = 'added';
   var REPLACED_EVENT = 'replaced';
   var REMOVED_EVENT = 'removed';
+  /**
+   * @event module:bff/list#item:added
+   * @arg {any} item - The item that was added to the List.
+   * @arg {number} index - The position withing the List where the item was added.
+   * @arg {module:bff/list} list - The List to which the item was added.
+   */
   var ITEM_ADDED_EVENT = 'item:added';
+  /**
+   * @event module:bff/list#item:replaced
+   * @arg {any} newItem - The item that was added to the List.
+   * @arg {any} oldItem - The item that was removed from the List.
+   * @arg {number} index - The position withing the List where the item was replaced.
+   * @arg {module:bff/list} list - The List in which the item was replaced.
+   */
   var ITEM_REPLACED_EVENT = 'item:replaced';
+  /**
+   * @event module:bff/list#item:removed
+   * @arg {any} item - The item that was removed from the List.
+   * @arg {number} index - The position withing the List where the item was removed.
+   * @arg {module:bff/list} list - The List from which the item was removed.
+   */
   var ITEM_REMOVED_EVENT = 'item:removed';
+  /**
+   * @event module:bff/list#change:length
+   * @arg {number} newLength - The current length of the List.
+   * @arg {number} oldLength - The previous length of the List.
+   * @arg {module:bff/list} list - The List whose length has changed.
+   */
   var LENGTH_CHANGED_EVENT = 'change:length';
 
   var ITEM_EVENT_PREFIX = /^item:/;
@@ -97,6 +123,15 @@ define([
     };
   }
 
+  /**
+   * Represents a list of items.
+   * @constructor
+   * @alias module:bff/list
+   * @mixes bff/event-emitter
+   * @mixes bff/event-listener
+   * @arg {Object} [schema] - Description of properties that will be added to the List.
+   * @arg {(Array|List)} [items] - Items that will be added to the List on creation.
+   */
   function List(schema, items) {
     this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
     this.__private.array = [];
@@ -169,6 +204,14 @@ define([
     items.length && this.push.apply(this, items);
   }
 
+  /**
+   * Add one or more items to the end of the List. Mirrors Array.push behavior.
+   * @func
+   * @arg {...any} items - Each item argument will be pushed onto the List.
+   * @emits module:bff/list#change:length
+   * @emits module:bff/list#item:added
+   * @returns {module:bff/list} Self reference
+   */
   List.prototype.push = function () {
     var nItems = arguments.length;
     if (nItems === 0) { return this; }

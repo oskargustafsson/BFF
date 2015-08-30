@@ -1,8 +1,19 @@
 define(function () {
   'use strict';
 
-  return {
-
+  /**
+   * A mixin, providing event emitting capabilities to a class. Events are simply string identifiers. When they are
+   * emitted, zero or more parameters can be passed as arguments to the listening functions.
+   * @exports bff/event-emitter
+   * @mixin
+   */
+  var EventEmitter = {
+    /**
+     * Emit an event.
+     * @arg {string} eventName - Identifier string for the event.
+     * @arg {...any} [eventArguments] - Zero or more arguments that event listeners will be called with.
+     * @returns {undefined}
+     */
     emit: function (eventName, eventArguments) {
       if (typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
@@ -23,6 +34,13 @@ define(function () {
       }
     },
 
+    /**
+     * Add an event listener function that will be called whenever the given event is emitted. Trying to add the exact
+     * same function twice till throw an error, as that is rarely ever the intention and a common source of errors.
+     * @arg {string} eventName - Identifier string for the event that is to be listened to.
+     * @arg {function} callback - The function that will be called when the event is emitted.
+     * @returns {undefined}
+     */
     addEventListener: function (eventName, callback) {
       if (typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
@@ -42,6 +60,13 @@ define(function () {
       listenersForEvent.push(callback);
     },
 
+    /**
+     * Removes an event listener function. If the function was never a listener, do nothing.
+     * @arg {string} eventName - Identifier string for the event in question.
+     * @arg {function} [callback] - If not given, all event listeners to the provided eventName will be removed. If
+     *     given, only the given callback will be removed from the given eventName.
+     * @returns {undefined}
+     */
     removeEventListener: function (eventName, callback) {
       if (typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
@@ -67,5 +92,7 @@ define(function () {
     },
 
   };
+
+  return EventEmitter;
 
 });
