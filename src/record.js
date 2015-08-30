@@ -34,7 +34,7 @@ define([
       propSchema.setter && (canonicalVal = propSchema.setter.call(this, canonicalVal));
 
       // Input validation
-      validateInput(canonicalVal, propName, propSchema);
+      RUNTIME_CHECKS && validateInput(canonicalVal, propName, propSchema);
 
       // Do a "dry-run" to test if the value would actually change
       var oldVal = this[propName];
@@ -155,7 +155,7 @@ define([
     // Object.preventExtensions(this);
 
     for (propName in values) {
-      if (!schema.hasOwnProperty(propName)) {
+      if (RUNTIME_CHECKS && !schema.hasOwnProperty(propName)) {
         throw 'Cannot assign undeclared property ' + propName;
       }
       propertiesUnion[propName] = values[propName];
@@ -165,7 +165,7 @@ define([
     for (propName in propertiesUnion) {
       var val = propertiesUnion[propName];
       schema[propName].setter && (val = schema[propName].setter.call(this, val));
-      validateInput(val, propName, schema[propName]);
+      RUNTIME_CHECKS && validateInput(val, propName, schema[propName]);
       this.__private.values[propName] = val;
     }
   }

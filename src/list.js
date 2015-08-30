@@ -157,18 +157,22 @@ define([
     schema = schema || {};
     items = items || [];
 
-    if (typeof schema !== 'object') {
+    if (RUNTIME_CHECKS && typeof schema !== 'object') {
       throw 'Schema argument must be an object';
     }
-    if (!(items instanceof Array)) {
+    if (RUNTIME_CHECKS && !(items instanceof Array)) {
       throw 'Items argument must be an array';
     }
 
     for (var propName in schema) {
       var propertySchema = schema[propName];
 
-      if (!propertySchema.getter) { throw 'List property ' + propName + ' must have a custom getter function'; }
-      if (propertySchema.setter) { throw 'List property ' + propName + ' may not have a setter'; }
+      if (RUNTIME_CHECKS && !propertySchema.getter) {
+        throw 'List property ' + propName + ' must have a custom getter function';
+      }
+      if (RUNTIME_CHECKS && propertySchema.setter) {
+        throw 'List property ' + propName + ' may not have a setter';
+      }
 
       propertySchema.setter = false;
     }

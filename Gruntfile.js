@@ -15,13 +15,48 @@ module.exports = function (grunt) {
       },
     },
 
-    /*uglify: {
-      dist: {
-        files: {
-          'dist/jimage.min.js': [ 'src/jimage.js' ],
+    uglify: {
+      dev: {
+        options: {
+          beautify: true,
+          mangle: false,
+          screwIE8: true,
+          quoteStyle: 1,
+          drop_console: true,
+          compress: {
+            global_defs: {
+              RUNTIME_CHECKS: true,
+            },
+            dead_code: true,
+          },
         },
+        files: [ {
+          expand: true,
+          cwd: 'src',
+          src: '**/*.js',
+          dest: 'dist/dev',
+        } ],
       },
-    },*/
+      prod: {
+        options: {
+          screwIE8: true,
+          quoteStyle: 1,
+          drop_console: true,
+          compress: {
+            global_defs: {
+              RUNTIME_CHECKS: false,
+            },
+            dead_code: true,
+          },
+        },
+        files: [ {
+          expand: true,
+          cwd: 'src',
+          src: '**/*.js',
+          dest: 'dist/prod',
+        } ],
+      },
+    },
 
     watch: {
       scripts: {
@@ -39,6 +74,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', [ 'jsdoc' ]);
+  grunt.registerTask('default', [ 'jsdoc', 'uglify' ]);
 
 };

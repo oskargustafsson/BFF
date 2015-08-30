@@ -7,7 +7,7 @@ define(function (require) {
   var sinon = require('node_modules/sinon/pkg/sinon');
   var sinonChai = require('node_modules/sinon-chai/lib/sinon-chai');
 
-  var factory = require('src/record-constructor-factory');
+  var factory = require('dist/dev/record-constructor-factory');
 
   chai.use(sinonChai);
 

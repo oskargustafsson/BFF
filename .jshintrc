@@ -26,5 +26,5 @@
   "white":      true,      // Enforce Crockford style guides
   "indent":     2,          // Set indentation to two spaces
 
-  "predef": [ "define", "require" ]
+  "predef": [ "define", "require", "RUNTIME_CHECKS" ]
 }

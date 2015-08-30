@@ -13,13 +13,13 @@ define(function () {
   }
 
   function listenTo(self, eventEmitter, eventName, callback, context) {
-    if (!eventEmitter.removeEventListener) {
+    if (RUNTIME_CHECKS && !eventEmitter.removeEventListener) {
       throw 'First argument is not an event emitter';
     }
-    if (typeof eventName !== 'string') {
+    if (RUNTIME_CHECKS && typeof eventName !== 'string') {
       throw 'Second argument is not a string';
     }
-    if (typeof callback !== 'function') {
+    if (RUNTIME_CHECKS && typeof callback !== 'function') {
       throw 'Third argument must be a function'; // Catch a common cause of errors
     }
 
@@ -74,7 +74,7 @@ define(function () {
      * @returns {undefined}
      */
     stopListening: function (eventEmitter, eventName) {
-      if ((eventEmitter || arguments.length === 1) && !(eventEmitter || {}).removeEventListener) {
+      if (RUNTIME_CHECKS && (eventEmitter || arguments.length === 1) && !(eventEmitter || {}).removeEventListener) {
         throw 'First argument is not an event emitter';
       }
 

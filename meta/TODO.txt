@@ -2,11 +2,8 @@ General
 -------
 - Add CommonJS support
 - Add input validation (of calling arguments) to all exposed functions
-- Conditional runtime checks https://github.com/mishoo/UglifyJS2#user-content-conditional-compilation
 - Docblocks
 - Grunt integration of
-  - Generate docs
-  - Conditional runtime checks (part of build system)
   - Run Intern tests suites
   - JSHint & JSCS
 
@@ -27,6 +24,7 @@ List
 - Modify functions so that they stay closer to their Array counterparts (sacrifice chainability)
 - Rename pushArray to pushAll (it accepts a List as well as an Array)
 - Make constructor accept a List a second arg (not just Array)
+- UT negative index for .splice
 
 Record
 ------

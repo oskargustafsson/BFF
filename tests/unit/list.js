@@ -7,9 +7,9 @@ define(function (require) {
   var sinonChai = require('node_modules/sinon-chai/lib/sinon-chai');
   var expect = require('intern/chai!expect');
 
-  var List = require('src/list');
-  var extend = require('src/extend');
-  var eventEmitter = require('src/event-emitter');
+  var List = require('dist/dev/list');
+  var extend = require('dist/dev/extend');
+  var eventEmitter = require('dist/dev/event-emitter');
 
   chai.use(sinonChai);
 

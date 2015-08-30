@@ -15,7 +15,7 @@ define(function () {
      * @returns {undefined}
      */
     emit: function (eventName) {
-      if (typeof eventName !== 'string') {
+      if (RUNTIME_CHECKS && typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
       }
 
@@ -40,10 +40,10 @@ define(function () {
      * @returns {undefined}
      */
     addEventListener: function (eventName, callback) {
-      if (typeof eventName !== 'string') {
+      if (RUNTIME_CHECKS && typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
       }
-      if (typeof callback !== 'function') {
+      if (RUNTIME_CHECKS && typeof callback !== 'function') {
         throw '"callback" argument must be a function'; // Catch a common cause of errors
       }
 
@@ -66,10 +66,10 @@ define(function () {
      * @returns {undefined}
      */
     removeEventListener: function (eventName, callback) {
-      if (typeof eventName !== 'string') {
+      if (RUNTIME_CHECKS && typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
       }
-      if (arguments.length === 2 && typeof callback !== 'function') {
+      if (RUNTIME_CHECKS && arguments.length === 2 && typeof callback !== 'function') {
         throw '"callback" argument must be a function'; // Catch a common cause of errors
       }
 
