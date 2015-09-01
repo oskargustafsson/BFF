@@ -140,23 +140,20 @@ define([
           triggerDependerChangeEvents.bind(this, dependency.dependers));
     }
 
+    var props = {};
     for (propName in schema) {
       propertySchema = schema[propName];
       typeof propertySchema === 'string' && (propertySchema = schema[propName] = { type: propertySchema });
 
-      var descriptor = {
+      props[propName] = {
         enumerable: true,
+        get: propertySchema.getter === false ? undefined : makeGetter(propName, propertySchema),
+        set: propertySchema.setter === false ? undefined : makeSetter(propName, propertySchema),
       };
-      if (propertySchema.getter !== false) {
-        descriptor.get = makeGetter(propName, propertySchema);
-      }
-      if (propertySchema.setter !== false) {
-        descriptor.set = makeSetter(propName, propertySchema);
-      }
-      Object.defineProperty(this, propName, descriptor);
 
       propertiesUnion[propName] = propertySchema.defaultValue;
     }
+    Object.defineProperties(this, props);
 
     options.allowExtensions || Object.preventExtensions(this);
 

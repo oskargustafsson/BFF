@@ -25,8 +25,6 @@ List
 
 Record
 ------
-- Use Object.defineProperties instead of Object.defineProperty
-- BUG: forbiddenValues: [ undefined ] doesn't throw an error
 
 Event emitter
 -------------
