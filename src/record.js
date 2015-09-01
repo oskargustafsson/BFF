@@ -107,6 +107,12 @@ define([
     schema = schema || {};
     options = options || {};
 
+    if (RUNTIME_CHECKS) { // Guarantee that we don't mess with the arguments, they may be reused by the caller
+      Object.preventExtensions(schema);
+      Object.preventExtensions(values);
+      Object.preventExtensions(options);
+    }
+
     var propName, propertySchema;
     var propertiesUnion = {};
     var dependencies = {};
