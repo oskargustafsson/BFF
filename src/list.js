@@ -365,16 +365,25 @@ define([
 
   List.prototype.filterMut = function (predicate, thisArg) {
     var length = this.length;
+    var removedItems = [];
     var removeCount = 0;
     for (var i = length - 1; i >= -1; --i) {
       if (i > -1 && predicate.call(thisArg, this[i], i, this)) {
         removeCount++;
       } else if (removeCount) {
-        this.splice(i + 1, removeCount);
+        removedItems.push.apply(this, this.splice(i + 1, removeCount));
         removeCount = 0;
       }
     }
-    return this;
+    return removedItems;
+  };
+
+  List.prototype.remove = function (item) {
+    return this.filterMut(function (listItem) { return item === listItem; });
+  };
+
+  List.prototype.clear = function () {
+    return this.splice(0, this.length);
   };
 
   List.prototype.pushArray = List.prototype.concatMut = function (items) {
