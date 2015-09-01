@@ -98,13 +98,14 @@ define([
     }
   };
 
-  function Record(schema, values) {
+  function Record(schema, values, options) {
     this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
     this.__private.values = {};
     this.__private.previousValues = {};
 
     values = values || {};
     schema = schema || {};
+    options = options || {};
 
     var propName, propertySchema;
     var propertiesUnion = {};
@@ -151,8 +152,7 @@ define([
       propertiesUnion[propName] = propertySchema.defaultValue;
     }
 
-    // Disabled, for now
-    // Object.preventExtensions(this);
+    options.allowExtensions || Object.preventExtensions(this);
 
     for (propName in values) {
       if (RUNTIME_CHECKS && !schema.hasOwnProperty(propName)) {

@@ -197,7 +197,7 @@ define([
       }
     });
 
-    Record.call(this, schema);
+    Record.call(this, schema, undefined, { allowExtensions: true });
 
     items.length && this.push.apply(this, items);
   }
