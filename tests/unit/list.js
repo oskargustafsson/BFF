@@ -8,6 +8,7 @@ define(function (require) {
   var expect = require('intern/chai!expect');
 
   var List = require('dist/dev/list');
+  var Record = require('dist/dev/record');
   var extend = require('dist/dev/extend');
   var eventEmitter = require('dist/dev/event-emitter');
 
@@ -90,11 +91,15 @@ define(function (require) {
               dependencies: [ 'length', 'item:done' ],
             }
           };
+          var TodoItem = Record.bind(null, {
+            id: 'number',
+            done: 'boolean',
+          });
           var list = new List(schema, [
-            { id: 1, done: false },
-            { id: 2, done: true },
-            { id: 3, done: false },
-            { id: 4, done: true },
+            new TodoItem({ id: 1, done: false }),
+            new TodoItem({ id: 2, done: true }),
+            new TodoItem({ id: 3, done: false }),
+            new TodoItem({ id: 4, done: true }),
           ]);
           var nDoneChangedCallback = sinon.spy();
           list.addEventListener('change:nDone', nDoneChangedCallback);
@@ -119,6 +124,7 @@ define(function (require) {
 
           //list[0].done = true;
 
+          // FAILS
           //expect(nDoneChangedCallback).to.have.been.calledThrice;
           //expect(nDoneChangedCallback).to.have.been.calledWith(3, 2, list);
         },

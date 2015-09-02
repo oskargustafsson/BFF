@@ -40,7 +40,6 @@ module.exports = function (grunt) {
           mangle: false,
           screwIE8: true,
           quoteStyle: 1,
-          drop_console: true,
           compress: {
             global_defs: {
               RUNTIME_CHECKS: true,
