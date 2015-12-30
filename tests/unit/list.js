@@ -548,11 +548,16 @@ define(function (require) {
         'mirrors Array.splice behavior': function () {
           var list = new List([ 'a', 'b', 'c', 'd' ]);
 
-          list.splice(1, 2, 'd');
+          list.splice(1, 2, 'e');
           expect(list.length).to.equal(3);
           expect(list[0]).to.equal('a');
-          expect(list[1]).to.equal('d');
+          expect(list[1]).to.equal('e');
           expect(list[2]).to.equal('d');
+
+          list.splice(-2, 999, 'f');
+          expect(list.length).to.equal(2);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal('f');
         },
 
         'emits events': function () {

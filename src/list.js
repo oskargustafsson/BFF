@@ -292,13 +292,15 @@ define([
   List.prototype.splice = function (start, nItemsToRemove) {
     var i;
     var oldLength = this.length;
+
+    start < 0 && (start = oldLength + start);
+    nItemsToRemove = Math.min(nItemsToRemove, oldLength - start);
+
     var nItemsToAdd = arguments.length - 2;
     var nItemsToReplace = Math.min(nItemsToAdd, nItemsToRemove);
     var nItemsAffected = Math.max(nItemsToAdd, nItemsToRemove);
 
     var deletedItems = this.__private.array.splice.apply(this.__private.array, arguments);
-
-    start < 0 && (start = oldLength + start);
 
     for (i = 0; i < nItemsAffected; ++i) {
       i < nItemsToAdd && onItemAdded(this, arguments[i + 2], start + i);

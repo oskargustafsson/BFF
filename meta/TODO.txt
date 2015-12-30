@@ -10,7 +10,6 @@ List
 - Fix broken UTs
 - Add custom properties (no setters, just getters)
 - Unit tests for all the extra functions
-- UT negative index for .splice
 - Events "items:added", "items:replaced", "items:removed"
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
 - Option to mixin lodash functions
