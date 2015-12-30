@@ -619,6 +619,155 @@ define(function (require) {
 
       },
 
+      '"every" method': {
+
+        'returns true if all elements pass the predicate': function () {
+          var list = new List([ true, true, true ]);
+          var isAllTrue = list.every(function (item) {
+            return !!item;
+          });
+          expect(isAllTrue).to.equal(true);
+        },
+
+        'returns false if some element does not pass the predicate': function () {
+          var list = new List([ true, false, true ]);
+          var isAllTrue = list.every(function (item) {
+            return !!item;
+          });
+          expect(isAllTrue).to.equal(false);
+        },
+
+      },
+
+      '"some" method': {
+
+        'returns true if some element pass the predicate': function () {
+          var list = new List([ true, false, false ]);
+          var isAllTrue = list.some(function (item) {
+            return !!item;
+          });
+          expect(isAllTrue).to.equal(true);
+        },
+
+        'returns false if all elements fails to pass the predicate': function () {
+          var list = new List([ false, false, false ]);
+          var isAllTrue = list.some(function (item) {
+            return !!item;
+          });
+          expect(isAllTrue).to.equal(false);
+        },
+
+      },
+
+      '"indexOf" method': {
+
+        'mirrors Array.indexOf behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          expect(list.indexOf('b')).to.equal(1);
+        },
+
+      },
+
+      '"lastIndexOf" method': {
+
+        'mirrors Array.lastIndexOf behavior': function () {
+          var list = new List([ 'a', 'b', 'c', 'b', 'c' ]);
+          expect(list.lastIndexOf('b')).to.equal(3);
+        },
+
+      },
+
+      '"join" method': {
+
+        'mirrors Array.join behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          expect(list.join('-')).to.equal('a-b-c');
+        },
+
+      },
+
+      '"reduce" method': {
+
+        'mirrors Array.reduce behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var aggregate = list.reduce(function (acc, item) {
+            return acc + '-' + item;
+          }, '');
+          expect(aggregate).to.equal('-a-b-c');
+        },
+
+      },
+
+      '"reduceRight" method': {
+
+        'mirrors Array.reduceRight behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var aggregate = list.reduceRight(function (acc, item) {
+            return acc + '-' + item;
+          }, '');
+          expect(aggregate).to.equal('-c-b-a');
+        },
+
+      },
+
+      '"sort" method': {
+
+        'mirrors Array.sort behavior': function () {
+          var list = new List([ 'c', 'b', 'a' ]);
+          list.sort();
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal('b');
+          expect(list[2]).to.equal('c');
+        },
+
+        // 'does not mess upp events after being sorted': function () {},
+
+      },
+
+      '"reverse" method': {
+
+        'mirrors Array.reverse behavior': function () {
+          var list = new List([ 'c', 'b', 'a' ]);
+          list.reverse();
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal('b');
+          expect(list[2]).to.equal('c');
+        },
+
+        // 'does not mess upp events after being reversed': function () {},
+
+      },
+
+      '"filter" method': {},
+
+      '"concat" method': {},
+
+      '"slice" method': {},
+
+      '"map" method': {},
+
+      '"mapMut" method': {},
+
+      '"filterMut" method': {},
+
+      '"remove" method': {},
+
+      '"clear" method': {},
+
+      '"sliceMut" method': {},
+
+      '"find" method': {},
+
+      '"findIndex" method': {},
+
+      '"includes" method': {},
+
+      '"toArray" method': {},
+
+      '"addEventListener" method': {},
+
+      '"removeEventListener" method': {},
+
       '"length" property': {
 
         /*'can be set to decrease the size of the array': function () {

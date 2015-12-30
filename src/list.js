@@ -326,7 +326,6 @@ define([
    * @arg {any} thisArg - Value to use as "this" when executing callback.
    * @returns {undefined}
    */
-  List.prototype.forEach = Array.prototype.forEach;
 
   /**
    * @callback module:bff/list~reduceCallback
@@ -345,16 +344,21 @@ define([
    * @arg {any} initialVale - Value to use as the first argument to the first call of the callback.
    * @returns {any} Aggregated value
    */
-  List.prototype.reduce = Array.prototype.reduce;
 
-  // TODO: do as above
-  [ 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduceRight', 'sort', 'reverse' ].forEach(function (funcName) {
-    List.prototype[funcName] = delegate(funcName);
-  });
+  [ 'forEach', 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduce', 'reduceRight' ]
+      .forEach(function (funcName) {
+        List.prototype[funcName] = Array.prototype[funcName];
+      });
 
-  [ 'filter', 'concat', 'slice', 'map' ].forEach(function (funcName) {
-    List.prototype[funcName] = delegateCreator(funcName);
-  });
+  [ 'sort', 'reverse' ]
+      .forEach(function (funcName) {
+        List.prototype[funcName] = delegate(funcName);
+      });
+
+  [ 'filter', 'concat', 'slice', 'map' ]
+      .forEach(function (funcName) {
+        List.prototype[funcName] = delegateCreator(funcName);
+      });
 
   List.prototype.filterMut = function (predicate, thisArg) {
     var length = this.length;
@@ -370,7 +374,6 @@ define([
     }
     return removedItems;
   };
-
   List.prototype.remove = function (item) {
     return this.filterMut(function (listItem) { return item === listItem; });
   };
