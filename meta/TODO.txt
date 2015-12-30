@@ -11,7 +11,6 @@ List
 - Add custom properties (no setters, just getters)
 - Unit tests for all the extra functions
 - Modify functions so that they stay closer to their Array counterparts (sacrifice chainability)
-- Make constructor accept a List a second arg (not just Array)
 - UT negative index for .splice
 - Events "items:added", "items:replaced", "items:removed"
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]

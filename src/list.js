@@ -150,7 +150,7 @@ define([
       }
     });
 
-    if (arguments.length === 1 && schema instanceof Array) {
+    if (arguments.length === 1 && schema.length !== undefined) {
       items = schema;
       schema = undefined;
     }
@@ -160,8 +160,8 @@ define([
     if (RUNTIME_CHECKS && typeof schema !== 'object') {
       throw 'Schema argument must be an object';
     }
-    if (RUNTIME_CHECKS && !(items instanceof Array)) {
-      throw 'Items argument must be an array';
+    if (RUNTIME_CHECKS && items.length === undefined) {
+      throw 'Items argument must be an Array or List';
     }
 
     for (var propName in schema) {
@@ -199,7 +199,7 @@ define([
 
     Record.call(this, schema, undefined, { allowExtensions: true });
 
-    items.length && this.push.apply(this, items);
+    items.length && this.pushAll(items);
   }
 
   /**

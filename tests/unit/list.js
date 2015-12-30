@@ -25,12 +25,23 @@ define(function (require) {
 
       name: 'List',
 
-      'adds elements passed to its constructor': function () {
+      'adds items passed to its constructor': function () {
         var list1 = new List([ '3' ]);
         expect(list1.length).to.equal(1);
         expect(list1[0]).to.equal('3');
 
         var list2 = new List([ '3', 3 ]);
+        expect(list2.length).to.equal(2);
+        expect(list2[0]).to.equal('3');
+        expect(list2[1]).to.equal(3);
+      },
+
+      'accepts another List as a provider of items': function () {
+        var list1 = new List(new List([ '3' ]));
+        expect(list1.length).to.equal(1);
+        expect(list1[0]).to.equal('3');
+
+        var list2 = new List(new List([ '3', 3 ]));
         expect(list2.length).to.equal(2);
         expect(list2[0]).to.equal('3');
         expect(list2[1]).to.equal(3);
@@ -445,7 +456,7 @@ define(function (require) {
           expect(lengthChangedCallback).to.have.been.calledWith(0, 1, list);
         },
 
-        'does not emit events if no element has been removed': function () {
+        'does not emit events if no item has been removed': function () {
           var list = new List();
           var itemRemovedCallback = sinon.spy();
           var lengthChangedCallback = sinon.spy();
