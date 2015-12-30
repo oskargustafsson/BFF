@@ -1,6 +1,6 @@
 {
   "name": "BFF",
-  "description": "Basic Frontent Foundation - modules for JS front-end development",
+  "description": "Basic Front end Foundation - modules for JS front end development",
   "author": "Oskar Gustafsson <oskargustafsson88@gmail.com>",
   "devDependencies": {
     "chai": "^3.2.0",

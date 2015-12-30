@@ -55,6 +55,7 @@ define(function () {
      * @returns {undefined}
      */
     listenTo: function (eventEmitters, eventName, callback, context) {
+      if (RUNTIME_CHECKS && !eventEmitters) { throw 'First argument must not be falsy'; }
       // Convenience functionality that allows you to listen to all items in an Array or NodeList
       // BFF Lists have this kind of functionality built it, so don't handle that case here
       eventEmitters = eventEmitters instanceof Array ||
