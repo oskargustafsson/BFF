@@ -45,7 +45,7 @@ define([
    */
   var LENGTH_CHANGED_EVENT = 'change:length';
 
-  var ITEM_EVENT_PREFIX = /^item:/;
+  var ITEM_EVENT_TOKEN_MATCHER = /item:/;
 
   function isEmitter(obj) { return !!(obj && obj.addEventListener); } // Quack!
 
@@ -56,10 +56,9 @@ define([
     }
 
     var eventNames = self.__private.listeningToItemEvents;
-    var nEventNames = eventNames.length;
-    for (var i = 0; i < nEventNames; ++i) {
+    for (var i = 0, nEventNames = eventNames.length; i < nEventNames; ++i) {
       var eventName = eventNames[i];
-      var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
+      var strippedEventName = eventName.replace(ITEM_EVENT_TOKEN_MATCHER, '');
       reemitItemEvent(self, item, strippedEventName, eventName);
     }
 
@@ -438,11 +437,11 @@ define([
   };
 
   List.prototype.addEventListener = function (eventName) {
-    if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }
+    if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
 
     this.__private.listeningToItemEvents.push(eventName);
 
-    var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
+    var strippedEventName = eventName.replace(ITEM_EVENT_TOKEN_MATCHER, '');
     for (var i = 0, length = this.length; i < length; ++i) {
       var item = this[i];
       isEmitter(item) && reemitItemEvent(this, item, strippedEventName, eventName);
@@ -450,12 +449,12 @@ define([
   };
 
   List.prototype.removeEventListener = function (eventName) {
-    if (!ITEM_EVENT_PREFIX.test(eventName)) { return; }
+    if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
 
     var pos = this.__private.listeningToItemEvents.indexOf(eventName);
     pos === -1 || this.__private.listeningToItemEvents.splice(pos, 1);
 
-    var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
+    var strippedEventName = eventName.replace(ITEM_EVENT_TOKEN_MATCHER, '');
     this.stopListening(undefined, strippedEventName);
   };
 

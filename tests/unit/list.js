@@ -14,11 +14,6 @@ define(function (require) {
 
   chai.use(sinonChai);
 
-  // TESTS
-  // Can listen to item events (if they expose addEventListener & removeEventListener)
-  // Can have properties, just like Records, including dependencies
-  // List properties should trigger events when changed
-
   registerSuite(function () {
 
     return {
@@ -133,11 +128,10 @@ define(function (require) {
           expect(nDoneChangedCallback).to.have.been.calledTwice;
           expect(nDoneChangedCallback).to.have.been.calledWith(2, 1, list);
 
-          //list[0].done = true;
+          list[0].done = true;
 
-          // FAILS
-          //expect(nDoneChangedCallback).to.have.been.calledThrice;
-          //expect(nDoneChangedCallback).to.have.been.calledWith(3, 2, list);
+          expect(nDoneChangedCallback).to.have.been.calledThrice;
+          expect(nDoneChangedCallback).to.have.been.calledWith(3, 2, list);
         },
 
       },
