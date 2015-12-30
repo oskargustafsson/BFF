@@ -7,21 +7,21 @@ General
 
 List
 ----
+- Fix broken UTs
 - Add custom properties (no setters, just getters)
-- Add dependencies to properties
+- Unit tests for all the extra functions
+- Modify functions so that they stay closer to their Array counterparts (sacrifice chainability)
+- Make constructor accept a List a second arg (not just Array)
+- UT negative index for .splice
+- Events "items:added", "items:replaced", "items:removed"
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
 - Option to mixin lodash functions
   - or just implement some lodash funcs like union and intersection
 - Throw error message if user tries to assign to list[-1] or list[list.length]
 - Explore if there is a way to check if the user assigns outside of the array and throw an error.
+- Add dependencies to properties
   - Using Proxies? (FF + IE12)
   - Listening for internal Array "length" changes?
-- Unit tests for all the extra functions
-- Modify functions so that they stay closer to their Array counterparts (sacrifice chainability)
-- Rename pushArray to pushAll (it accepts a List as well as an Array)
-- Make constructor accept a List a second arg (not just Array)
-- UT negative index for .splice
-- Events "items:added", "items:replaced", "items:removed"
 
 Record
 ------

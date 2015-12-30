@@ -220,7 +220,7 @@ define([
     }
     this.length = this.__private.array.length;
 
-    return this;
+    return this.length;
   };
 
   /**
@@ -386,7 +386,7 @@ define([
     return this.splice(0, this.length);
   };
 
-  List.prototype.pushArray = List.prototype.concatMut = function (items) {
+  List.prototype.pushAll = List.prototype.concatMut = function (items) {
     items.length && this.push.apply(this, items);
     return this.length;
   };

@@ -81,7 +81,7 @@ module.exports = function (grunt) {
 
     watch: {
       files: 'src/*.js',
-      tasks: [ 'jsdoc' ],
+      tasks: [ 'jsdoc', 'uglify' ],
       options: {
         spawn: false,
       },

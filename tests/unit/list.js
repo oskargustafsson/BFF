@@ -282,9 +282,19 @@ define(function (require) {
 
       '"push" method': {
 
-        'is chainable': function () {
-          var list = new List();
-          expect(list.push(4)).to.equal(list);
+        'returns the new length of the list': function () {
+          var list = new List([ 'a', 1 ]);
+          expect(list.length).to.equal(2);
+          expect(list.push('b', 2)).to.equal(4);
+        },
+
+        'appends the new items to the end of the list': function () {
+          var list = new List([ 'a', 1 ]);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal(1);
+          list.push('b', 2);
+          expect(list[2]).to.equal('b');
+          expect(list[3]).to.equal(2);
         },
 
         'emits one itemAdded event per added item and one change:length event': function () {
@@ -303,6 +313,57 @@ define(function (require) {
           expect(lengthChangedCallback).to.have.been.calledWith(3, 2, list);
 
           list.push('d', 'e');
+
+          expect(itemAddedCallback).to.have.been.calledThrice;
+          expect(list[3]).to.equal('d');
+          expect(itemAddedCallback).to.have.been.calledWith('d', 3, list);
+          expect(list[4]).to.equal('e');
+          expect(itemAddedCallback).to.have.been.calledWith('e', 4, list);
+          expect(lengthChangedCallback).to.have.been.calledTwice;
+          expect(lengthChangedCallback).to.have.been.calledWith(5, 3, list);
+        },
+
+      },
+
+      '"pushAll" method': {
+
+        'returns the new length of the list': function () {
+          var list = new List([ 'a', 1 ]);
+          expect(list.length).to.equal(2);
+          expect(list.pushAll([ 'b', 2 ])).to.equal(4);
+        },
+
+        'appends the new items to the end of the list': function () {
+          var list = new List([ 'a', 1 ]);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal(1);
+          list.pushAll([ 'b', 2 ]);
+          expect(list[2]).to.equal('b');
+          expect(list[3]).to.equal(2);
+        },
+
+        'accepts a List as argument': function () {
+          var list = new List([ 'a', 1 ]);
+          expect(list.length).to.equal(2);
+          expect(list.pushAll(new List([ 'b', 2 ]))).to.equal(4);
+        },
+
+        'emits one itemAdded event per added item and one change:length event': function () {
+          var list = new List([ 'a', 'b' ]);
+          var itemAddedCallback = sinon.spy();
+          var lengthChangedCallback = sinon.spy();
+
+          list.addEventListener('item:added', itemAddedCallback);
+          list.addEventListener('change:length', lengthChangedCallback);
+          list.pushAll([ 'c' ]);
+
+          expect(list[2]).to.equal('c');
+          expect(itemAddedCallback).to.have.been.calledOnce;
+          expect(itemAddedCallback).to.have.been.calledWith('c', 2, list);
+          expect(lengthChangedCallback).to.have.been.calledOnce;
+          expect(lengthChangedCallback).to.have.been.calledWith(3, 2, list);
+
+          list.pushAll([ 'd', 'e' ]);
 
           expect(itemAddedCallback).to.have.been.calledThrice;
           expect(list[3]).to.equal('d');
