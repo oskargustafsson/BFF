@@ -304,6 +304,8 @@ define(function (require) {
           expect(list[0]).to.equal('a');
           expect(list[1]).to.equal(1);
           list.push('b', 2);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal(1);
           expect(list[2]).to.equal('b');
           expect(list[3]).to.equal(2);
         },
@@ -349,6 +351,8 @@ define(function (require) {
           expect(list[0]).to.equal('a');
           expect(list[1]).to.equal(1);
           list.pushAll([ 'b', 2 ]);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal(1);
           expect(list[2]).to.equal('b');
           expect(list[3]).to.equal(2);
         },
@@ -389,9 +393,23 @@ define(function (require) {
 
       '"unshift" method': {
 
-        'is chainable': function () {
-          var list = new List();
-          expect(list.unshift(4)).to.equal(list);
+        'returns the new length of the list': function () {
+          var list = new List([ 'a', 1 ]);
+          expect(list.length).to.equal(2);
+          list.unshift('b');
+          list.unshift(2);
+          expect(list.length).to.equal(4);
+        },
+
+        'prepends items to the List': function () {
+          var list = new List([ 'a', 1 ]);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal(1);
+          list.unshift('b', 2);
+          expect(list[0]).to.equal('b');
+          expect(list[1]).to.equal(2);
+          expect(list[2]).to.equal('a');
+          expect(list[3]).to.equal(1);
         },
 
         'emits one itemAdded event per added item and one change:length event': function () {

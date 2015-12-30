@@ -91,6 +91,7 @@ define([
   }
 
   function makeSetter(index) {
+    // TODO: Investigate if this is really a good idea, performance wise
     return function setter(val) { this.splice(index, 1, val); };
   }
 
@@ -107,13 +108,6 @@ define([
   function delegateCreator(funcName) {
     return function () {
       return new List(this.__private.array[funcName].apply(this.__private.array, arguments));
-    };
-  }
-
-  function delegateChainable(funcName) {
-    return function () {
-      this.__private.array[funcName].apply(this.__private.array, arguments);
-      return this;
     };
   }
 
@@ -207,11 +201,12 @@ define([
    * @arg {...any} item - Each item argument will be pushed onto the List.
    * @emits module:bff/list#change:length
    * @emits module:bff/list#item:added
-   * @returns {module:bff/list} Self reference
+   * @returns {Number} Updated List length
    */
   List.prototype.push = function () {
     var nItems = arguments.length;
-    if (nItems === 0) { return this; }
+    if (nItems === 0) { return this.length; }
+
     var oldLength = this.length;
     this.__private.array.push.apply(this.__private.array, arguments);
 
@@ -228,11 +223,12 @@ define([
    * @arg {...any} item - Each item argument will be pushed onto the List.
    * @emits module:bff/list#change:length
    * @emits module:bff/list#item:added
-   * @returns {module:bff/list} Self reference
+   * @returns {Number} Updated List length
    */
   List.prototype.unshift = function () {
     var nItems = arguments.length;
-    if (nItems === 0) { return this; }
+    if (nItems === 0) { return this.length; }
+
     this.__private.array.unshift.apply(this.__private.array, arguments);
 
     for (var i = 0; i < nItems; ++i) {
@@ -240,7 +236,7 @@ define([
     }
     this.length = this.__private.array.length;
 
-    return this;
+    return this.length;
   };
 
   /**
@@ -351,12 +347,8 @@ define([
   List.prototype.reduce = Array.prototype.reduce;
 
   // TODO: do as above
-  [ 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduceRight' ].forEach(function (funcName) {
+  [ 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduceRight', 'sort', 'reverse' ].forEach(function (funcName) {
     List.prototype[funcName] = delegate(funcName);
-  });
-
-  [ 'sort', 'reverse' ].forEach(function (funcName) {
-    List.prototype[funcName] = delegateChainable(funcName);
   });
 
   [ 'filter', 'concat', 'slice', 'map' ].forEach(function (funcName) {
@@ -415,23 +407,20 @@ define([
   };
 
   List.prototype.mapMut = function (callback, thisArg) {
-    var length = this.length;
-    for (var i = 0; i < length; ++i) {
+    for (var i = 0, length = this.length; i < length; ++i) {
       this[i] = callback.call(thisArg, this[i], i, this);
     }
     return this;
   };
 
   List.prototype.find = function (callback, thisArg) {
-    var length = this.length;
-    for (var i = 0; i < length; ++i) {
+    for (var i = 0, length = this.length; i < length; ++i) {
       if (callback.call(thisArg, this[i], i, this)) { return this[i]; }
     }
   };
 
   List.prototype.findIndex = function (callback, thisArg) {
-    var length = this.length;
-    for (var i = 0; i < length; ++i) {
+    for (var i = 0, length = this.length; i < length; ++i) {
       if (callback.call(thisArg, this[i], i, this)) { return i; }
     }
     return -1;
@@ -452,8 +441,7 @@ define([
     this.__private.listeningToItemEvents.push(eventName);
 
     var strippedEventName = eventName.replace(ITEM_EVENT_PREFIX, '');
-    var length = this.length;
-    for (var i = 0; i < length; ++i) {
+    for (var i = 0, length = this.length; i < length; ++i) {
       var item = this[i];
       isEmitter(item) && reemitItemEvent(this, item, strippedEventName, eventName);
     }
