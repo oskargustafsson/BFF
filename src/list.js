@@ -355,27 +355,36 @@ define([
         List.prototype[funcName] = delegate(funcName);
       });
 
-  [ 'filter', 'concat', 'slice', 'map' ]
+  [ 'filter', 'slice', 'map' ]
       .forEach(function (funcName) {
         List.prototype[funcName] = delegateCreator(funcName);
       });
 
+  List.prototype.concat = function () {
+    for (var i = 0, n = arguments.length; i < n; ++i) {
+      var argument = arguments[i];
+      if (argument instanceof List) {
+        arguments[i] = argument.toArray();
+      }
+    }
+    return new List(this.__private.array.concat.apply(this.__private.array, arguments));
+  };
+
   List.prototype.filterMut = function (predicate, thisArg) {
-    var length = this.length;
-    var removedItems = [];
     var removeCount = 0;
-    for (var i = length - 1; i >= -1; --i) {
-      if (i > -1 && predicate.call(thisArg, this[i], i, this)) {
+    for (var i = this.length - 1; i >= -1; --i) {
+      if (i > -1 && !predicate.call(thisArg, this[i], i, this)) {
         removeCount++;
       } else if (removeCount) {
-        removedItems.push.apply(this, this.splice(i + 1, removeCount));
+        this.splice(i + 1, removeCount);
         removeCount = 0;
       }
     }
-    return removedItems;
+    return this;
   };
+
   List.prototype.remove = function (item) {
-    return this.filterMut(function (listItem) { return item === listItem; });
+    return this.filterMut(function (listItem) { return item !== listItem; });
   };
 
   List.prototype.clear = function () {
@@ -397,7 +406,7 @@ define([
     start = (start >= 0) ? start : Math.max(0, length + start);
 
     // Handle negative value for "end"
-    var upTo = (typeof end === 'number') ? Math.min(end, length) : length;
+    var upTo = ((typeof end === 'number') ? Math.min(end, length) : length) - 1;
     end < 0 && (upTo = length + end);
 
     // Actual expected size of the slice
@@ -407,6 +416,7 @@ define([
       this.splice(0, start);
       this.splice(upTo, length - upTo);
     }
+
     return this;
   };
 
@@ -431,6 +441,7 @@ define([
   };
 
   List.prototype.includes = function (item, fromIndex) {
+    fromIndex = fromIndex || 0;
     var index = this.__private.array.indexOf(item);
     return index !== -1 && index >= fromIndex;
   };

@@ -738,35 +738,202 @@ define(function (require) {
 
       },
 
-      '"filter" method': {},
+      '"filter" method': {
 
-      '"concat" method': {},
+        'mirrors Array.filter behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var newList = list.filter(function (item) {
+            return item !== 'b';
+          });
+          expect(newList.length).to.equal(2);
+          expect(newList[0]).to.equal('a');
+          expect(newList[1]).to.equal('c');
+        },
 
-      '"slice" method': {},
+      },
 
-      '"map" method': {},
+      '"concat" method': {
 
-      '"mapMut" method': {},
+        'mirrors Array.concat behavior': function () {
+          var list = new List([ 'a', 'b' ]);
+          var array = [ 'c', 'd' ];
+          var newList = list.concat(array);
+          expect(newList.length).to.equal(4);
+          expect(newList[0]).to.equal('a');
+          expect(newList[1]).to.equal('b');
+          expect(newList[2]).to.equal('c');
+          expect(newList[3]).to.equal('d');
+        },
 
-      '"filterMut" method': {},
+        'works with Lists as well': function () {
+          var list1 = new List([ 'a', 'b' ]);
+          var list2 = new List([ 'c', 'd' ]);
+          var newList = list1.concat(list2);
+          expect(newList.length).to.equal(4);
+          expect(newList[0]).to.equal('a');
+          expect(newList[1]).to.equal('b');
+          expect(newList[2]).to.equal('c');
+          expect(newList[3]).to.equal('d');
+        },
 
-      '"remove" method': {},
+      },
 
-      '"clear" method': {},
+      '"slice" method': {
 
-      '"sliceMut" method': {},
+        'mirrors Array.slice behavior': function () {
+          var list = new List([ 'a', 'b', 'c', 'd' ]);
+          var newList = list.slice(1, 3);
+          expect(newList.length).to.equal(2);
+          expect(newList[0]).to.equal('b');
+          expect(newList[1]).to.equal('c');
+        },
 
-      '"find" method': {},
+      },
 
-      '"findIndex" method': {},
+      '"map" method': {
 
-      '"includes" method': {},
+        'mirrors Array.map behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var newList = list.map(function (item) {
+            return item.charCodeAt(0);
+          });
+          expect(newList[0]).to.equal(97);
+          expect(newList[1]).to.equal(98);
+          expect(newList[2]).to.equal(99);
+        },
 
-      '"toArray" method': {},
+      },
 
-      '"addEventListener" method': {},
+      '"mapMut" method': {
 
-      '"removeEventListener" method': {},
+        'maps all the values of the List in place': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var newList = list.mapMut(function (item) {
+            return item.charCodeAt(0);
+          });
+          expect(list).to.equal(newList);
+          expect(newList[0]).to.equal(97);
+          expect(newList[1]).to.equal(98);
+          expect(newList[2]).to.equal(99);
+        },
+
+      },
+
+      '"filterMut" method': {
+
+        'filters all matching values of the list in place': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var newList = list.filterMut(function (item) {
+            return item !== 'b';
+          });
+          expect(newList).to.equal(list);
+          expect(newList.length).to.equal(2);
+          expect(newList[0]).to.equal('a');
+          expect(newList[1]).to.equal('c');
+        },
+
+      },
+
+      '"remove" method': {
+
+        'removes all instances of the item from the List': function () {
+          var list = new List([ 'a', 'b', 'c', 'b' ]);
+          list.remove('b');
+          expect(list.length).to.equal(2);
+          expect(list[0]).to.equal('a');
+          expect(list[1]).to.equal('c');
+        },
+
+      },
+
+      '"clear" method': {
+
+        'removes all items from the List': function () {
+          var list = new List([ 'a', 'b' ]);
+          list.clear();
+          expect(list.length).to.equal(0);
+        },
+
+      },
+
+      '"sliceMut" method': {
+
+        'removes all items except for those within the provided range': function () {
+          var list = new List([ 'a', 'b', 'c', 'b' ]);
+          list.sliceMut(1, 3);
+          expect(list.length).to.equal(2);
+          expect(list[0]).to.equal('b');
+          expect(list[1]).to.equal('c');
+        },
+
+      },
+
+      '"find" method': {
+
+        'mirrors Array.find behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var item = list.find(function (item) {
+            return item === 'b';
+          });
+          expect(item).to.equal('b');
+        },
+
+      },
+
+      '"findIndex" method': {
+
+        'mirrors Array.findIndex behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          var item = list.findIndex(function (item) {
+            return item === 'b';
+          });
+          expect(item).to.equal(1);
+        },
+
+      },
+
+      '"includes" method': {
+
+        'mirrors Array.includes behavior': function () {
+          var list = new List([ 'a', 'b', 'c' ]);
+          expect(list.includes('b')).to.equal(true);
+          expect(list.includes('d')).to.equal(false);
+        },
+
+      },
+
+      '"toArray" method': {
+
+        'returns an Array containing all the items of the List': function () {
+          var list = new List([ 'a', 'b' ]);
+          var array = list.toArray();
+          expect(array).not.to.equal(list);
+          expect(array.length).to.equal(2);
+          expect(array[0]).to.equal('a');
+          expect(array[1]).to.equal('b');
+        },
+
+      },
+
+      '"removeEventListener" method': {
+
+        'removes event listeners': function () {
+          var emitterItem = extend({}, eventEmitter);
+          var list = new List([ emitterItem ]);
+          var callback = sinon.spy();
+
+          list.addEventListener('item:customEvent', callback);
+          emitterItem.emit('customEvent');
+
+          expect(callback).to.have.been.calledOnce;
+
+          list.removeEventListener('item:customEvent');
+          emitterItem.emit('customEvent');
+
+          expect(callback).to.have.been.calledOnce;
+        },
+
+      },
 
       '"length" property': {
 
