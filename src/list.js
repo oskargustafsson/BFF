@@ -472,6 +472,10 @@ define([
     this.stopListening(undefined, strippedEventName);
   };
 
+  List.prototype.bindSchema = function (schema) {
+    return List.bind(null, schema);
+  };
+
   extend(List.prototype, eventEmitter, { 'function': 'merge' });
   extend(List.prototype, eventListener);
 

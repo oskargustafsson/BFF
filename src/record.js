@@ -189,6 +189,10 @@ define([
     return JSON.stringify(obj);
   };
 
+  Record.prototype.bindSchema = function (schema) {
+    return Record.bind(null, schema);
+  };
+
   extend(Record.prototype, eventEmitter);
   extend(Record.prototype, eventListener);
 
