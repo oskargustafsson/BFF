@@ -20,7 +20,6 @@ List
 
 Record
 ------
-- Dependencies are broken. Reimplement as follows: Dependent properties listens to prechange on their dependencies and stores their current values. Dependent properties also listens to change on their dependencies and triggers a change event, if they actually changed.
 - How to destroy a Record?
 
 Event emitter
@@ -36,6 +35,7 @@ Extend
 
 View
 ----
+- listenTo('selector string', 'event-name', function)
 - DOM diffing
   - https://github.com/skatejs/dom-diff
   - https://github.com/fiduswriter/diffDOM

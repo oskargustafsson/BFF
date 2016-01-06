@@ -68,9 +68,9 @@ define(function (require) {
           record.race = 'human';
 
           expect(prechangeCallback).to.have.been.calledOnce;
-          expect(prechangeCallback).to.have.been.calledWith('race', undefined, 'race', 'human', record);
+          expect(prechangeCallback).to.have.been.calledWith('race', undefined, record);
           expect(prechangeRaceCallback).to.have.been.calledOnce;
-          expect(prechangeRaceCallback).to.have.been.calledWith(undefined, 'race', 'human', record);
+          expect(prechangeRaceCallback).to.have.been.calledWith(undefined, record);
           expect(changeCallback).to.have.been.calledOnce;
           expect(changeCallback).to.have.been.calledWith('race', 'human', undefined, record);
           expect(changeNameCallback).to.have.been.calledOnce;
@@ -84,9 +84,9 @@ define(function (require) {
           record.race = 'dancer';
 
           expect(prechangeCallback).to.have.been.calledTwice;
-          expect(prechangeCallback).to.have.been.calledWith('race', 'human', 'race', 'dancer', record);
+          expect(prechangeCallback).to.have.been.calledWith('race', 'human', record);
           expect(prechangeRaceCallback).to.have.been.calledTwice;
-          expect(prechangeRaceCallback).to.have.been.calledWith('human', 'race', 'dancer', record);
+          expect(prechangeRaceCallback).to.have.been.calledWith('human', record);
           expect(changeCallback).to.have.been.calledTwice;
           expect(changeCallback).to.have.been.calledWith('race', 'dancer', 'human', record);
           expect(changeNameCallback).to.have.been.calledTwice;
@@ -95,7 +95,7 @@ define(function (require) {
           record.name = 'bob';
 
           expect(prechangeCallback).to.have.been.calledThrice;
-          expect(prechangeCallback).to.have.been.calledWith('name', undefined, 'name', 'bob', record);
+          expect(prechangeCallback).to.have.been.calledWith('name', undefined, record);
           expect(prechangeRaceCallback).to.have.been.calledTwice;
           expect(changeCallback).to.have.been.calledThrice;
           expect(changeCallback).to.have.been.calledWith('name', 'bob', undefined, record);
@@ -110,16 +110,16 @@ define(function (require) {
           var prechangeCallback = sinon.spy();
           var changeCallback = sinon.spy();
 
-          record.addEventListener('change:race', prechangeCallback);
+          record.addEventListener('prechange:race', prechangeCallback);
           record.addEventListener('change:race', changeCallback);
           record.race = 'human';
 
-          expect(prechangeCallback).not.to.have.been.called;
+          expect(prechangeCallback).to.have.been.calledOnce;
           expect(changeCallback).not.to.have.been.called;
 
           record.race = 'human';
 
-          expect(prechangeCallback).not.to.have.been.called;
+          expect(prechangeCallback).to.have.been.calledTwice;
           expect(changeCallback).not.to.have.been.called;
         },
 
@@ -153,15 +153,15 @@ define(function (require) {
 
             expect(record.fullName).to.equal('Boutros Boutros-Ghali');
             expect(prechangeCallback).to.have.been.calledTwice;
-            expect(prechangeCallback).to.have.been.calledWith('lastName', 'Ghali', 'lastName', 'Boutros-Ghali', record);
+            expect(prechangeCallback).to.have.been.calledWith('lastName', 'Ghali', record);
             expect(prechangeCallback).to.have.been.calledWith(
-                'fullName', 'Boutros Ghali', 'lastName', 'Boutros-Ghali', record);
+                'fullName', 'Boutros Ghali', record);
             expect(fullNamePrechangeCallback).to.have.been.calledOnce;
-            expect(fullNamePrechangeCallback).to.have.been.calledWith(
-                'Boutros Ghali', 'lastName', 'Boutros-Ghali', record);
+            expect(fullNamePrechangeCallback).to.have.been.calledWith('Boutros Ghali', record);
             expect(changeCallback).to.have.been.calledTwice;
             expect(changeCallback).to.have.been.calledWith('lastName', 'Boutros-Ghali', 'Ghali', record);
-            expect(changeCallback).to.have.been.calledWith('fullName', 'Boutros Boutros-Ghali', 'Boutros Ghali', record);
+            expect(changeCallback).to.have.been.calledWith(
+                'fullName', 'Boutros Boutros-Ghali', 'Boutros Ghali', record);
             expect(fullNameChangeCallback).to.have.been.calledOnce;
             expect(fullNameChangeCallback).to.have.been.calledWith('Boutros Boutros-Ghali', 'Boutros Ghali', record);
 
@@ -169,13 +169,10 @@ define(function (require) {
 
             expect(record.fullName).to.equal('Boutros Boutros Boutros-Ghali');
             expect(prechangeCallback).to.have.callCount(4);
-            expect(prechangeCallback).to.have.been.calledWith(
-                'firstName', 'Boutros', 'firstName', 'Boutros Boutros', record);
-            expect(prechangeCallback).to.have.been.calledWith(
-                'fullName', 'Boutros Boutros-Ghali', 'firstName', 'Boutros Boutros', record);
+            expect(prechangeCallback).to.have.been.calledWith('firstName', 'Boutros', record);
+            expect(prechangeCallback).to.have.been.calledWith('fullName', 'Boutros Boutros-Ghali', record);
             expect(fullNamePrechangeCallback).to.have.been.calledTwice;
-            expect(fullNamePrechangeCallback).to.have.been.calledWith(
-                'Boutros Boutros-Ghali', 'firstName', 'Boutros Boutros', record);
+            expect(fullNamePrechangeCallback).to.have.been.calledWith('Boutros Boutros-Ghali', record);
             expect(changeCallback).to.have.callCount(4);
             expect(changeCallback).to.have.been.calledWith('firstName', 'Boutros Boutros', 'Boutros', record);
             expect(changeCallback).to.have.been.calledWith(
@@ -185,7 +182,7 @@ define(function (require) {
                 'Boutros Boutros Boutros-Ghali', 'Boutros Boutros-Ghali', record);
           },
 
-          'does not trigger events if the dependent does not actually change': function () {
+          'does not trigger change events if the dependent does not actually change': function () {
             Record = recordFactory({
               firstName: { type: 'string', defaultValue: 'Boutros' },
               lastName: { type: 'string', defaultValue: 'boutros-ghali' },
@@ -208,7 +205,7 @@ define(function (require) {
             record.lastName = 'Boutros-Ghali';
 
             expect(record.fullName).to.equal('BOUTROS BOUTROS-GHALI');
-            expect(prechangeCallback).not.to.have.been.called;
+            expect(prechangeCallback).to.have.been.calledOnce;
             expect(changeCallback).not.to.have.been.called;
           },
 
@@ -263,16 +260,16 @@ define(function (require) {
             expect(record.third).to.equal('bbbb');
 
             expect(prechangeCallback).to.have.been.calledThrice;
-            expect(prechangeCallback).to.have.been.calledWith('first', 'a', 'first', 'b', record);
-            expect(prechangeCallback).to.have.been.calledWith('second', 'aa', 'first', 'b', record);
-            expect(prechangeCallback).to.have.been.calledWith('third', 'aaaa', 'first', 'b', record);
+            expect(prechangeCallback).to.have.been.calledWith('first', 'a', record);
+            expect(prechangeCallback).to.have.been.calledWith('second', 'aa', record);
+            expect(prechangeCallback).to.have.been.calledWith('third', 'aaaa', record);
 
             expect(firstPrechangeCallback).to.have.been.calledOnce;
-            expect(firstPrechangeCallback).to.have.been.calledWith('a', 'first', 'b', record);
+            expect(firstPrechangeCallback).to.have.been.calledWith('a', record);
             expect(secondPrechangeCallback).to.have.been.calledOnce;
-            expect(secondPrechangeCallback).to.have.been.calledWith('aa', 'first', 'b', record);
+            expect(secondPrechangeCallback).to.have.been.calledWith('aa', record);
             expect(thirdPrechangeCallback).to.have.been.calledOnce;
-            expect(thirdPrechangeCallback).to.have.been.calledWith('aaaa', 'first', 'b', record);
+            expect(thirdPrechangeCallback).to.have.been.calledWith('aaaa', record);
 
             expect(changeCallback).to.have.been.calledThrice;
             expect(changeCallback).to.have.been.calledWith('first', 'b', 'a', record);

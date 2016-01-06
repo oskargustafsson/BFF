@@ -29,28 +29,22 @@ define([
 
     // TODO: make two different setter functions (in outer scope) and select (+bind)
     // one of the depending of whether the propery has any dependers
-    return function setter(canonicalVal) {
+    return function setter(val) {
       // If there is a custom setter, use it to transform the value
-      propSchema.setter && (canonicalVal = propSchema.setter.call(this, canonicalVal));
+      propSchema.setter && (val = propSchema.setter.call(this, val));
 
       // Input validation
-      RUNTIME_CHECKS && validateInput(canonicalVal, propName, propSchema);
+      RUNTIME_CHECKS && validateInput(val, propName, propSchema);
 
-      // Do a "dry-run" to test if the value would actually change
       var oldVal = this[propName];
-      var oldCanonicalVal = this.__private.values[propName];
-      this.__private.values[propName] = canonicalVal;
 
-      // If the value change did not affect the public value, we don't trigger any events
+      this.emit(PRECHANGE_EVENT, propName, oldVal, this);
+      this.emit(MY_PRECHANGE_EVENT, oldVal, this);
+
+      this.__private.values[propName] = val;
+
+      // If the value change did not affect the public value, we don't trigger any change events
       if (this[propName] === oldVal) { return; }
-
-      // Switch the value back and do things for real
-      this.__private.values[propName] = oldCanonicalVal;
-
-      this.emit(PRECHANGE_EVENT, propName, oldVal, propName, canonicalVal, this);
-      this.emit(MY_PRECHANGE_EVENT, oldVal, propName, canonicalVal, this);
-
-      this.__private.values[propName] = canonicalVal;
 
       var newVal = this[propName];
       this.emit(CHANGE_EVENT, propName, newVal, oldVal, this);
@@ -63,40 +57,6 @@ define([
         function getter() { return propSchema.getter.call(this, this.__private.values[propName]); } :
         function getter() { return this.__private.values[propName]; };
   }
-
-  var triggerDependerPrechangeEvents = function (dependerPropNames, currentVal, triggeringPropName, canonicalVal) {
-    for (var i = 0; i < dependerPropNames.length; ++i) {
-      var propName = dependerPropNames[i];
-      // Do a "dry-run" to test if the value would actually change
-      var oldVal = this.__private.previousValues[propName] = this[propName];
-
-      var oldCanonicalTriggeringPropVal = this.__private.values[triggeringPropName];
-      this.__private.values[triggeringPropName] = canonicalVal;
-
-      // If the value change did not affect the depender's public value, we don't trigger any events
-      var noChange = this[propName] === oldVal;
-
-      this.__private.values[triggeringPropName] = oldCanonicalTriggeringPropVal;
-
-      if (noChange) { continue; }
-
-      this.emit(PRECHANGE_EVENT, propName, oldVal, triggeringPropName, canonicalVal, this);
-      this.emit(PRECHANGE_EVENT + ':' + propName, oldVal, triggeringPropName, canonicalVal, this);
-    }
-  };
-
-  var triggerDependerChangeEvents = function (dependerPropNames) {
-    for (var i = 0; i < dependerPropNames.length; ++i) {
-      var propName = dependerPropNames[i];
-      var prevValue = this.__private.previousValues[propName];
-      var value = this[propName];
-
-      if (value === prevValue) { continue; }
-
-      this.emit(CHANGE_EVENT, propName, value, prevValue, this);
-      this.emit(CHANGE_EVENT + ':' + propName, value, prevValue, this);
-    }
-  };
 
   function Record(schema, values, options) {
     this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
@@ -113,31 +73,36 @@ define([
       Object.preventExtensions(options);
     }
 
-    var propName, propertySchema;
+    var propName, propertySchema, i;
     var propertiesUnion = {};
-    var dependencies = {};
-    var dependencyPropName, dependency, i;
 
-    // Set up dependers and remove dependencies
+    var onPreChangeEvent = function (propName) {
+      var oldVal = this.__private.previousValues[propName] = this[propName];
+
+      this.emit(PRECHANGE_EVENT, propName, oldVal, this);
+      this.emit(PRECHANGE_EVENT + ':' + propName, oldVal, this);
+    };
+    var onChangeEvent = function (propName) {
+      var oldVal = this.__private.previousValues[propName];
+      var newVal = this[propName];
+
+      // If the value change did not affect the public value, we don't trigger any change events
+      if (newVal === oldVal) { return; }
+
+      this.emit(CHANGE_EVENT, propName, newVal, oldVal, this);
+      this.emit(CHANGE_EVENT + ':' + propName, newVal, oldVal, this);
+    };
+
     for (propName in schema) {
       propertySchema = schema[propName] = schema[propName] || {};
 
       if (!propertySchema.dependencies) { continue; }
 
       for (i = 0; i < propertySchema.dependencies.length; ++i) {
-        dependencyPropName = propertySchema.dependencies[i];
-        dependency = dependencies[dependencyPropName] = dependencies[dependencyPropName] || {};
-        dependency.dependers = dependency.dependers || [];
-        dependency.dependers.push(propName);
+        var dependencyPropName = propertySchema.dependencies[i];
+        this.listenTo(this, PRECHANGE_EVENT + ':' + dependencyPropName, onPreChangeEvent.bind(this, propName));
+        this.listenTo(this, CHANGE_EVENT + ':' + dependencyPropName, onChangeEvent.bind(this, propName));
       }
-    }
-
-    for (propName in dependencies) {
-      dependency = dependencies[propName];
-      this.listenTo(this,  PRECHANGE_EVENT + ':' + propName,
-          triggerDependerPrechangeEvents.bind(this, dependency.dependers));
-      this.listenTo(this,  CHANGE_EVENT + ':' + propName,
-          triggerDependerChangeEvents.bind(this, dependency.dependers));
     }
 
     var props = {};
