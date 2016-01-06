@@ -36,11 +36,25 @@ module.exports = function (grunt) {
           dest: 'dist/dev',
         } ],
         options: {
-          beautify: true,
+          beautify: {
+            beautify: true,
+            indent_level: 2,
+            width: 120,
+            bracketize: true,
+            screw_ie8: true,
+          },
           mangle: false,
-          screwIE8: true,
           quoteStyle: 1,
           compress: {
+            screw_ie8: true,
+            sequences: false,
+            conditionals: false,
+            booleans: false,
+            loops: false,
+            if_return: false,
+            join_vars: false,
+            drop_debugger: false,
+            drop_console: false,
             global_defs: {
               RUNTIME_CHECKS: true,
             },
@@ -56,10 +70,12 @@ module.exports = function (grunt) {
           dest: 'dist/prod',
         } ],
         options: {
-          screwIE8: true,
           quoteStyle: 1,
           drop_console: true,
           compress: {
+            screw_ie8: true,
+            drop_debugger: true,
+            drop_console: true,
             global_defs: {
               RUNTIME_CHECKS: false,
             },
