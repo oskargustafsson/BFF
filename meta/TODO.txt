@@ -7,6 +7,7 @@ General
 
 List
 ----
+- bindSchema -> makeSubclass
 - Unit tests for all the extra functions
 - Events "items:added", "items:replaced", "items:removed"
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
@@ -20,6 +21,8 @@ List
 
 Record
 ------
+- Define properties on prototype instead of directly on object
+- bindSchema -> makeSubclass
 - How to destroy a Record?
 
 Event emitter

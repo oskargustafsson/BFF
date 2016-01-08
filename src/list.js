@@ -43,7 +43,10 @@ define([
    * @arg {number} oldLength - The previous length of the List.
    * @arg {module:bff/list} list - The List whose length has changed.
    */
-  var LENGTH_CHANGED_EVENT = 'change:length';
+  var CHANGE_LENGTH_EVENT = 'change:length';
+
+  // "Private event"
+  var PRECHANGE_LENGTH_EVENT = 'prechange:length';
 
   var ITEM_EVENT_TOKEN_MATCHER = /item:/;
 
@@ -110,6 +113,14 @@ define([
     };
   }
 
+  function triggerPrechangeLengthEvent(self) {
+    self.emit(PRECHANGE_LENGTH_EVENT, self.length, self);
+  }
+
+  function triggerChangeLengthEvent(self, prevLength) {
+    self.length !== prevLength && self.emit(CHANGE_LENGTH_EVENT, self.length, prevLength, self);
+  }
+
   /**
    * Represents a list of items.
    * @constructor
@@ -124,7 +135,7 @@ define([
     this.__private.array = [];
     this.__private.listeningToItemEvents = [];
 
-    this.listenTo(this, LENGTH_CHANGED_EVENT, function (length, prevLength) {
+    this.listenTo(this, CHANGE_LENGTH_EVENT, function (length, prevLength) {
       var diff = length - prevLength;
       var i;
       if (diff > 0) {
@@ -171,15 +182,6 @@ define([
     }
 
     extend(schema, {
-      length: {
-        type: 'number',
-        defaultValue: 0,
-        setter: function (newLength) {
-          // TODO: Make sure this does work as expected
-          //if (newLength !== this.__private.array.length) { throw 'Length may not be changed'; }
-          return newLength;
-        },
-      },
       first: {
         getter: function () { return this[0]; },
         setter: false,
@@ -195,6 +197,10 @@ define([
     items.length && this.pushAll(items);
   }
 
+  Object.defineProperty(List.prototype, 'length', {
+    get: function () { return this.__private.array.length; }
+  });
+
   /**
    * Add one or more items to the end of the List. Mirrors Array.push behavior.
    * @arg {...any} item - Each item argument will be pushed onto the List.
@@ -206,13 +212,15 @@ define([
     var nItems = arguments.length;
     if (nItems === 0) { return this.length; }
 
-    var oldLength = this.length;
+    var prevLength = this.length;
+    triggerPrechangeLengthEvent(this);
+
     this.__private.array.push.apply(this.__private.array, arguments);
 
+    triggerChangeLengthEvent(this, prevLength);
     for (var i = 0; i < nItems; ++i) {
-      onItemAdded(this, arguments[i], oldLength + i);
+      onItemAdded(this, arguments[i], prevLength + i);
     }
-    this.length = this.__private.array.length;
 
     return this.length;
   };
@@ -228,12 +236,15 @@ define([
     var nItems = arguments.length;
     if (nItems === 0) { return this.length; }
 
+    var prevLength = this.length;
+    triggerPrechangeLengthEvent(this);
+
     this.__private.array.unshift.apply(this.__private.array, arguments);
 
+    triggerChangeLengthEvent(this, prevLength);
     for (var i = 0; i < nItems; ++i) {
       onItemAdded(this, arguments[i], i);
     }
-    this.length = this.__private.array.length;
 
     return this.length;
   };
@@ -247,9 +258,12 @@ define([
   List.prototype.pop = function () {
     if (this.length === 0) { return; }
 
-    this.length = this.__private.array.length - 1;
+    var prevLength = this.length;
+    triggerPrechangeLengthEvent(this);
+
     var poppedItem = this.__private.array.pop.apply(this.__private.array, arguments);
 
+    triggerChangeLengthEvent(this, prevLength);
     onItemRemoved(this, poppedItem, this.length);
 
     return poppedItem;
@@ -264,9 +278,12 @@ define([
   List.prototype.shift = function () {
     if (this.length === 0) { return; }
 
-    this.length = this.__private.array.length - 1;
+    var prevLength = this.length;
+    triggerPrechangeLengthEvent(this);
+
     var shiftedItem = this.__private.array.shift.apply(this.__private.array, arguments);
 
+    triggerChangeLengthEvent(this, prevLength);
     onItemRemoved(this, shiftedItem, 0);
 
     return shiftedItem;
@@ -299,15 +316,17 @@ define([
     var nItemsToReplace = Math.min(nItemsToAdd, nItemsToRemove);
     var nItemsAffected = Math.max(nItemsToAdd, nItemsToRemove);
 
+    var prevLength = this.length;
+    triggerPrechangeLengthEvent(this);
+
     var deletedItems = this.__private.array.splice.apply(this.__private.array, arguments);
 
+    triggerChangeLengthEvent(this, prevLength);
     for (i = 0; i < nItemsAffected; ++i) {
       i < nItemsToAdd && onItemAdded(this, arguments[i + 2], start + i);
       i < nItemsToReplace && onItemReplaced(this, arguments[i + 2], deletedItems[i], start + i);
       i < nItemsToRemove && onItemRemoved(this, deletedItems[i], start + i);
     }
-
-    this.length = this.__private.array.length;
 
     return deletedItems;
   };
