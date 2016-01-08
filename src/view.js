@@ -1,10 +1,12 @@
 define([
   './extend',
   './event-listener',
+  './dom-patcher',
   './list',
 ], function (
   extend,
   eventListener,
+  patch,
   List
 ) {
   'use strict';
@@ -46,6 +48,14 @@ define([
     parseHtml: function (htmlString, returnAll) {
       HTML_PARSER_EL.innerHTML = htmlString;
       return returnAll ? HTML_PARSER_EL.children : HTML_PARSER_EL.firstChild;
+    },
+
+    /*patchEl: function (templateHtmlStr, values) {
+      patchDom(this.el, myTemplateRenderer(templateHtmlStr, values));
+    },*/
+
+    patchEl: function (htmlStr) {
+      patch(this.el, this.parseHtml(htmlStr));
     },
 
     $: function (queryString) {

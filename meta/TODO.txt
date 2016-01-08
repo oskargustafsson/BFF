@@ -39,6 +39,12 @@ Extend
 View
 ----
 - listenTo('selector string', 'event-name', function)
-- DOM diffing
-  - https://github.com/skatejs/dom-diff
-  - https://github.com/fiduswriter/diffDOM
+
+DOM Patcher
+-----------
+- Option: ignoreSubtreeOf: []
+- Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
+- Smart algorithm for diffing lists of childNodes, based on their nodeNames
+- SVG?
+- https://github.com/skatejs/dom-diff
+- https://github.com/fiduswriter/diffDOM
