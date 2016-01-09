@@ -14,6 +14,22 @@ define([
   var HTML_PARSER_EL = document.createElement('div');
 
   function View() {
+    Object.defineProperty(this, '__private', { writable: true, value: {}, });
+
+    var delegates = this.__private.eventDelegates = {};
+    this.__private.onDelegatedEvent = function onDelegatedEvent(ev) {
+      var delegatesForEvent = delegates[ev.type];
+      var el = ev.target;
+      for (var selector in delegatesForEvent) {
+        if (!el.matches(selector)) { continue; } // TODO: IE9 support (msMatchesSelector)
+        var delegatesForEventAndSelector = delegatesForEvent[selector];
+        for (var i = 0, n = delegatesForEventAndSelector.length; i < n; ++i) {
+          //console.log(ev.type, selector, ev.target);
+          delegatesForEventAndSelector[i](ev);
+        }
+      }
+    };
+
     this.children = new List();
     this.listenTo(this.children, 'item:removed', this.onChildRemoved);
   }
@@ -85,7 +101,43 @@ define([
       childView.destroy();
     },
 
-  });
+    // Based on https://github.com/ftlabs/ftdomdelegate/blob/master/lib/delegate.js
+    listenTo: function (selectorStr, eventName, callback, context, useCapture) {
+      if (typeof selectorStr !== 'string') {
+        eventListener.listenTo.apply(this, arguments);
+        return;
+      }
+
+      var delegates = this.__private.eventDelegates;
+      var delegatesForEvent = delegates[eventName];
+      var firstTimeListeningToEvent = false;
+      if (!delegatesForEvent) {
+        delegatesForEvent = (delegates[eventName] = {});
+        firstTimeListeningToEvent = true;
+        useCapture = useCapture || eventName === 'blur' || eventName === 'focus';
+        eventListener.listenTo.call(this, this.el, eventName, this.__private.onDelegatedEvent, undefined, useCapture);
+      }
+      delegatesForEvent[selectorStr] = delegatesForEvent[selectorStr] || [];
+      delegatesForEvent[selectorStr].push(callback.bind(context || this));
+    },
+
+    stopListening: function (selectorStr, eventName) {
+      if (typeof selectorStr !== 'string') {
+        eventListener.stopListening.apply(this, arguments);
+        return;
+      }
+
+      var delegatesForEvent = this.__private.eventDelegates[eventName];
+      if (!delegatesForEvent) { return; }
+
+      delete delegatesForEvent[selectorStr];
+      if (Object.keys(delegatesForEvent).length === 0) {
+        delete this.__private.eventDelegates[eventName];
+        eventListener.stopListening.call(this, this.el, eventName);
+      }
+    },
+
+  }, 'useSource');
 
   return View;
 

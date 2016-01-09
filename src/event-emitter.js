@@ -51,7 +51,7 @@ define(function () {
       var listeners = this.__private.listeners || (this.__private.listeners = {});
       var listenersForEvent = listeners[eventName] || (listeners[eventName] = []);
 
-      if (listenersForEvent.indexOf(callback) !== -1) {
+      if (RUNTIME_CHECKS && listenersForEvent.indexOf(callback) !== -1) {
         throw 'This listener has already been added (event: ' + eventName + ')';
       }
 

@@ -27,22 +27,25 @@ Record
 
 Event emitter
 -------------
+- Calling addEventListener() with the same arguments multiple times should have no effect. Maybe.
 
 Event listener
 --------------
-- Make it possible to listen to multiple events, like [ 'item:added' 'item:removed' ]
+!!! - Make it possible to listen to multiple events, like [ 'item:added' 'item:removed' ]
+- Option: useCapture
 - Write UTs for listenTo(anArray, ...)
+- Option: useCapture
 
 Extend
 ------
 
 View
 ----
-- listenTo('selector string', 'event-name', function)
+!!! - listenTo('selector string', 'event-name', function)
 
 DOM Patcher
 -----------
-- Option: ignoreSubtreeOf: []
+!!! - Option: ignoreSubtreeOf: []
 - Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
 - Smart algorithm for diffing lists of childNodes, based on their nodeNames
 - SVG?

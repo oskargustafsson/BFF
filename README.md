@@ -10,6 +10,12 @@ Ambitions
 ---------
 Simplicity; Don't create a Rube Goldberg machine that operates behind the scenes to create the illusion of magic functionality. Instead, make heavy use of getter, setters, prototypal inheritance and mixins to bring out the best parts of JS. Stay close to classic MVC, to avoid recreating problems that has already been solved.
 
+Bottom up; By creating a great data layer, the rest follows naturally
+
+Don't do everything; There are great e.g. templating engines, ajax request libs, and routers out there, don't reinvent the wheel
+
+Cache as little as possible: Caching stuff creates complexity. Only cache stuff if it is needed for performance reasons
+
 A library, not a framework; BFF comprises a set of standalone modules, each providing a complete service or functionality. All modules should be compatible with eachother but dependencies between modules should be kept at a minimum.
 
 Terse but explicit code; terseness should come from avoiding repeated boilerplate code. On the other hand, complex tasks (such as data bindings) should not be abstracted away using leaky abstractions, just to create less code in some cases.

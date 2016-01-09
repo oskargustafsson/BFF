@@ -12,7 +12,7 @@ define(function () {
     }
   }
 
-  function listenTo(self, eventEmitter, eventName, callback, context) {
+  function listenTo(self, eventEmitter, eventName, callback, context, useCapture) {
     if (RUNTIME_CHECKS && !eventEmitter.removeEventListener) {
       throw 'First argument is not an event emitter';
     }
@@ -31,7 +31,7 @@ define(function () {
 
     listeningToEvent.push({ callback: callback, emitter: eventEmitter });
 
-    eventEmitter.addEventListener(eventName, callback);
+    eventEmitter.addEventListener(eventName, callback, !!useCapture);
   }
 
   /**
@@ -54,7 +54,7 @@ define(function () {
      *     default to the caller of .listenTo, if not provided.
      * @returns {undefined}
      */
-    listenTo: function (eventEmitters, eventName, callback, context) {
+    listenTo: function (eventEmitters, eventName, callback, context, useCapture) {
       if (RUNTIME_CHECKS && !eventEmitters) { throw 'First argument must not be falsy'; }
       // Convenience functionality that allows you to listen to all items in an Array or NodeList
       // BFF Lists have this kind of functionality built it, so don't handle that case here
@@ -62,7 +62,7 @@ define(function () {
           (typeof NodeList !== 'undefined' && eventEmitters instanceof NodeList) ? eventEmitters : [ eventEmitters ];
 
       for (var i = 0; i < eventEmitters.length; ++i) {
-        listenTo(this, eventEmitters[i], eventName, callback, context);
+        listenTo(this, eventEmitters[i], eventName, callback, context, useCapture);
       }
     },
 
