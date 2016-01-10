@@ -61,17 +61,20 @@ define([
       return Constructor;
     },
 
+    render: function (patchOptions) {
+      if (RUNTIME_CHECKS && !this.getHtml) { throw 'You must implement getHtml() in order to use render()'; }
+
+      var newEl = this.parseHtml(this.getHtml());
+      if (this.el) {
+        patch(this.el, newEl, patchOptions);
+      } else {
+        this.el = newEl;
+      }
+    },
+
     parseHtml: function (htmlString, returnAll) {
       HTML_PARSER_EL.innerHTML = htmlString;
       return returnAll ? HTML_PARSER_EL.children : HTML_PARSER_EL.firstChild;
-    },
-
-    /*patchEl: function (templateHtmlStr, values) {
-      patchDom(this.el, myTemplateRenderer(templateHtmlStr, values));
-    },*/
-
-    patchEl: function (htmlStr) {
-      patch(this.el, this.parseHtml(htmlStr));
     },
 
     $: function (queryString) {

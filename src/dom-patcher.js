@@ -48,7 +48,7 @@ define(function () {
     }
   }
 
-  function patch(target, source) {
+  function patchRecursive(target, source, ignoreSubtreeOf) {
     var targetParent = target.parentNode;
 
     // Patch the current node
@@ -63,19 +63,25 @@ define(function () {
       return;
     }
 
+    if (ignoreSubtreeOf && Array.prototype.indexOf.call(ignoreSubtreeOf, target) !== -1) { return; }
+
     // Add/patch/remove children
     var i, n,
         targetChildren = target.childNodes,
         sourceChildren = source.childNodes;
 
     for (i = 0, n = targetChildren.length; i < n; ++i) {
-      patch(targetChildren[i], sourceChildren[i]);
+      patchRecursive(targetChildren[i], sourceChildren[i], ignoreSubtreeOf);
     }
     for (i = targetChildren.length, n = sourceChildren.length; i < n; ++i) {
       targetParent.appendChild(sourceChildren[i]);
     }
+  }
 
-    return target;
+  function patch(target, source, options) {
+    options = options || {};
+    var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);
+    patchRecursive(target, source, ignoreSubtreeOf);
   }
 
   return patch;
