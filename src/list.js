@@ -219,7 +219,7 @@ define([
 
     triggerChangeLengthEvent(this, prevLength);
     for (var i = 0; i < nItems; ++i) {
-      onItemAdded(this, arguments[i], prevLength + i);
+      onItemAdded(this, this[prevLength + i], prevLength + i);
     }
 
     return this.length;
@@ -243,7 +243,7 @@ define([
 
     triggerChangeLengthEvent(this, prevLength);
     for (var i = 0; i < nItems; ++i) {
-      onItemAdded(this, arguments[i], i);
+      onItemAdded(this, this[i], i);
     }
 
     return this.length;
@@ -323,8 +323,8 @@ define([
 
     triggerChangeLengthEvent(this, prevLength);
     for (i = 0; i < nItemsAffected; ++i) {
-      i < nItemsToAdd && onItemAdded(this, arguments[i + 2], start + i);
-      i < nItemsToReplace && onItemReplaced(this, arguments[i + 2], deletedItems[i], start + i);
+      i < nItemsToAdd && onItemAdded(this, this[start + i], start + i);
+      i < nItemsToReplace && onItemReplaced(this, this[start + i], deletedItems[i], start + i);
       i < nItemsToRemove && onItemRemoved(this, deletedItems[i], start + i);
     }
 
@@ -467,6 +467,10 @@ define([
 
   List.prototype.toArray = function () {
     return this.__private.array.slice();
+  };
+
+  List.prototype.toJSON = function () {
+    return this.toArray();
   };
 
   List.prototype.addEventListener = function (eventName) {
