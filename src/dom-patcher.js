@@ -23,6 +23,11 @@ define(function () {
     var sourceAttrArr = source.attributes;
     var i, n, sourceAttr, targetAttr, attrName;
 
+    // Special cases
+    if (target.nodeName === 'INPUT') { target.value = source.value || ''; }
+    if (source.checked !== undefined) { target.checked = source.checked; }
+    if (source.selected !== undefined) { target.selected = source.selected; }
+
     for (i = 0, n = sourceAttrArr.length; i < n; ++i) {
       sourceAttr = sourceAttrArr[i];
       attrName = sourceAttr.name;
@@ -38,7 +43,9 @@ define(function () {
   }
 
   function patchTextNode(target, source) {
-    target.nodeValue = source.nodeValue;
+    var sourceValue = source.nodeValue;
+    if (target.nodeValue === sourceValue) { return; }
+    target.nodeValue = sourceValue;
   }
 
   function patchNode(target, source) {

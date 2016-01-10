@@ -23,6 +23,7 @@ Record
 ------
 - Define properties on prototype instead of directly on object
 - bindSchema -> makeSubclass
+- Cache calculated property values
 - How to destroy a Record?
 
 Event emitter
@@ -41,6 +42,7 @@ Extend
 
 View
 ----
+- Debounce render()
 
 DOM Patcher
 -----------
