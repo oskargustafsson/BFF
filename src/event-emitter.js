@@ -14,7 +14,7 @@ define(function () {
      * @arg {...any} [eventArguments] - Zero or more arguments that event listeners will be called with.
      * @returns {undefined}
      */
-    emit: function (eventName) {
+    emit: function emit(eventName) {
       if (RUNTIME_CHECKS && typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
       }
@@ -39,7 +39,7 @@ define(function () {
      * @arg {function} callback - The function that will be called when the event is emitted.
      * @returns {undefined}
      */
-    addEventListener: function (eventName, callback) {
+    addEventListener: function addEventListener(eventName, callback) {
       if (RUNTIME_CHECKS && typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
       }
@@ -65,7 +65,7 @@ define(function () {
      *     given, only the given callback will be removed from the given eventName.
      * @returns {undefined}
      */
-    removeEventListener: function (eventName, callback) {
+    removeEventListener: function removeEventListener(eventName, callback) {
       if (RUNTIME_CHECKS && typeof eventName !== 'string') {
         throw '"eventName" argument must be a string';
       }

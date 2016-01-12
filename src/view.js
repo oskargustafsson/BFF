@@ -38,13 +38,13 @@ define([
 
   extend(View.prototype, {
 
-    destroy: function () {
+    destroy: function destroy() {
       this.removeChildren();
       this.stopListening();
       this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
     },
 
-    makeSubclass: function (properties) {
+    makeSubclass: function makeSubclass(properties) {
       var superclass = this;
       var customConstructor = properties.constructor;
 
@@ -61,7 +61,7 @@ define([
       return Constructor;
     },
 
-    render: function (patchOptions) {
+    render: function render(patchOptions) {
       if (RUNTIME_CHECKS && !this.getHtml) { throw 'You must implement getHtml() in order to use render()'; }
 
       var newEl = this.parseHtml(this.getHtml());
@@ -72,40 +72,40 @@ define([
       }
     },
 
-    parseHtml: function (htmlString, returnAll) {
+    parseHtml: function parseHtml(htmlString, returnAll) {
       HTML_PARSER_EL.innerHTML = htmlString;
       return returnAll ? HTML_PARSER_EL.children : HTML_PARSER_EL.firstChild;
     },
 
-    $: function (queryString) {
+    $: function $(queryString) {
       return this.el.querySelector(queryString);
     },
 
-    forceRepaint: function (el) {
+    forceRepaint: function forceRepaint(el) {
       return (el || this.el).offsetHeight;
     },
 
-    addChild: function (childView, el) {
+    addChild: function addChild(childView, el) {
       this.children.push(childView);
       el && el.appendChild(childView.el);
       return childView;
     },
 
-    removeChild: function (childView) {
+    removeChild: function removeChild(childView) {
       this.children.remove(childView);
       return childView;
     },
 
-    removeChildren: function () {
+    removeChildren: function removeChildren() {
       this.children.clear();
     },
 
-    onChildRemoved: function (childView) {
+    onChildRemoved: function onChildRemoved(childView) {
       childView.destroy();
     },
 
     // Based on https://github.com/ftlabs/ftdomdelegate/blob/master/lib/delegate.js
-    listenTo: function (selectorStr, eventName, callback, context, useCapture) {
+    listenTo: function listenTo(selectorStr, eventName, callback, context, useCapture) {
       if (typeof selectorStr !== 'string') {
         eventListener.listenTo.apply(this, arguments);
         return;
@@ -124,7 +124,7 @@ define([
       delegatesForEvent[selectorStr].push(callback.bind(context || this));
     },
 
-    stopListening: function (selectorStr, eventName) {
+    stopListening: function stopListening(selectorStr, eventName) {
       if (typeof selectorStr !== 'string') {
         eventListener.stopListening.apply(this, arguments);
         return;

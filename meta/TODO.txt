@@ -21,6 +21,7 @@ List
 
 Record
 ------
+!!! - Make undefined a forbidden value by default
 - Define properties on prototype instead of directly on object
 - bindSchema -> makeSubclass
 - Cache calculated property values

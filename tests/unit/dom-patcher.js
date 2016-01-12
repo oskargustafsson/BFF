@@ -138,6 +138,7 @@ define(function (require) {
         expect(targetParent.firstChild).to.equal(target1);
         expect(targetParent.lastChild).to.equal(target2);
 
+        console.log('SELECTED1', target1.selected);
         expect(target1.selected).to.equal(false);
         expect(target1.getAttribute('selected')).to.equal(null);
         expect(target2.selected).to.equal(true);
@@ -145,6 +146,7 @@ define(function (require) {
 
         patch(target2, source2);
 
+        console.log('SELECTED2', target1.selected);
         expect(target1.selected).to.equal(false);
         expect(target1.getAttribute('selected')).to.equal(null);
         expect(target2.selected).to.equal(true);

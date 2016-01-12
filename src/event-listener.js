@@ -12,7 +12,7 @@ define(function () {
     }
   }
 
-  function listenTo(self, eventEmitter, eventName, callback, context, useCapture) {
+  function setupListeners(self, eventEmitter, eventName, callback, context, useCapture) {
     if (RUNTIME_CHECKS && !eventEmitter.removeEventListener) {
       throw 'First argument is not an event emitter';
     }
@@ -54,7 +54,7 @@ define(function () {
      *     default to the caller of .listenTo, if not provided.
      * @returns {undefined}
      */
-    listenTo: function (eventEmitters, eventName, callback, context, useCapture) {
+    listenTo: function listenTo(eventEmitters, eventName, callback, context, useCapture) {
       if (RUNTIME_CHECKS && !eventEmitters) { throw 'First argument must not be falsy'; }
       // Convenience functionality that allows you to listen to all items in an Array or NodeList
       // BFF Lists have this kind of functionality built it, so don't handle that case here
@@ -62,7 +62,7 @@ define(function () {
           (typeof NodeList !== 'undefined' && eventEmitters instanceof NodeList) ? eventEmitters : [ eventEmitters ];
 
       for (var i = 0; i < eventEmitters.length; ++i) {
-        listenTo(this, eventEmitters[i], eventName, callback, context, useCapture);
+        setupListeners(this, eventEmitters[i], eventName, callback, context, useCapture);
       }
     },
 
@@ -74,7 +74,7 @@ define(function () {
      * @arg {string} [eventName] - If provided, only event listeners listening to the given event name will be removed.
      * @returns {undefined}
      */
-    stopListening: function (eventEmitter, eventName) {
+    stopListening: function stopListening(eventEmitter, eventName) {
       if (RUNTIME_CHECKS && (eventEmitter || arguments.length === 1) && !(eventEmitter || {}).removeEventListener) {
         throw 'First argument is not an event emitter';
       }

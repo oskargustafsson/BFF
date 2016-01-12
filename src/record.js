@@ -140,11 +140,11 @@ define([
 
   // toJSON() actually returns an object, which is a bit misleading. For compatibility reasons.
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior
-  Record.prototype.toJSON = function () {
+  Record.prototype.toJSON = function toJSON() {
     return JSON.parse(this.toJSONString());
   };
 
-  Record.prototype.toJSONString = Record.prototype.toString = function () {
+  Record.prototype.toJSONString = Record.prototype.toString = function toString() {
     var keys = Object.keys(this);
     var obj = {};
     for (var i = 0; i < keys.length; ++i) {
@@ -154,7 +154,7 @@ define([
     return JSON.stringify(obj);
   };
 
-  Record.prototype.bindSchema = function (schema) {
+  Record.prototype.bindSchema = function bindSchema(schema) {
     return Record.bind(null, schema);
   };
 

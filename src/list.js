@@ -87,7 +87,7 @@ define([
   }
 
   function reemitItemEvent(self, item, strippedEventName, eventName) {
-    self.listenTo(item, strippedEventName, function () {
+    self.listenTo(item, strippedEventName, function reemitItemEvent() {
       self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments))); // TODO: better solution
     });
   }
@@ -208,7 +208,7 @@ define([
    * @emits module:bff/list#item:added
    * @returns {Number} Updated List length
    */
-  List.prototype.push = function () {
+  List.prototype.push = function push() {
     var nItems = arguments.length;
     if (nItems === 0) { return this.length; }
 
@@ -232,7 +232,7 @@ define([
    * @emits module:bff/list#item:added
    * @returns {Number} Updated List length
    */
-  List.prototype.unshift = function () {
+  List.prototype.unshift = function unshift() {
     var nItems = arguments.length;
     if (nItems === 0) { return this.length; }
 
@@ -255,7 +255,7 @@ define([
    * @emits module:bff/list#item:removed
    * @returns {any} Removed item
    */
-  List.prototype.pop = function () {
+  List.prototype.pop = function pop() {
     if (this.length === 0) { return; }
 
     var prevLength = this.length;
@@ -275,7 +275,7 @@ define([
    * @emits module:bff/list#item:removed
    * @returns {any} Removed item
    */
-  List.prototype.shift = function () {
+  List.prototype.shift = function shift() {
     if (this.length === 0) { return; }
 
     var prevLength = this.length;
@@ -305,7 +305,7 @@ define([
    * @emits module:bff/list#item:removed
    * @returns {any[]} Array of removed items
    */
-  List.prototype.splice = function (start, nItemsToRemove) {
+  List.prototype.splice = function splice(start, nItemsToRemove) {
     var i;
     var oldLength = this.length;
 
@@ -379,7 +379,7 @@ define([
         List.prototype[funcName] = delegateCreator(funcName);
       });
 
-  List.prototype.concat = function () {
+  List.prototype.concat = function concat() {
     for (var i = 0, n = arguments.length; i < n; ++i) {
       var argument = arguments[i];
       if (argument instanceof List) {
@@ -389,7 +389,7 @@ define([
     return new List(this.__private.array.concat.apply(this.__private.array, arguments));
   };
 
-  List.prototype.filterMut = function (predicate, thisArg) {
+  List.prototype.filterMut = function filterMut(predicate, thisArg) {
     var removeCount = 0;
     for (var i = this.length - 1; i >= -1; --i) {
       if (i > -1 && !predicate.call(thisArg, this[i], i, this)) {
@@ -402,20 +402,20 @@ define([
     return this;
   };
 
-  List.prototype.remove = function (item) {
+  List.prototype.remove = function remove(item) {
     return this.filterMut(function (listItem) { return item !== listItem; });
   };
 
-  List.prototype.clear = function () {
+  List.prototype.clear = function clear() {
     return this.splice(0, this.length);
   };
 
-  List.prototype.pushAll = List.prototype.concatMut = function (items) {
+  List.prototype.pushAll = List.prototype.concatMut = function pushAll(items) {
     items.length && this.push.apply(this, items);
     return this.length;
   };
 
-  List.prototype.sliceMut = function (begin, end) {
+  List.prototype.sliceMut = function sliceMut(begin, end) {
     var length = this.length;
 
     end = (typeof end !== 'undefined') ? end : length;
@@ -439,41 +439,41 @@ define([
     return this;
   };
 
-  List.prototype.mapMut = function (callback, thisArg) {
+  List.prototype.mapMut = function mapMut(callback, thisArg) {
     for (var i = 0, length = this.length; i < length; ++i) {
       this[i] = callback.call(thisArg, this[i], i, this);
     }
     return this;
   };
 
-  List.prototype.find = function (callback, thisArg) {
+  List.prototype.find = function find(callback, thisArg) {
     for (var i = 0, length = this.length; i < length; ++i) {
       if (callback.call(thisArg, this[i], i, this)) { return this[i]; }
     }
   };
 
-  List.prototype.findIndex = function (callback, thisArg) {
+  List.prototype.findIndex = function findIndex(callback, thisArg) {
     for (var i = 0, length = this.length; i < length; ++i) {
       if (callback.call(thisArg, this[i], i, this)) { return i; }
     }
     return -1;
   };
 
-  List.prototype.includes = function (item, fromIndex) {
+  List.prototype.includes = function includes(item, fromIndex) {
     fromIndex = fromIndex || 0;
     var index = this.__private.array.indexOf(item);
     return index !== -1 && index >= fromIndex;
   };
 
-  List.prototype.toArray = function () {
+  List.prototype.toArray = function toArray() {
     return this.__private.array.slice();
   };
 
-  List.prototype.toJSON = function () {
+  List.prototype.toJSON = function toJSON() {
     return this.toArray();
   };
 
-  List.prototype.addEventListener = function (eventName) {
+  List.prototype.addEventListener = function addEventListener(eventName) {
     if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
 
     this.__private.listeningToItemEvents.push(eventName);
@@ -485,7 +485,7 @@ define([
     }
   };
 
-  List.prototype.removeEventListener = function (eventName) {
+  List.prototype.removeEventListener = function removeEventListener(eventName) {
     if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
 
     var pos = this.__private.listeningToItemEvents.indexOf(eventName);
@@ -495,7 +495,7 @@ define([
     this.stopListening(undefined, strippedEventName);
   };
 
-  List.prototype.bindSchema = function (schema) {
+  List.prototype.bindSchema = function bindSchema(schema) {
     return List.bind(null, schema);
   };
 

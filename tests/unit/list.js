@@ -226,6 +226,19 @@ define(function (require) {
           expect(listItemAddedCallback).to.have.been.calledWith(emitterItem1, 0, list);
         },
 
+        'triggers the event listeners for the same event exactly once': function () {
+          var list = new List();
+          var eventListener1 = sinon.spy();
+          var eventListener2 = sinon.spy();
+          list.addEventListener('item:added', eventListener1);
+          list.addEventListener('item:added', eventListener2);
+
+          list.push({});
+
+          expect(eventListener1).to.have.been.calledOnce;
+          expect(eventListener2).to.have.been.calledOnce;
+        },
+
       },
 
       'event proxying': {
