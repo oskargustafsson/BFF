@@ -58,9 +58,7 @@ define([
       return;
     }
 
-    var eventNames = self.__private.listeningToItemEvents;
-    for (var i = 0, nEventNames = eventNames.length; i < nEventNames; ++i) {
-      var eventName = eventNames[i];
+    for (var eventName in self.__private.reEmittingEvents) {
       var strippedEventName = eventName.replace(ITEM_EVENT_TOKEN_MATCHER, '');
       reemitItemEvent(self, item, strippedEventName, eventName);
     }
@@ -133,7 +131,7 @@ define([
   function List(schema, items) {
     this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
     this.__private.array = [];
-    this.__private.listeningToItemEvents = [];
+    this.__private.reEmittingEvents = {};
 
     this.listenTo(this, CHANGE_LENGTH_EVENT, function (length, prevLength) {
       var diff = length - prevLength;
@@ -474,12 +472,11 @@ define([
   };
 
   List.prototype.addEventListener = function addEventListener(eventName) {
-    if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
-
-    this.__private.listeningToItemEvents.push(eventName);
+    if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName) || this.__private.reEmittingEvents[eventName]) { return; }
+    this.__private.reEmittingEvents[eventName] = true;
 
     var strippedEventName = eventName.replace(ITEM_EVENT_TOKEN_MATCHER, '');
-    for (var i = 0, length = this.length; i < length; ++i) {
+    for (var i = 0, n = this.length; i < n; ++i) {
       var item = this[i];
       isEmitter(item) && reemitItemEvent(this, item, strippedEventName, eventName);
     }
@@ -488,9 +485,11 @@ define([
   List.prototype.removeEventListener = function removeEventListener(eventName) {
     if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
 
-    var pos = this.__private.listeningToItemEvents.indexOf(eventName);
-    pos === -1 || this.__private.listeningToItemEvents.splice(pos, 1);
+    // Check if we still need to re-emit this event
+    var listeners = this.__private.listeners[eventName];
+    if (listeners && listeners.length) { return; }
 
+    delete this.__private.reEmittingEvents[eventName];
     var strippedEventName = eventName.replace(ITEM_EVENT_TOKEN_MATCHER, '');
     this.stopListening(undefined, strippedEventName);
   };

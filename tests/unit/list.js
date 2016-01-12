@@ -230,10 +230,11 @@ define(function (require) {
           var list = new List();
           var eventListener1 = sinon.spy();
           var eventListener2 = sinon.spy();
+          var item = extend({}, eventEmitter);
+
           list.addEventListener('item:added', eventListener1);
           list.addEventListener('item:added', eventListener2);
-
-          list.push({});
+          list.push(item);
 
           expect(eventListener1).to.have.been.calledOnce;
           expect(eventListener2).to.have.been.calledOnce;

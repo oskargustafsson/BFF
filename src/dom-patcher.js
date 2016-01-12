@@ -89,6 +89,7 @@ define(function () {
     options = options || {};
     var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);
     patchRecursive(target, source, ignoreSubtreeOf);
+    return target;
   }
 
   return patch;
