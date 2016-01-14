@@ -54,15 +54,20 @@ define(function () {
      *     default to the caller of .listenTo, if not provided.
      * @returns {undefined}
      */
-    listenTo: function listenTo(eventEmitters, eventName, callback, context, useCapture) {
+    listenTo: function listenTo(eventEmitters, eventNames, callback, context, useCapture) {
       if (RUNTIME_CHECKS && !eventEmitters) { throw 'First argument must not be falsy'; }
+
       // Convenience functionality that allows you to listen to all items in an Array or NodeList
       // BFF Lists have this kind of functionality built it, so don't handle that case here
       eventEmitters = eventEmitters instanceof Array ||
           (typeof NodeList !== 'undefined' && eventEmitters instanceof NodeList) ? eventEmitters : [ eventEmitters ];
 
+      eventNames = eventNames instanceof Array ? eventNames : [ eventNames ];
+
       for (var i = 0; i < eventEmitters.length; ++i) {
-        setupListeners(this, eventEmitters[i], eventName, callback, context, useCapture);
+        for (var j = 0; j < eventNames.length; ++j) {
+          setupListeners(this, eventEmitters[i], eventNames[j], callback, context, useCapture);
+        }
       }
     },
 

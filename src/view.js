@@ -111,6 +111,12 @@ define([
         return;
       }
 
+      if (eventName instanceof Array && eventName.length > 0) {
+        this.listenTo(selectorStr, eventName.pop(), callback, context, useCapture);
+        this.listenTo(selectorStr, eventName, callback, context, useCapture);
+        return;
+      }
+
       var delegates = this.__private.eventDelegates;
       var delegatesForEvent = delegates[eventName];
       var firstTimeListeningToEvent = false;
