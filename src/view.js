@@ -87,6 +87,7 @@ define([
 
     addChild: function addChild(childView, el) {
       this.children.push(childView);
+      el = el || this.el;
       el && el.appendChild(childView.el);
       return childView;
     },

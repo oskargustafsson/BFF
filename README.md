@@ -6,6 +6,13 @@ Run tests in browser
 --------------------
 [server_root]/node_modules/intern/client.html?config=tests/intern
 
+Inspirations
+------------
+Backbone: Modular, unopinionated, strong event system
+Functional Reactive Programming: Signals (BFF equiv. calculated properties)
+React: DOM patching
+Typed languages: Type safety, non-null (in the data layer), debug/release mod where you trade safety for performance
+
 Ambitions
 ---------
 Simplicity; Don't create a Rube Goldberg machine that operates behind the scenes to create the illusion of magic functionality. Instead, make heavy use of getter, setters, prototypal inheritance and mixins to bring out the best parts of JS. Stay close to classic MVC, to avoid recreating problems that has already been solved.

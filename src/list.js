@@ -48,6 +48,9 @@ define([
   // "Private event"
   var PRECHANGE_LENGTH_EVENT = 'prechange:length';
 
+  var PRECHANGE_EVENT = 'prechange';
+  var CHANGE_EVENT = 'change';
+
   var ITEM_EVENT_TOKEN_MATCHER = /item:/;
 
   function isEmitter(obj) { return !!(obj && obj.addEventListener); } // Quack!
@@ -112,11 +115,14 @@ define([
   }
 
   function triggerPrechangeLengthEvent(self) {
+    self.emit(PRECHANGE_EVENT, 'length', self.length, self);
     self.emit(PRECHANGE_LENGTH_EVENT, self.length, self);
   }
 
   function triggerChangeLengthEvent(self, prevLength) {
-    self.length !== prevLength && self.emit(CHANGE_LENGTH_EVENT, self.length, prevLength, self);
+    if (self.length === prevLength) { return; }
+    self.emit(CHANGE_EVENT, 'length', self.length, prevLength, self);
+    self.emit(CHANGE_LENGTH_EVENT, self.length, prevLength, self);
   }
 
   /**
