@@ -21,7 +21,6 @@ List
 
 Record
 ------
-!!! - Make undefined a forbidden value by default
 - Define properties on prototype instead of directly on object
 - bindSchema -> makeSubclass
 - Cache calculated property values
@@ -33,7 +32,6 @@ Event emitter
 
 Event listener
 --------------
-!!! - Make it possible to listen to multiple events, like [ 'item:added' 'item:removed' ]
 - Option: useCapture
 - Write UTs for listenTo(anArray, ...)
 - Option: useCapture

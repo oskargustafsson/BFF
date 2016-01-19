@@ -301,7 +301,7 @@ define(function (require) {
           'are applied before a property value is returned': function () {
             Record = recordFactory({
               date: {
-                type: 'number', // Input type
+                type: 'object',
                 getter: function (value) {
                   return new Date(value);
                 },
@@ -315,7 +315,7 @@ define(function (require) {
             Record = recordFactory({
               currencySymbol: 'string',
               amount: {
-                type: 'number',
+                type: 'string',
                 getter: function (value) {
                   return value + ' ' + this.currencySymbol;
                 },
@@ -471,12 +471,18 @@ define(function (require) {
             }).to.throw();
         },
 
-        'allows values to be unset and undefined': function () {
+        'throws an error if a default value has not been provided': function () {
             Record = recordFactory({
               race: 'string',
             });
-            expect(new Record().race).to.equal(undefined);
-            expect(new Record({ race: undefined }).race).to.equal(undefined);
+
+            expect(function () {
+              new Record();
+            }).to.throw();
+
+            expect(function () {
+              new Record({ race: undefined });
+            }).to.throw();
         },
 
       },
@@ -485,7 +491,7 @@ define(function (require) {
 
         'throws an error when a forbidden value is passed to constructor': function () {
           Record = recordFactory({
-            race: { type: 'string', forbiddenValues: [ undefined, null, 'cow' ] },
+            race: { type: 'string', forbiddenValues: [ 'cow' ] },
           });
           expect(function () { new Record(); }).to.throw();
           expect(function () { new Record({ race: undefined }); }).to.throw();
@@ -496,14 +502,52 @@ define(function (require) {
 
         'throws an error when a forbidden value is assigned': function () {
           Record = recordFactory({
-            race: { type: 'string', forbiddenValues: [ undefined, null, 'cow' ] },
+            race: { type: 'string', forbiddenValues: [ 'cow' ] },
           });
           var record = new Record({ race: 'human' });
           expect(function () { delete record.race; }).to.throw();
           expect(function () { record.race = undefined; }).to.throw();
           expect(function () { record.race = null; }).to.throw();
           expect(function () { record.race = 'cow'; }).to.throw();
-          expect(record.race).to.equal('human');
+          // Error checking should not change the behavior, just throw errors
+          expect(record.race).to.equal('cow');
+        },
+
+      },
+
+      'allowed value checking': {
+
+        'does not throw an error if the assigned value is in the list of allowed values': function () {
+          Record = recordFactory({
+            race: {
+              type: 'string',
+              allowedValues: [ 3, undefined ],
+            },
+          });
+
+          var record = new Record({ race: 3 });
+          expect(record.race).to.equal(3);
+
+          record = new Record();
+          expect(record.race).to.equal(undefined);
+        },
+
+        'throws an error if the value has been explicitly listed as forbidden': function () {
+          Record = recordFactory({
+            race: {
+              type: 'string',
+              allowedValues: [ 3, undefined ],
+              forbiddenValues: [ 3, undefined ],
+            },
+          });
+
+          expect(function () {
+            new Record({ race: 3 });
+          }).to.throw();
+
+          expect(function () {
+            new Record();
+          }).to.throw();
         },
 
       },

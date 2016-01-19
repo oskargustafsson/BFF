@@ -14,9 +14,10 @@ define([
 
   function validateInput(val, propName, propSchema) {
     var type = typeof val;
-    if (propSchema.type && !(type === propSchema.type || type === 'undefined')) {
-      throw 'Property ' + propName + ' is of type ' + propSchema.type +
-          ' and can not be assigned a value of type ' + type;
+    if (propSchema.type && type !== propSchema.type &&
+        (!propSchema.allowedValues || propSchema.allowedValues.indexOf(val) === -1)) {
+      throw 'Property ' + propName + ' is of type ' + propSchema.type + ' and can not be assigned a value of type ' +
+          type + '. You can add an "allowedValues" array to the schema to allow specific values';
     }
     if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
       throw 'Property ' + propName + ' is not allowed to be ' + val;
@@ -33,9 +34,6 @@ define([
       // If there is a custom setter, use it to transform the value
       propSchema.setter && (val = propSchema.setter.call(this, val));
 
-      // Input validation
-      RUNTIME_CHECKS && validateInput(val, propName, propSchema);
-
       var oldVal = this[propName];
 
       this.emit(PRECHANGE_EVENT, propName, oldVal, this);
@@ -49,6 +47,9 @@ define([
       var newVal = this[propName];
       this.emit(CHANGE_EVENT, propName, newVal, oldVal, this);
       this.emit(MY_CHANGE_EVENT, newVal, oldVal, this);
+
+      // Input validation, after setters and getters has been applied
+      RUNTIME_CHECKS && validateInput(newVal, propName, propSchema);
     };
   }
 
@@ -133,8 +134,8 @@ define([
     for (propName in propertiesUnion) {
       var val = propertiesUnion[propName];
       schema[propName].setter && (val = schema[propName].setter.call(this, val));
-      RUNTIME_CHECKS && validateInput(val, propName, schema[propName]);
       this.__private.values[propName] = val;
+      RUNTIME_CHECKS && validateInput(this[propName], propName, schema[propName]);
     }
   }
 
