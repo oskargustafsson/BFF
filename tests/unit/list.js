@@ -45,7 +45,7 @@ define(function (require) {
       'schema': {
 
         'allows specifying properties with custom getters': function () {
-          var MyList = List.makeSubclass({
+          var MyList = List.withProperties({
             nDone: {
               getter: function () {
                 return this.reduce(function (nDone, item) {
@@ -88,12 +88,12 @@ define(function (require) {
         },
 
         'allows you to specify dependencies': function () {
-          var TodoItem = Record.makeSubclass({
+          var TodoItem = Record.withProperties({
             id: 'number',
             done: 'boolean',
           });
 
-          var TodoItems = List.makeSubclass({
+          var TodoItems = List.withProperties({
             nDone: {
               getter: function () {
                 return this.reduce(function (nDone, item) {

@@ -61,7 +61,7 @@ define([
 
   function Record(values) {
     if (!this.__private) {
-      throw 'Record an abstract class, meant to be subclassed using Record.makeSubclass(schema)';
+      throw 'Record an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
     }
 
     this.__private.values = {};
@@ -136,7 +136,7 @@ define([
   extend(Record.prototype, eventEmitter);
   extend(Record.prototype, eventListener);
 
-  Record.makeSubclass = function makeSubclass(schema) {
+  Record.withProperties = function withProperties(schema) {
     var RecordSubclass = function RecordSubclass(values) {
       this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
       this.__private.schema = schema;

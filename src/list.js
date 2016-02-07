@@ -422,7 +422,7 @@ define([
 
   extend(listFunctions, eventEmitter, { 'function': 'merge' });
 
-  function makeSubclass(schema) {
+  function withProperties(schema) {
     for (var propName in schema) {
       var propertySchema = schema[propName];
 
@@ -452,7 +452,7 @@ define([
       }
     });
 
-    var RecordSubclass = Record.makeSubclass(schema);
+    var RecordSubclass = Record.withProperties(schema);
 
     function List(items) {
       this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
@@ -508,8 +508,8 @@ define([
    * @arg {Object} [schema] - Description of properties that will be added to the List.
    * @arg {(Array|List)} [items] - Items that will be added to the List on creation.
    */
-  var List = makeSubclass({});
-  List.makeSubclass = makeSubclass;
+  var List = withProperties({});
+  List.withProperties = withProperties;
 
   return List;
 
