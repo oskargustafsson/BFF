@@ -59,23 +59,33 @@ define([
         function getter() { return this.__private.values[propName]; };
   }
 
-  function Record(schema, values, options) {
-    this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
+  function Record(values) {
+    if (!this.__private) {
+      throw 'Record an abstract class, meant to be subclassed using Record.makeSubclass(schema)';
+    }
+
     this.__private.values = {};
     this.__private.previousValues = {};
 
-    values = values || {};
-    schema = schema || {};
-    options = options || {};
+    var schema = this.__private.schema;
+    var propsUnion = {};
 
-    if (RUNTIME_CHECKS) { // Guarantee that we don't mess with the arguments, they may be reused by the caller
-      Object.preventExtensions(schema);
-      Object.preventExtensions(values);
-      Object.preventExtensions(options);
+    for (var propName in schema) {
+      propsUnion[propName] = schema[propName].defaultValue;
     }
-
-    var propName, propertySchema, i;
-    var propertiesUnion = {};
+    for (propName in values) {
+      if (RUNTIME_CHECKS && !schema.hasOwnProperty(propName)) {
+        throw 'Cannot assign undeclared property ' + propName;
+      }
+      propsUnion[propName] = values[propName];
+    }
+    // Silently assign initial values
+    for (propName in propsUnion) {
+      var val = propsUnion[propName];
+      schema[propName].setter && (val = schema[propName].setter.call(this, val));
+      this.__private.values[propName] = val;
+      RUNTIME_CHECKS && validateInput(this[propName], propName, schema[propName]);
+    }
 
     var onPreChangeEvent = function (propName) {
       var oldVal = this.__private.previousValues[propName] = this[propName];
@@ -83,6 +93,7 @@ define([
       this.emit(PRECHANGE_EVENT, propName, oldVal, this);
       this.emit(PRECHANGE_EVENT + ':' + propName, oldVal, this);
     };
+
     var onChangeEvent = function (propName) {
       var oldVal = this.__private.previousValues[propName];
       var newVal = this[propName];
@@ -95,72 +106,62 @@ define([
     };
 
     for (propName in schema) {
-      propertySchema = schema[propName] = schema[propName] || {};
+      var propSchema = schema[propName];
 
-      if (!propertySchema.dependencies) { continue; }
+      if (!propSchema.dependencies) { continue; }
 
-      for (i = 0; i < propertySchema.dependencies.length; ++i) {
-        var dependencyPropName = propertySchema.dependencies[i];
+      for (var i = 0; i < propSchema.dependencies.length; ++i) {
+        var dependencyPropName = propSchema.dependencies[i];
         this.listenTo(this, PRECHANGE_EVENT + ':' + dependencyPropName, onPreChangeEvent.bind(this, propName));
         this.listenTo(this, CHANGE_EVENT + ':' + dependencyPropName, onChangeEvent.bind(this, propName));
       }
-    }
-
-    var props = {};
-    for (propName in schema) {
-      propertySchema = schema[propName];
-      typeof propertySchema === 'string' && (propertySchema = schema[propName] = { type: propertySchema });
-
-      props[propName] = {
-        enumerable: true,
-        get: propertySchema.getter === false ? undefined : makeGetter(propName, propertySchema),
-        set: propertySchema.setter === false ? undefined : makeSetter(propName, propertySchema),
-      };
-
-      propertiesUnion[propName] = propertySchema.defaultValue;
-    }
-    Object.defineProperties(this, props);
-
-    options.allowExtensions || Object.preventExtensions(this);
-
-    for (propName in values) {
-      if (RUNTIME_CHECKS && !schema.hasOwnProperty(propName)) {
-        throw 'Cannot assign undeclared property ' + propName;
-      }
-      propertiesUnion[propName] = values[propName];
-    }
-
-    // Silently assign initial values
-    for (propName in propertiesUnion) {
-      var val = propertiesUnion[propName];
-      schema[propName].setter && (val = schema[propName].setter.call(this, val));
-      this.__private.values[propName] = val;
-      RUNTIME_CHECKS && validateInput(this[propName], propName, schema[propName]);
     }
   }
 
   // toJSON() actually returns an object, which is a bit misleading. For compatibility reasons.
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior
   Record.prototype.toJSON = function toJSON() {
-    return JSON.parse(this.toJSONString());
-  };
-
-  Record.prototype.toJSONString = Record.prototype.toString = function toString() {
-    var keys = Object.keys(this);
     var obj = {};
-    for (var i = 0; i < keys.length; ++i) {
-      var propName = keys[i];
+    for (var propName in this.__private.values) {
       obj[propName] = this[propName];
     }
-    return JSON.stringify(obj);
+    return obj;
   };
 
-  Record.prototype.bindSchema = function bindSchema(schema) {
-    return Record.bind(null, schema);
+  // Override, to get nicer prints
+  Record.prototype.toString = function toString() {
+    return JSON.stringify(this);
   };
 
   extend(Record.prototype, eventEmitter);
   extend(Record.prototype, eventListener);
+
+  Record.makeSubclass = function makeSubclass(schema) {
+    var RecordSubclass = function RecordSubclass(values) {
+      this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
+      this.__private.schema = schema;
+      Record.call(this, values);
+    };
+
+    RecordSubclass.prototype = Object.create(Record.prototype);
+    RecordSubclass.prototype.constructor = RecordSubclass;
+
+    var props = {};
+    for (var propName in schema) {
+      var propSchema = schema[propName] = schema[propName] || {};
+
+      typeof propSchema === 'string' && (propSchema = schema[propName] = { type: propSchema });
+
+      props[propName] = {
+        enumerable: true,
+        get: propSchema.getter === false ? undefined : makeGetter(propName, propSchema),
+        set: propSchema.setter === false ? undefined : makeSetter(propName, propSchema),
+      };
+    }
+    Object.defineProperties(RecordSubclass.prototype, props);
+
+    return RecordSubclass;
+  };
 
   return Record;
 

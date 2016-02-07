@@ -7,22 +7,20 @@ General
 
 List
 ----
-- bindSchema -> makeSubclass
 - Unit tests for all the extra functions
 - Events "items:added", "items:replaced", "items:removed"
 - Add "positionChanged" event to items. Args: [ newPosition, oldPosition, list, item ]
+- UT: Props that depend on 'length' should trigger own change events when length changes
 - Option to mixin lodash functions
   - or just implement some lodash funcs like union and intersection
 - Throw error message if user tries to assign to list[-1] or list[list.length]
 - Explore if there is a way to check if the user assigns outside of the array and throw an error.
-- Add dependencies to properties
   - Using Proxies? (FF + IE12)
   - Listening for internal Array "length" changes?
 
 Record
 ------
-- Define properties on prototype instead of directly on object
-- bindSchema -> makeSubclass
+- preventExtensions
 - Cache calculated property values
 - How to destroy a Record?
 

@@ -7,14 +7,11 @@ define(function (require) {
   var sinon = require('node_modules/sinon/pkg/sinon');
   var sinonChai = require('node_modules/sinon-chai/lib/sinon-chai');
 
-  var Record = require('dist/dev/record');
-
-  var recordFactory = function (schema) { return Record.bind(null, schema); };
+  var AbstractRecord = require('dist/dev/record');
 
   chai.use(sinonChai);
 
   registerSuite(function () {
-    var Record;
 
     return {
 
@@ -23,29 +20,29 @@ define(function (require) {
       'properties': {
 
         'can be declared without any additional information and set in the constructor': function () {
-          Record = recordFactory({ race: undefined });
+          var Record = AbstractRecord.makeSubclass({ race: undefined });
           expect(new Record({ race: 'human' }).race).to.equal('human');
         },
 
         'can be set after creation': function () {
-          Record = recordFactory({ race: undefined });
+          var Record = AbstractRecord.makeSubclass({ race: undefined });
           var record = new Record();
           expect(record.race).to.equal(undefined);
           record.race = 'human';
           expect(record.race).to.equal('human');
         },
 
-        'are enumerable, and nothing else is': function () {
-          Record = recordFactory({ prop1: undefined, prop2: undefined });
+        /*'are enumerable, and nothing else is': function () {
+          var Record = AbstractRecord.makeSubclass({ prop1: undefined, prop2: undefined });
           var record = new Record({ prop1: 'a' });
           expect(Object.keys(record)).to.contain('prop1');
           expect(Object.keys(record)).to.contain('prop2');
           expect(Object.keys(record).length).to.equal(2);
-        },
+        },*/
 
         /* this functionality is disabled, for now
         'can not be set unless declared': function () {
-          Record = recordFactory();
+          var Record = AbstractRecord.makeSubclass();
           expect(function () { new Record({ race: 'human' }); }).to.throw();
           expect(function () {
             var record = new Record();
@@ -54,7 +51,7 @@ define(function (require) {
         },*/
 
         'triggers "prechange" and "change" events when a property is changed': function () {
-          Record = recordFactory({ race: undefined, name: undefined });
+          var Record = AbstractRecord.makeSubclass({ race: undefined, name: undefined });
           var record = new Record();
           var prechangeCallback = sinon.spy();
           var prechangeRaceCallback = sinon.spy();
@@ -103,7 +100,7 @@ define(function (require) {
         },
 
         'does not trigger change events if the assigned value is equal to the current': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: { defaultValue: 'human', },
           });
           var record = new Record();
@@ -126,7 +123,7 @@ define(function (require) {
         'dependencies': {
 
           'causes "prechange" and "change" events to be triggered on dependent properties': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               firstName: { type: 'string', defaultValue: 'Boutros' },
               lastName: { type: 'string', defaultValue: 'Ghali' },
               fullName: {
@@ -183,7 +180,7 @@ define(function (require) {
           },
 
           'does not trigger change events if the dependent does not actually change': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               firstName: { type: 'string', defaultValue: 'Boutros' },
               lastName: { type: 'string', defaultValue: 'boutros-ghali' },
               fullName: {
@@ -214,7 +211,7 @@ define(function (require) {
         'second-level dependencies': {
 
           'emits "prechange" and "change" event when a property in its dependency chain is changed': function  () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               first: { type: 'string', defaultValue: 'a' },
               second: {
                 setter: false,
@@ -290,7 +287,7 @@ define(function (require) {
 
           'can be explicitly disabled': function () {
             // TODO: figure out what this would ever be used for...
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               password: { getter: false, },
             });
             var record = new Record();
@@ -299,7 +296,7 @@ define(function (require) {
           },
 
           'are applied before a property value is returned': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               date: {
                 type: 'object',
                 getter: function (value) {
@@ -312,7 +309,7 @@ define(function (require) {
           },
 
           'have access to other properties': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               currencySymbol: 'string',
               amount: {
                 type: 'string',
@@ -329,7 +326,7 @@ define(function (require) {
           },
 
           'can stop a change event from being triggered': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               username: {
                 type: 'string',
                 defaultValue: '',
@@ -357,7 +354,7 @@ define(function (require) {
         'setters': {
 
           'can be explicitly disabled': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               MAX_LEVEL: {
                 getter: function () { return 99; },
                 setter: false,
@@ -369,7 +366,7 @@ define(function (require) {
           },
 
           'even if disabled, allows you to specify an initial value': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               MAX_LEVEL: {
                 defaultValue: 99,
                 setter: false,
@@ -381,7 +378,7 @@ define(function (require) {
           },
 
           'even if disabled, allows you to pass an initial value to the constructor': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               MAX_LEVEL: {
                 setter: false,
               },
@@ -392,7 +389,7 @@ define(function (require) {
           },
 
           'are applied before a property value is assigned': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               date: {
                 type: 'object', // Stored type
                 setter: function (value) {
@@ -405,7 +402,7 @@ define(function (require) {
           },
 
           'have access to other properties': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               currencySymbol: 'string',
               amount: {
                 type: 'string',
@@ -422,7 +419,7 @@ define(function (require) {
           },
 
           'can stop a change event from being triggered': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               username: {
                 type: 'string',
                 defaultValue: '',
@@ -452,7 +449,7 @@ define(function (require) {
       'type checking': {
 
         'throws an error if the passed value is of the wrong type': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               race: { type: 'string', },
             });
             expect(new Record({ race: 'human' }).race).to.equal('human');
@@ -462,7 +459,7 @@ define(function (require) {
         },
 
         'throws an error if the passed value is of the wrong type (alt. syntax)': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               race: 'string',
             });
             expect(new Record({ race: 'human' }).race).to.equal('human');
@@ -472,7 +469,7 @@ define(function (require) {
         },
 
         'throws an error if a default value has not been provided': function () {
-            Record = recordFactory({
+            var Record = AbstractRecord.makeSubclass({
               race: 'string',
             });
 
@@ -490,7 +487,7 @@ define(function (require) {
       'forbidden value checking': {
 
         'throws an error when a forbidden value is passed to constructor': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: { type: 'string', forbiddenValues: [ 'cow' ] },
           });
           expect(function () { new Record(); }).to.throw();
@@ -501,11 +498,11 @@ define(function (require) {
         },
 
         'throws an error when a forbidden value is assigned': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: { type: 'string', forbiddenValues: [ 'cow' ] },
           });
           var record = new Record({ race: 'human' });
-          expect(function () { delete record.race; }).to.throw();
+          //expect(function () { delete record.race; }).to.throw();
           expect(function () { record.race = undefined; }).to.throw();
           expect(function () { record.race = null; }).to.throw();
           expect(function () { record.race = 'cow'; }).to.throw();
@@ -518,7 +515,7 @@ define(function (require) {
       'allowed value checking': {
 
         'does not throw an error if the assigned value is in the list of allowed values': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: {
               type: 'string',
               allowedValues: [ 3, undefined ],
@@ -533,7 +530,7 @@ define(function (require) {
         },
 
         'throws an error if the value has been explicitly listed as forbidden': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: {
               type: 'string',
               allowedValues: [ 3, undefined ],
@@ -555,28 +552,28 @@ define(function (require) {
       'default values': {
 
         'are assigned': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: { defaultValue: 'human', },
           });
           expect(new Record().race).to.equal('human');
         },
 
         'can be overridden': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: { defaultValue: 'human', },
           });
           expect(new Record({ race: 'squirrel' }).race).to.equal('squirrel');
         },
 
         'throws an error when the wrong type is passed': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: { type: 'number', defaultValue: 'human', },
           });
           expect(function () { new Record(); }).to.throw();
         },
 
         'does not throw an error when the specified type is passed': function () {
-          Record = recordFactory({
+          var Record = AbstractRecord.makeSubclass({
             race: { type: 'string', defaultValue: 'human', },
           });
           expect(new Record().race).to.equal('human');
@@ -585,7 +582,7 @@ define(function (require) {
       },
 
       '"toJSON" method returns a plain object representation of the record': function () {
-        Record = recordFactory({
+        var Record = AbstractRecord.makeSubclass({
           firstName: 'string',
           lastName: 'string',
           fullName: {
@@ -618,7 +615,7 @@ define(function (require) {
       },
 
       '"toString" method returns a string containing all properties and their respective values': function () {
-        Record = recordFactory({
+        var Record = AbstractRecord.makeSubclass({
           firstName: 'string',
           lastName: 'string',
           fullName: {
@@ -648,8 +645,8 @@ define(function (require) {
         expect(str).to.contain('4');
       },
 
-      '"toJSONString" method to return a valid JSON string representation of the record': function () {
-        Record = recordFactory({
+      '"toString" method to returns a valid JSON string representation of the record': function () {
+        var Record = AbstractRecord.makeSubclass({
           firstName: 'string',
           lastName: 'string',
           fullName: {
@@ -667,7 +664,7 @@ define(function (require) {
           age: 4,
         });
 
-        var jsonStr = record.toJSONString();
+        var jsonStr = record.toString();
 
         var parsedObj = JSON.parse(jsonStr);
 

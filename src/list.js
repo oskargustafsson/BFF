@@ -2,12 +2,10 @@
 define([
   './extend',
   './event-emitter',
-  './event-listener',
   './record',
 ], function (
   extend,
   eventEmitter,
-  eventListener,
   Record
 ) {
   'use strict';
@@ -110,7 +108,7 @@ define([
 
   function delegateCreator(funcName) {
     return function () {
-      return new List(this.__private.array[funcName].apply(this.__private.array, arguments));
+      return new this.constructor(this.__private.array[funcName].apply(this.__private.array, arguments));
     };
   }
 
@@ -125,85 +123,7 @@ define([
     self.emit(CHANGE_LENGTH_EVENT, self.length, prevLength, self);
   }
 
-  /**
-   * Represents a list of items.
-   * @constructor
-   * @alias module:bff/list
-   * @mixes bff/event-emitter
-   * @mixes bff/event-listener
-   * @arg {Object} [schema] - Description of properties that will be added to the List.
-   * @arg {(Array|List)} [items] - Items that will be added to the List on creation.
-   */
-  function List(schema, items) {
-    this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
-    this.__private.array = [];
-    this.__private.reEmittingEvents = {};
-
-    this.listenTo(this, CHANGE_LENGTH_EVENT, function (length, prevLength) {
-      var diff = length - prevLength;
-      var i;
-      if (diff > 0) {
-        for (i = prevLength; i < length; ++i) {
-          Object.defineProperty(this, i, {
-            enumerable: true,
-            configurable: true,
-            get: makeGetter(i),
-            set: makeSetter(i),
-          });
-        }
-      } else {
-        for (i = length; i < prevLength; ++i) {
-          delete this[i];
-        }
-      }
-    });
-
-    if (arguments.length === 1 && schema.length !== undefined) {
-      items = schema;
-      schema = undefined;
-    }
-    schema = schema || {};
-    items = items || [];
-
-    if (RUNTIME_CHECKS && typeof schema !== 'object') {
-      throw 'Schema argument must be an object';
-    }
-    if (RUNTIME_CHECKS && items.length === undefined) {
-      throw 'Items argument must be an Array or List';
-    }
-
-    for (var propName in schema) {
-      var propertySchema = schema[propName];
-
-      if (RUNTIME_CHECKS && !propertySchema.getter) {
-        throw 'List property ' + propName + ' must have a custom getter function';
-      }
-      if (RUNTIME_CHECKS && propertySchema.setter) {
-        throw 'List property ' + propName + ' may not have a setter';
-      }
-
-      propertySchema.setter = false;
-    }
-
-    extend(schema, {
-      first: {
-        getter: function () { return this[0]; },
-        setter: false,
-      },
-      last: {
-        getter: function () { return this[this.length - 1]; },
-        setter: false,
-      }
-    });
-
-    Record.call(this, schema, undefined, { allowExtensions: true });
-
-    items.length && this.pushAll(items);
-  }
-
-  Object.defineProperty(List.prototype, 'length', {
-    get: function () { return this.__private.array.length; }
-  });
+  var listFunctions = {};
 
   /**
    * Add one or more items to the end of the List. Mirrors Array.push behavior.
@@ -212,7 +132,7 @@ define([
    * @emits module:bff/list#item:added
    * @returns {Number} Updated List length
    */
-  List.prototype.push = function push() {
+  listFunctions.push = function push() {
     var nItems = arguments.length;
     if (nItems === 0) { return this.length; }
 
@@ -236,7 +156,7 @@ define([
    * @emits module:bff/list#item:added
    * @returns {Number} Updated List length
    */
-  List.prototype.unshift = function unshift() {
+  listFunctions.unshift = function unshift() {
     var nItems = arguments.length;
     if (nItems === 0) { return this.length; }
 
@@ -259,7 +179,7 @@ define([
    * @emits module:bff/list#item:removed
    * @returns {any} Removed item
    */
-  List.prototype.pop = function pop() {
+  listFunctions.pop = function pop() {
     if (this.length === 0) { return; }
 
     var prevLength = this.length;
@@ -279,7 +199,7 @@ define([
    * @emits module:bff/list#item:removed
    * @returns {any} Removed item
    */
-  List.prototype.shift = function shift() {
+  listFunctions.shift = function shift() {
     if (this.length === 0) { return; }
 
     var prevLength = this.length;
@@ -309,7 +229,7 @@ define([
    * @emits module:bff/list#item:removed
    * @returns {any[]} Array of removed items
    */
-  List.prototype.splice = function splice(start, nItemsToRemove) {
+  listFunctions.splice = function splice(start, nItemsToRemove) {
     var i;
     var oldLength = this.length;
 
@@ -370,30 +290,30 @@ define([
 
   [ 'forEach', 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduce', 'reduceRight' ]
       .forEach(function (funcName) {
-        List.prototype[funcName] = Array.prototype[funcName];
+        listFunctions[funcName] = Array.prototype[funcName];
       });
 
   [ 'sort', 'reverse' ]
       .forEach(function (funcName) {
-        List.prototype[funcName] = delegate(funcName);
+        listFunctions[funcName] = delegate(funcName);
       });
 
   [ 'filter', 'slice', 'map' ]
       .forEach(function (funcName) {
-        List.prototype[funcName] = delegateCreator(funcName);
+        listFunctions[funcName] = delegateCreator(funcName);
       });
 
-  List.prototype.concat = function concat() {
+  listFunctions.concat = function concat() {
     for (var i = 0, n = arguments.length; i < n; ++i) {
       var argument = arguments[i];
-      if (argument instanceof List) {
+      if (!(argument instanceof Array) && argument.length !== undefined) {
         arguments[i] = argument.toArray();
       }
     }
-    return new List(this.__private.array.concat.apply(this.__private.array, arguments));
+    return new this.constructor(this.__private.array.concat.apply(this.__private.array, arguments));
   };
 
-  List.prototype.filterMut = function filterMut(predicate, thisArg) {
+  listFunctions.filterMut = function filterMut(predicate, thisArg) {
     var removeCount = 0;
     for (var i = this.length - 1; i >= -1; --i) {
       if (i > -1 && !predicate.call(thisArg, this[i], i, this)) {
@@ -406,20 +326,20 @@ define([
     return this;
   };
 
-  List.prototype.remove = function remove(item) {
+  listFunctions.remove = function remove(item) {
     return this.filterMut(function (listItem) { return item !== listItem; });
   };
 
-  List.prototype.clear = function clear() {
+  listFunctions.clear = function clear() {
     return this.splice(0, this.length);
   };
 
-  List.prototype.pushAll = List.prototype.concatMut = function pushAll(items) {
+  listFunctions.pushAll = listFunctions.concatMut = function pushAll(items) {
     items.length && this.push.apply(this, items);
     return this.length;
   };
 
-  List.prototype.sliceMut = function sliceMut(begin, end) {
+  listFunctions.sliceMut = function sliceMut(begin, end) {
     var length = this.length;
 
     end = (typeof end !== 'undefined') ? end : length;
@@ -443,41 +363,41 @@ define([
     return this;
   };
 
-  List.prototype.mapMut = function mapMut(callback, thisArg) {
+  listFunctions.mapMut = function mapMut(callback, thisArg) {
     for (var i = 0, length = this.length; i < length; ++i) {
       this[i] = callback.call(thisArg, this[i], i, this);
     }
     return this;
   };
 
-  List.prototype.find = function find(callback, thisArg) {
+  listFunctions.find = function find(callback, thisArg) {
     for (var i = 0, length = this.length; i < length; ++i) {
       if (callback.call(thisArg, this[i], i, this)) { return this[i]; }
     }
   };
 
-  List.prototype.findIndex = function findIndex(callback, thisArg) {
+  listFunctions.findIndex = function findIndex(callback, thisArg) {
     for (var i = 0, length = this.length; i < length; ++i) {
       if (callback.call(thisArg, this[i], i, this)) { return i; }
     }
     return -1;
   };
 
-  List.prototype.includes = function includes(item, fromIndex) {
+  listFunctions.includes = function includes(item, fromIndex) {
     fromIndex = fromIndex || 0;
     var index = this.__private.array.indexOf(item);
     return index !== -1 && index >= fromIndex;
   };
 
-  List.prototype.toArray = function toArray() {
+  listFunctions.toArray = function toArray() {
     return this.__private.array.slice();
   };
 
-  List.prototype.toJSON = function toJSON() {
+  listFunctions.toJSON = function toJSON() {
     return this.toArray();
   };
 
-  List.prototype.addEventListener = function addEventListener(eventName) {
+  listFunctions.addEventListener = function addEventListener(eventName) {
     if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName) || this.__private.reEmittingEvents[eventName]) { return; }
     this.__private.reEmittingEvents[eventName] = true;
 
@@ -488,7 +408,7 @@ define([
     }
   };
 
-  List.prototype.removeEventListener = function removeEventListener(eventName) {
+  listFunctions.removeEventListener = function removeEventListener(eventName) {
     if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
 
     // Check if we still need to re-emit this event
@@ -500,12 +420,96 @@ define([
     this.stopListening(undefined, strippedEventName);
   };
 
-  List.prototype.bindSchema = function bindSchema(schema) {
-    return List.bind(null, schema);
-  };
+  extend(listFunctions, eventEmitter, { 'function': 'merge' });
 
-  extend(List.prototype, eventEmitter, { 'function': 'merge' });
-  extend(List.prototype, eventListener);
+  function makeSubclass(schema) {
+    for (var propName in schema) {
+      var propertySchema = schema[propName];
+
+      if (RUNTIME_CHECKS && !propertySchema.getter) {
+        throw 'List property ' + propName + ' must have a custom getter function';
+      }
+      if (RUNTIME_CHECKS && propertySchema.setter) {
+        throw 'List property ' + propName + ' may not have a setter';
+      }
+
+      propertySchema.setter = false;
+    }
+
+    extend(schema, {
+      length: {
+        getter: function () { return this.__private.array.length; },
+        //getter: function () { return this.__private && this.__private.array ? this.__private.array.length : 0; },
+        setter: false,
+      },
+      first: {
+        getter: function () { return this[0]; },
+        setter: false,
+      },
+      last: {
+        getter: function () { return this[this.length - 1]; },
+        setter: false,
+      }
+    });
+
+    var RecordSubclass = Record.makeSubclass(schema);
+
+    function List(items) {
+      this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
+      this.__private.array = [];
+      this.__private.reEmittingEvents = {};
+
+      this.listenTo(this, CHANGE_LENGTH_EVENT, function (length, prevLength) {
+        var diff = length - prevLength;
+        var i;
+        if (diff > 0) {
+          for (i = prevLength; i < length; ++i) {
+            Object.defineProperty(this, i, {
+              enumerable: true,
+              configurable: true,
+              get: makeGetter(i),
+              set: makeSetter(i),
+            });
+          }
+        } else {
+          for (i = length; i < prevLength; ++i) {
+            delete this[i];
+          }
+        }
+      });
+
+      // We don't want to send any arguments to the record constructor,
+      // none of the properties we added has any setters!
+      RecordSubclass.call(this);
+
+      items = items || [];
+
+      if (RUNTIME_CHECKS && items.length === undefined) {
+        throw 'Items argument must be an Array or List';
+      }
+
+      items.length && this.pushAll(items);
+    }
+
+    List.prototype = Object.create(RecordSubclass.prototype);
+    List.prototype.constructor = List;
+
+    extend(List.prototype, listFunctions);
+
+    return List;
+  }
+
+  /**
+   * Represents a list of items.
+   * @constructor
+   * @alias module:bff/list
+   * @mixes bff/event-emitter
+   * @mixes bff/event-listener
+   * @arg {Object} [schema] - Description of properties that will be added to the List.
+   * @arg {(Array|List)} [items] - Items that will be added to the List on creation.
+   */
+  var List = makeSubclass({});
+  List.makeSubclass = makeSubclass;
 
   return List;
 

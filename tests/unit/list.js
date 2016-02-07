@@ -45,7 +45,7 @@ define(function (require) {
       'schema': {
 
         'allows specifying properties with custom getters': function () {
-          var schema = {
+          var MyList = List.makeSubclass({
             nDone: {
               getter: function () {
                 return this.reduce(function (nDone, item) {
@@ -53,8 +53,9 @@ define(function (require) {
                 }, 0);
               }
             }
-          };
-          var list = new List(schema, [
+          });
+
+          var list = new MyList([
             { id: 1, done: false },
             { id: 2, done: true },
             { id: 3, done: false },
@@ -87,7 +88,12 @@ define(function (require) {
         },
 
         'allows you to specify dependencies': function () {
-          var schema = {
+          var TodoItem = Record.makeSubclass({
+            id: 'number',
+            done: 'boolean',
+          });
+
+          var TodoItems = List.makeSubclass({
             nDone: {
               getter: function () {
                 return this.reduce(function (nDone, item) {
@@ -96,12 +102,9 @@ define(function (require) {
               },
               dependencies: [ 'length', 'item:done' ],
             }
-          };
-          var TodoItem = Record.bind(null, {
-            id: 'number',
-            done: 'boolean',
           });
-          var list = new List(schema, [
+
+          var list = new TodoItems([
             new TodoItem({ id: 1, done: false }),
             new TodoItem({ id: 2, done: true }),
             new TodoItem({ id: 3, done: false }),
@@ -119,11 +122,11 @@ define(function (require) {
 
           expect(nDoneChangedCallback).to.have.been.calledOnce;
 
-          list.push({ id: 5, done: true });
+          list.push(new TodoItem({ id: 5, done: true }));
 
           expect(nDoneChangedCallback).to.have.been.calledTwice;
 
-          list.push({ id: 6, done: false });
+          list.push(new TodoItem({ id: 6, done: false }));
 
           expect(nDoneChangedCallback).to.have.been.calledTwice;
           expect(nDoneChangedCallback).to.have.been.calledWith(2, 1, list);
