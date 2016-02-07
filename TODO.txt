@@ -1,6 +1,5 @@
 General
 -------
-- Add CommonJS support
 - Add input validation (of calling arguments) to all exposed functions
 - Docblocks
 - Implement toString() for all modules
