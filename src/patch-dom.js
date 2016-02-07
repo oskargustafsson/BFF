@@ -85,13 +85,11 @@ define(function () {
     }
   }
 
-  function patch(target, source, options) {
+  return function patchDom(target, source, options) {
     options = options || {};
     var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);
     patchRecursive(target, source, ignoreSubtreeOf);
     return target;
-  }
-
-  return patch;
+  };
 
 });

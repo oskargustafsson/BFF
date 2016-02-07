@@ -1,7 +1,7 @@
 define([
   './extend',
   './event-listener',
-  './dom-patcher',
+  './patch-dom',
   './list',
 ], function (
   extend,

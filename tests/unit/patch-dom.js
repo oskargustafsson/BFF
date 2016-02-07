@@ -6,7 +6,7 @@ define(function (require) {
   var sinonChai = require('node_modules/sinon-chai/lib/sinon-chai');
   var expect = require('intern/chai!expect');
 
-  var patch = require('dist/dev/dom-patcher');
+  var patch = require('dist/dev/patch-dom');
 
   chai.use(sinonChai);
 
@@ -25,7 +25,7 @@ define(function (require) {
 
     return {
 
-      name: 'DOM Merger',
+      name: 'Patch DOM',
 
       'beforeEach': function () {
         testRoot = makeNode('div');
