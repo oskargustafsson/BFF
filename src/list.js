@@ -452,7 +452,7 @@ define([
       }
     });
 
-    var RecordSubclass = Record.withProperties(schema);
+    var RecordSubclass = Record.withProperties(schema, true);
 
     function List(items) {
       this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });

@@ -40,15 +40,14 @@ define(function (require) {
           expect(Object.keys(record).length).to.equal(2);
         },*/
 
-        /* this functionality is disabled, for now
         'can not be set unless declared': function () {
-          var Record = AbstractRecord.withProperties();
+          var Record = AbstractRecord.withProperties({});
           expect(function () { new Record({ race: 'human' }); }).to.throw();
           expect(function () {
             var record = new Record();
             record.race = 'human';
           }).to.throw();
-        },*/
+        },
 
         'triggers "prechange" and "change" events when a property is changed': function () {
           var Record = AbstractRecord.withProperties({ race: undefined, name: undefined });

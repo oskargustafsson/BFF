@@ -136,11 +136,12 @@ define([
   extend(Record.prototype, eventEmitter);
   extend(Record.prototype, eventListener);
 
-  Record.withProperties = function withProperties(schema) {
+  Record.withProperties = function withProperties(schema, dontPreventExtensions) {
     var RecordSubclass = function RecordSubclass(values) {
       this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
       this.__private.schema = schema;
       Record.call(this, values);
+      dontPreventExtensions || Object.preventExtensions(this);
     };
 
     RecordSubclass.prototype = Object.create(Record.prototype);
@@ -159,7 +160,6 @@ define([
       };
     }
     Object.defineProperties(RecordSubclass.prototype, props);
-
     return RecordSubclass;
   };
 

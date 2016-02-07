@@ -20,7 +20,6 @@ List
 
 Record
 ------
-- preventExtensions
 - Cache calculated property values
 - How to destroy a Record? Will they be garbage collected?
 
