@@ -22,7 +22,7 @@ Record
 ------
 - preventExtensions
 - Cache calculated property values
-- How to destroy a Record?
+- How to destroy a Record? Will they be garbage collected?
 
 Event emitter
 -------------
@@ -30,7 +30,6 @@ Event emitter
 
 Event listener
 --------------
-- Option: useCapture
 - Write UTs for listenTo(anArray, ...)
 - Option: useCapture
 
@@ -39,7 +38,6 @@ Extend
 
 View
 ----
-- Debounce render()
 
 DOM Patcher
 -----------

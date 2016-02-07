@@ -16,6 +16,8 @@ define([
   function View() {
     Object.defineProperty(this, '__private', { writable: true, value: {}, });
 
+    this.__private.isRenderRequested = false;
+
     var delegates = this.__private.eventDelegates = {};
     this.__private.onDelegatedEvent = function onDelegatedEvent(ev) {
       var delegatesForEvent = delegates[ev.type];
@@ -70,6 +72,17 @@ define([
       } else {
         this.el = newEl;
       }
+    },
+
+    requestRender: function () {
+      if (this.__private.isRenderRequested) { return; }
+      this.__private.isRenderRequested = true;
+
+      var self = this;
+      requestAnimationFrame(function () {
+        self.__private.isRenderRequested = false;
+        self.render.apply(self, arguments);
+      });
     },
 
     parseHtml: function parseHtml(htmlString, returnAll) {
