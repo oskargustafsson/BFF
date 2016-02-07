@@ -19,14 +19,12 @@ define(function () {
         throw '"eventName" argument must be a string';
       }
 
-      if (!this.__private) { return; }
-      if (!this.__private.listeners) { return; }
+      if (!this.__private || !this.__private.listeners) { return; }
 
       var listenersForEvent = this.__private.listeners[eventName];
       if (!listenersForEvent) { return; }
 
-      var length = listenersForEvent.length;
-      for (var i = 0; i < length; ++i) {
+      for (var i = 0, n = listenersForEvent.length; i < n; ++i) {
         var listener = listenersForEvent[i];
         listener.call.apply(listener, arguments); // Call the listener without the first item in the "arguments" array
       }
@@ -73,8 +71,8 @@ define(function () {
         throw '"callback" argument must be a function'; // Catch a common cause of errors
       }
 
-      if (!this.__private) { return; } // No listeners at all? We are done.
-      if (!this.__private.listeners) { return; }
+      // No listeners at all? We are done.
+      if (!this.__private || !this.__private.listeners) { return; }
 
       var listenersForEvent = this.__private.listeners[eventName];
       if (!listenersForEvent) { return; } // No listeners for this event? We are done.
