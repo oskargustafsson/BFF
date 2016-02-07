@@ -24,8 +24,8 @@
         }
       };
 
-      this.children = new List();
-      this.listenTo(this.children, 'item:removed', this.onChildRemoved);
+      this.__private.childViews = new List();
+      this.listenTo(this.__private.childViews, 'item:removed', this.onChildRemoved);
     }
 
     extend(View.prototype, eventListener);
@@ -79,7 +79,7 @@
 
       parseHtml: function parseHtml(htmlString, returnAll) {
         HTML_PARSER_EL.innerHTML = htmlString;
-        return returnAll ? HTML_PARSER_EL.children : HTML_PARSER_EL.firstChild;
+        return returnAll ? HTML_PARSER_EL.childNodes : HTML_PARSER_EL.firstChild;
       },
 
       $: function $(queryString) {
@@ -91,19 +91,19 @@
       },
 
       addChild: function addChild(childView, el) {
-        this.children.push(childView);
+        this.__private.childViews.push(childView);
         el = el || this.el;
         el && el.appendChild(childView.el);
         return childView;
       },
 
       removeChild: function removeChild(childView) {
-        this.children.remove(childView);
+        this.__private.childViews.remove(childView);
         return childView;
       },
 
       removeChildren: function removeChildren() {
-        this.children.clear();
+        this.__private.childViews.clear();
       },
 
       onChildRemoved: function onChildRemoved(childView) {
