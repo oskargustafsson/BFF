@@ -1,7 +1,15 @@
 {
-  "name": "BFF",
+  "name": "bff-lib",
+  "author": "Oskar Gustafsson",
+  "version": "0.1.0",
+  "license": "MIT",
   "description": "Basic Front end Foundation - modules for JS front end development",
-  "author": "Oskar Gustafsson <oskargustafsson88@gmail.com>",
+  "keywords": [ "mvc", "model", "view", "controller", "extend", "events", "patch DOM" ],
+  "files": [ "dist" ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oskargustafsson/bff.git"
+  },
   "devDependencies": {
     "chai": "^3.2.0",
     "grunt": "^0.4.5",
