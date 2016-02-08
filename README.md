@@ -55,7 +55,6 @@ TO DO before 1.0
 * Option: useCapture
 
 ### Extend
--
 
 ### View
 * FTs
