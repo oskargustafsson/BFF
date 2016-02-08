@@ -1,32 +1,67 @@
-Run tests in terminal
----------------------
-node_modules/.bin/intern-client config=tests/intern
+BFF - Basic Front end Foundation
+================================
+### Disclaimer: BFF is in alpha - don't use it for production projects just yet!
+
+BFF is a collection of standalone modules, designed with the intent of making it easier to design interactive web applications. It comprises base classes for the MVC pattern ([Record](https://github.com/oskargustafsson/BFF/blob/master/src/record.js), [View](https://github.com/oskargustafsson/BFF/blob/master/src/view.js)) but more importantly, generic building blocks for event systems ([Event Emitter](https://github.com/oskargustafsson/BFF/blob/master/src/event-emitter.js), [Event Listener](https://github.com/oskargustafsson/BFF/blob/master/src/event-listener.js)), inheritance ([Extend](https://github.com/oskargustafsson/BFF/blob/master/src/extend.js)), collections ([List](https://github.com/oskargustafsson/BFF/blob/master/src/list.js)) and DOM manipulation ([Patch DOM](https://github.com/oskargustafsson/BFF/blob/master/src/patch-dom.js)).
+
+Its ambition is to be a helper library rather than a framework, to be mixed and matched with home grown or third-party components. As such, each BFF module provides a specific service, with a minimal interface. All modules are AMD and CommonJS compatible.
+
+Demos
+-----
+[Todo application](http://oskargustafsson.github.io/BFF-todos-example/) ([source](https://github.com/oskargustafsson/BFF-todos-example/))
+
+Build
+-----
+`npm install` will install all project dev. dependencies.
+
+`grunt` will lint the project, build dev and prod versions of BFF, compile JSDoc documentation, and run the Intern test suite
+
+`grunt watch` will watch for source file changes and recompile the source and documentation
+
+`grunt test` will run the test suite
 
 Run tests in browser
 --------------------
-[server_root]/node_modules/intern/client.html?config=tests/intern
+[server root]/node_modules/intern/client.html?config=tests/intern
 
-Inspirations
-------------
-Backbone: Modular, unopinionated, strong event system
-Functional Reactive Programming: Signals (BFF equiv. calculated properties)
-React: DOM patching
-Typed languages: Type safety, non-null (in the data layer), debug/release mod where you trade safety for performance
+TO DO before 1.0
+----------------
+### General
+* Add input validation (of calling arguments) to all exposed functions
+* Complete documentation
+    * Docblocks
+    * Make available online
+* Implement toString() for all modules
 
-Ambitions
----------
-Simplicity; Don't create a Rube Goldberg machine that operates behind the scenes to create the illusion of magic functionality. Instead, make heavy use of getter, setters, prototypal inheritance and mixins to bring out the best parts of JS. Stay close to classic MVC, to avoid recreating problems that has already been solved.
+### List
+* UTs for all functions
+* UT: Props that depend on 'length' should trigger own change events when length changes
+* Option to mixin Lodash functions
+    * or just implement some lodash funcs like union and intersection
+* Throw error message if user tries to assign to list[-1] or list[list.length]
+* Explore if there is a way to check if the user assigns outside of the array and throw an error.
+    * Using Proxies? (FF + IE12)
+    * Listening for internal Array "length" changes?
 
-Bottom up; By creating a great data layer, the rest follows naturally
+### Record
+* Cache calculated property values
+* How to destroy Records? Will they be garbage collected as-is?
 
-Don't do everything; There are great e.g. templating engines, ajax request libs, and routers out there, don't reinvent the wheel
+### Event emitter
+* Calling addEventListener() with the same arguments multiple times should have no effect. Maybe.
 
-Cache as little as possible: Caching stuff creates complexity. Only cache stuff if it is needed for performance reasons
+### Event listener
+* Write UTs for listenTo(anArray, ...)
+* Option: useCapture
 
-A library, not a framework; BFF comprises a set of standalone modules, each providing a complete service or functionality. All modules should be compatible with eachother but dependencies between modules should be kept at a minimum.
+### Extend
+-
 
-Terse but explicit code; terseness should come from avoiding repeated boilerplate code. On the other hand, complex tasks (such as data bindings) should not be abstracted away using leaky abstractions, just to create less code in some cases.
+### View
+* FTs
 
-No external library dependencies; all modern browsers support enough of the HTML/JS/CSS specs to render libraries such as jQuery unnecessary.
-
-Lots of error checks; provide two versions of the library. One development version with lots of runtime error checks and one production version with all runtime checks stripped.
+### Patch DOM
+* Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
+* Smart algorithm for diffing lists of childNodes, based on their nodeNames
+* SVG support
+* FTs
