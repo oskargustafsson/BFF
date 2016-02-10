@@ -62,9 +62,10 @@
         }
         this.__private.isRenderRequested = true;
         var self = this;
+        var renderArgs = arguments;
         requestAnimationFrame(function() {
           self.__private.isRenderRequested = false;
-          self.render.apply(self, arguments);
+          self.render.apply(self, renderArgs);
         });
       },
       parseHtml: function(htmlString, returnAll) {

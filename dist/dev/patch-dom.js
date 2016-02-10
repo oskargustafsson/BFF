@@ -1,7 +1,7 @@
 !function() {
   'use strict';
   function moduleFactory() {
-    function shouldPatch(target, source) {
+    function areOfSameType(target, source) {
       if (!source) {
         return false;
       }
@@ -64,7 +64,7 @@
     }
     function patchRecursive(target, source, ignoreSubtreeOf) {
       var targetParent = target.parentNode;
-      if (shouldPatch(target, source)) {
+      if (areOfSameType(target, source)) {
         patchNode(target, source);
       } else {
         if (source) {
@@ -77,12 +77,53 @@
       if (ignoreSubtreeOf && -1 !== Array.prototype.indexOf.call(ignoreSubtreeOf, target)) {
         return;
       }
-      var i, n, targetChildren = target.childNodes, sourceChildren = source.childNodes;
-      for (i = 0, n = targetChildren.length; n > i; ++i) {
-        patchRecursive(targetChildren[i], sourceChildren[i], ignoreSubtreeOf);
+      var targetChildren = target.childNodes;
+      var sourceChildren = source.childNodes;
+      var targetPos, sourcePos, substitution, insertion, deletion;
+      var nTargetChildren = targetChildren.length;
+      var nSourceChildren = sourceChildren.length;
+      if (0 === nTargetChildren && 0 === nSourceChildren) {
+        return;
       }
-      for (i = targetChildren.length, n = sourceChildren.length; n > i; ++i) {
-        targetParent.appendChild(sourceChildren[i]);
+      var levMat = [];
+      for (targetPos = 0; nTargetChildren >= targetPos; ++targetPos) {
+        levMat[targetPos] = [ targetPos ];
+      }
+      for (sourcePos = 0; nSourceChildren >= sourcePos; ++sourcePos) {
+        levMat[0][sourcePos] = sourcePos;
+      }
+      for (targetPos = 1; nTargetChildren >= targetPos; ++targetPos) {
+        for (sourcePos = 1; nSourceChildren >= sourcePos; ++sourcePos) {
+          if (areOfSameType(targetChildren[targetPos - 1], sourceChildren[sourcePos - 1])) {
+            levMat[targetPos][sourcePos] = levMat[targetPos - 1][sourcePos - 1];
+          } else {
+            levMat[targetPos][sourcePos] = 1 + Math.min(levMat[targetPos - 1][sourcePos - 1], levMat[targetPos][sourcePos - 1], levMat[targetPos - 1][sourcePos]);
+          }
+        }
+      }
+      targetPos = nTargetChildren;
+      sourcePos = nSourceChildren;
+      while (0 !== targetPos || 0 !== sourcePos) {
+        substitution = targetPos > 0 && sourcePos > 0 ? levMat[targetPos - 1][sourcePos - 1] : 1 / 0;
+        insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : 1 / 0;
+        deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : 1 / 0;
+        if (insertion >= substitution && deletion >= substitution) {
+          if (substitution < levMat[targetPos][sourcePos]) {
+            target.replaceChild(sourceChildren[sourcePos - 1], targetChildren[targetPos - 1]);
+          } else {
+            patchRecursive(targetChildren[targetPos - 1], sourceChildren[sourcePos - 1], ignoreSubtreeOf);
+          }
+          targetPos--;
+          sourcePos--;
+        } else {
+          if (deletion >= insertion) {
+            sourcePos--;
+            target.insertBefore(sourceChildren[sourcePos], targetChildren[targetPos].nextSibling);
+          } else {
+            targetPos--;
+            target.removeChild(targetChildren[targetPos]);
+          }
+        }
       }
     }
     return function(target, source, options) {
