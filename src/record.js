@@ -1,3 +1,4 @@
+/* global RUNTIME_CHECKS, define */
 (function () {
   'use strict';
 
