@@ -1,6 +1,7 @@
-*.sublime-project
-*.sublime-workspace
+doc
 node_modules
 npm-debug.log
+*.sublime-project
+*.sublime-workspace
 .c9
-doc
+.vscode
