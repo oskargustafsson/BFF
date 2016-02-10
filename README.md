@@ -54,13 +54,15 @@ TO DO before 1.0
 * Write UTs for listenTo(anArray, ...)
 * Option: useCapture
 
-### Extend
-
 ### View
 * FTs
 
 ### Patch DOM
 * Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
-* Smart algorithm for diffing lists of childNodes, based on their nodeNames
+* Use Levenshtein distance algorithm to diff node lists
+		* Option to ignore nodes
+		* Optimize some common cases
 * SVG support
 * FTs
+
+### Extend

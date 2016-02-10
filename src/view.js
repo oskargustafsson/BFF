@@ -1,175 +1,175 @@
 /* global RUNTIME_CHECKS, define */
 (function () {
-  'use strict';
+	'use strict';
 
-  function moduleFactory(extend, eventListener, patch, List) {
+	function moduleFactory(extend, eventListener, patch, List) {
 
-    var HTML_PARSER_EL = document.createElement('div');
+		var HTML_PARSER_EL = document.createElement('div');
 
-    function View() {
-      Object.defineProperty(this, '__private', { writable: true, value: {}, });
+		function View() {
+			Object.defineProperty(this, '__private', { writable: true, value: {}, });
 
-      this.__private.isRenderRequested = false;
+			this.__private.isRenderRequested = false;
 
-      var delegates = this.__private.eventDelegates = {};
-      this.__private.onDelegatedEvent = function onDelegatedEvent(ev) {
-        var delegatesForEvent = delegates[ev.type];
-        var el = ev.target;
-        for (var selector in delegatesForEvent) {
-          if (!el.matches(selector)) { continue; } // TODO: IE9 support (msMatchesSelector)
-          var delegatesForEventAndSelector = delegatesForEvent[selector];
-          for (var i = 0, n = delegatesForEventAndSelector.length; i < n; ++i) {
-            //console.log(ev.type, selector, ev.target);
-            delegatesForEventAndSelector[i](ev);
-          }
-        }
-      };
+			var delegates = this.__private.eventDelegates = {};
+			this.__private.onDelegatedEvent = function onDelegatedEvent(ev) {
+				var delegatesForEvent = delegates[ev.type];
+				var el = ev.target;
+				for (var selector in delegatesForEvent) {
+					if (!el.matches(selector)) { continue; } // TODO: IE9 support (msMatchesSelector)
+					var delegatesForEventAndSelector = delegatesForEvent[selector];
+					for (var i = 0, n = delegatesForEventAndSelector.length; i < n; ++i) {
+						//console.log(ev.type, selector, ev.target);
+						delegatesForEventAndSelector[i](ev);
+					}
+				}
+			};
 
-      this.__private.childViews = new List();
-      this.listenTo(this.__private.childViews, 'item:removed', this.onChildRemoved);
-    }
+			this.__private.childViews = new List();
+			this.listenTo(this.__private.childViews, 'item:removed', this.onChildRemoved);
+		}
 
-    extend(View.prototype, eventListener);
+		extend(View.prototype, eventListener);
 
-    extend(View.prototype, {
+		extend(View.prototype, {
 
-      destroy: function destroy() {
-        this.removeChildren();
-        this.stopListening();
-        this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
-      },
+			destroy: function destroy() {
+				this.removeChildren();
+				this.stopListening();
+				this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
+			},
 
-      makeSubclass: function makeSubclass(properties) {
-        var superclass = this;
-        var customConstructor = properties.constructor;
+			makeSubclass: function makeSubclass(properties) {
+				var superclass = this;
+				var customConstructor = properties.constructor;
 
-        var Constructor = function SubClassConstructor() {
-          superclass.constructor.apply(this, arguments);
-          customConstructor && customConstructor.apply(this, arguments);
-        };
-        delete properties.constructor;
+				var Constructor = function SubClassConstructor() {
+					superclass.constructor.apply(this, arguments);
+					customConstructor && customConstructor.apply(this, arguments);
+				};
+				delete properties.constructor;
 
-        Constructor.prototype = Object.create(this);
-        properties && extend(Constructor.prototype, properties);
-        Constructor.prototype.constructor = Constructor;
+				Constructor.prototype = Object.create(this);
+				properties && extend(Constructor.prototype, properties);
+				Constructor.prototype.constructor = Constructor;
 
-        return Constructor;
-      },
+				return Constructor;
+			},
 
-      render: function render(patchOptions) {
-        if (RUNTIME_CHECKS && !this.getHtml) { throw 'You must implement getHtml() in order to use render()'; }
+			render: function render(patchOptions) {
+				if (RUNTIME_CHECKS && !this.getHtml) { throw 'You must implement getHtml() in order to use render()'; }
 
-        var newEl = this.parseHtml(this.getHtml());
-        if (this.el) {
-          patch(this.el, newEl, patchOptions);
-        } else {
-          this.el = newEl;
-        }
-      },
+				var newEl = this.parseHtml(this.getHtml());
+				if (this.el) {
+					patch(this.el, newEl, patchOptions);
+				} else {
+					this.el = newEl;
+				}
+			},
 
-      requestRender: function () {
-        if (this.__private.isRenderRequested) { return; }
-        this.__private.isRenderRequested = true;
+			requestRender: function () {
+				if (this.__private.isRenderRequested) { return; }
+				this.__private.isRenderRequested = true;
 
-        var self = this;
-        var renderArgs = arguments;
+				var self = this;
+				var renderArgs = arguments;
 
-        requestAnimationFrame(function () {
-          self.__private.isRenderRequested = false;
-          self.render.apply(self, renderArgs);
-        });
-      },
+				requestAnimationFrame(function () {
+					self.__private.isRenderRequested = false;
+					self.render.apply(self, renderArgs);
+				});
+			},
 
-      parseHtml: function parseHtml(htmlString, returnAll) {
-        HTML_PARSER_EL.innerHTML = htmlString;
-        return returnAll ? HTML_PARSER_EL.childNodes : HTML_PARSER_EL.firstChild;
-      },
+			parseHtml: function parseHtml(htmlString, returnAll) {
+				HTML_PARSER_EL.innerHTML = htmlString;
+				return returnAll ? HTML_PARSER_EL.childNodes : HTML_PARSER_EL.firstChild;
+			},
 
-      $: function $(queryString) {
-        return this.el.querySelector(queryString);
-      },
+			$: function $(queryString) {
+				return this.el.querySelector(queryString);
+			},
 
-      forceRepaint: function forceRepaint(el) {
-        return (el || this.el).offsetHeight;
-      },
+			forceRepaint: function forceRepaint(el) {
+				return (el || this.el).offsetHeight;
+			},
 
-      addChild: function addChild(childView, el) {
-        this.__private.childViews.push(childView);
-        el = el || this.el;
-        el && el.appendChild(childView.el);
-        return childView;
-      },
+			addChild: function addChild(childView, el) {
+				this.__private.childViews.push(childView);
+				el = el || this.el;
+				el && el.appendChild(childView.el);
+				return childView;
+			},
 
-      removeChild: function removeChild(childView) {
-        this.__private.childViews.remove(childView);
-        return childView;
-      },
+			removeChild: function removeChild(childView) {
+				this.__private.childViews.remove(childView);
+				return childView;
+			},
 
-      removeChildren: function removeChildren() {
-        this.__private.childViews.clear();
-      },
+			removeChildren: function removeChildren() {
+				this.__private.childViews.clear();
+			},
 
-      onChildRemoved: function onChildRemoved(childView) {
-        childView.destroy();
-      },
+			onChildRemoved: function onChildRemoved(childView) {
+				childView.destroy();
+			},
 
-      // Based on https://github.com/ftlabs/ftdomdelegate/blob/master/lib/delegate.js
-      listenTo: function listenTo(selectorStr, eventName, callback, context, useCapture) {
-        if (typeof selectorStr !== 'string') {
-          eventListener.listenTo.apply(this, arguments);
-          return;
-        }
+			// Based on https://github.com/ftlabs/ftdomdelegate/blob/master/lib/delegate.js
+			listenTo: function listenTo(selectorStr, eventName, callback, context, useCapture) {
+				if (typeof selectorStr !== 'string') {
+					eventListener.listenTo.apply(this, arguments);
+					return;
+				}
 
-        if (eventName instanceof Array && eventName.length > 0) {
-          this.listenTo(selectorStr, eventName.pop(), callback, context, useCapture);
-          this.listenTo(selectorStr, eventName, callback, context, useCapture);
-          return;
-        }
+				if (eventName instanceof Array && eventName.length > 0) {
+					this.listenTo(selectorStr, eventName.pop(), callback, context, useCapture);
+					this.listenTo(selectorStr, eventName, callback, context, useCapture);
+					return;
+				}
 
-        var delegates = this.__private.eventDelegates;
-        var delegatesForEvent = delegates[eventName];
-        var firstTimeListeningToEvent = false;
-        if (!delegatesForEvent) {
-          delegatesForEvent = (delegates[eventName] = {});
-          firstTimeListeningToEvent = true;
-          useCapture = useCapture || eventName === 'blur' || eventName === 'focus';
-          eventListener.listenTo.call(this, this.el, eventName, this.__private.onDelegatedEvent, undefined, useCapture);
-        }
-        delegatesForEvent[selectorStr] = delegatesForEvent[selectorStr] || [];
-        delegatesForEvent[selectorStr].push(callback.bind(context || this));
-      },
+				var delegates = this.__private.eventDelegates;
+				var delegatesForEvent = delegates[eventName];
+				var firstTimeListeningToEvent = false;
+				if (!delegatesForEvent) {
+					delegatesForEvent = (delegates[eventName] = {});
+					firstTimeListeningToEvent = true;
+					useCapture = useCapture || eventName === 'blur' || eventName === 'focus';
+					eventListener.listenTo.call(this, this.el, eventName, this.__private.onDelegatedEvent, undefined, useCapture);
+				}
+				delegatesForEvent[selectorStr] = delegatesForEvent[selectorStr] || [];
+				delegatesForEvent[selectorStr].push(callback.bind(context || this));
+			},
 
-      stopListening: function stopListening(selectorStr, eventName) {
-        if (typeof selectorStr !== 'string') {
-          eventListener.stopListening.apply(this, arguments);
-          return;
-        }
+			stopListening: function stopListening(selectorStr, eventName) {
+				if (typeof selectorStr !== 'string') {
+					eventListener.stopListening.apply(this, arguments);
+					return;
+				}
 
-        var delegatesForEvent = this.__private.eventDelegates[eventName];
-        if (!delegatesForEvent) { return; }
+				var delegatesForEvent = this.__private.eventDelegates[eventName];
+				if (!delegatesForEvent) { return; }
 
-        delete delegatesForEvent[selectorStr];
-        if (Object.keys(delegatesForEvent).length === 0) {
-          delete this.__private.eventDelegates[eventName];
-          eventListener.stopListening.call(this, this.el, eventName);
-        }
-      },
+				delete delegatesForEvent[selectorStr];
+				if (Object.keys(delegatesForEvent).length === 0) {
+					delete this.__private.eventDelegates[eventName];
+					eventListener.stopListening.call(this, this.el, eventName);
+				}
+			},
 
-    }, 'useSource');
+		}, 'useSource');
 
-    return View;
+		return View;
 
-  }
+	}
 
-  // Expose, based on environment
-  if (typeof define === 'function' && define.amd) { // AMD
-    define([ './extend', './event-listener', './patch-dom', './list' ], moduleFactory);
-  } else if (typeof exports === 'object') { // Node, CommonJS-like
-    module.exports = moduleFactory(
-        require('./extend'), require('./event-listener'), require('./patch-dom'), require('./list'));
-  } else { // Browser globals
-    var bff = window.bff = window.bff || {};
-    bff.View = moduleFactory(bff.extend, bff.eventListener, bff.patchDom, bff.List);
-  }
+	// Expose, based on environment
+	if (typeof define === 'function' && define.amd) { // AMD
+		define([ './extend', './event-listener', './patch-dom', './list' ], moduleFactory);
+	} else if (typeof exports === 'object') { // Node, CommonJS-like
+		module.exports = moduleFactory(
+				require('./extend'), require('./event-listener'), require('./patch-dom'), require('./list'));
+	} else { // Browser globals
+		var bff = window.bff = window.bff || {};
+		bff.View = moduleFactory(bff.extend, bff.eventListener, bff.patchDom, bff.List);
+	}
 
 }());
