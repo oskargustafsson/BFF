@@ -60,8 +60,8 @@ TO DO before 1.0
 ### Patch DOM
 * Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
 * Use Levenshtein distance algorithm to diff node lists
-		* Option to ignore nodes
 		* Optimize some common cases
+* Make patchRecursive tailRecusive + use preallocated static typed array for levMat
 * SVG support
 * FTs
 

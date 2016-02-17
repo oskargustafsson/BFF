@@ -58,6 +58,10 @@
 			}
 		}
 
+		function shouldIgnoreNode(node) {
+			return !!node.hasAttribute && node.hasAttribute('patch-ignore');
+		}
+
 		function patchRecursive(target, source, ignoreSubtreeOf) {
 			var targetParent = target.parentNode;
 
@@ -80,11 +84,17 @@
 			var targetChildren = target.childNodes;
 			var sourceChildren = source.childNodes;
 
-			var targetPos, sourcePos, substitution, insertion, deletion;
+			var targetPos, sourcePos, substitution, insertion, deletion, targetChild, sourceChild;
 			var nTargetChildren = targetChildren.length;
 			var nSourceChildren = sourceChildren.length;
 
-			if (nTargetChildren === 0 && nSourceChildren === 0) { return; }
+			var nIgnoredTargetChildren = 0;
+			var nTargetChildrenToIgnore = 0;
+			for (var i = 0; i < nTargetChildren; ++i) {
+				shouldIgnoreNode(targetChildren[i]) && nTargetChildrenToIgnore++;
+			}
+
+			if (nTargetChildren - nTargetChildrenToIgnore === 0 && nSourceChildren === 0) { return; }
 
 			var levMat = [];
 
@@ -96,9 +106,17 @@
 				levMat[0][sourcePos] = sourcePos;
 			}
 
-			for (targetPos = 1; targetPos <= nTargetChildren; ++targetPos) {
+			for (targetPos = 1; targetPos + nIgnoredTargetChildren <= nTargetChildren; targetPos++) {
+				targetChild = targetChildren[targetPos + nIgnoredTargetChildren - 1];
+
+				if (shouldIgnoreNode(targetChild)) {
+					nIgnoredTargetChildren++;
+					targetPos--;
+					continue;
+				}
+
 				for (sourcePos = 1; sourcePos <= nSourceChildren; ++sourcePos) {
-					if (areOfSameType(targetChildren[targetPos - 1], sourceChildren[sourcePos - 1])) {
+					if (areOfSameType(targetChild, sourceChildren[sourcePos - 1])) {
 						levMat[targetPos][sourcePos] = levMat[targetPos - 1][sourcePos - 1];
 					} else {
 						levMat[targetPos][sourcePos] = 1 + Math.min(
@@ -109,30 +127,40 @@
 				}
 			}
 
-			targetPos = nTargetChildren;
+			targetPos = nTargetChildren - nTargetChildrenToIgnore;
 			sourcePos = nSourceChildren;
-			while (targetPos !== 0 || sourcePos !== 0) {
+			while (targetPos > 0 || sourcePos > 0) {
+				targetChild = targetChildren[targetPos + nTargetChildrenToIgnore - 1];
+
+				if (shouldIgnoreNode(targetChild)) {
+					nTargetChildrenToIgnore--;
+					continue;
+				}
+
 				substitution = targetPos > 0 && sourcePos > 0 ? levMat[targetPos - 1][sourcePos - 1] : Infinity;
 				insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : Infinity;
 				deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : Infinity;
+
+				sourceChild = sourceChildren[sourcePos - 1];
+
 				if (substitution <= insertion && substitution <= deletion) {
 					if (substitution < levMat[targetPos][sourcePos]) {
 						// Substitute
-						target.replaceChild(sourceChildren[sourcePos - 1], targetChildren[targetPos - 1]);
+						target.replaceChild(sourceChild, targetChild);
 					} else {
 						// Patch
-						patchRecursive(targetChildren[targetPos - 1], sourceChildren[sourcePos - 1], ignoreSubtreeOf);
+						patchRecursive(targetChild, sourceChild, ignoreSubtreeOf);
 					}
 					targetPos--;
 					sourcePos--;
 				} else if (insertion <= deletion) {
 					// Insert
+					target.insertBefore(sourceChild, targetChild.nextSibling);
 					sourcePos--;
-					target.insertBefore(sourceChildren[sourcePos], targetChildren[targetPos].nextSibling);
 				} else {
 					// Delete
+					target.removeChild(targetChild);
 					targetPos--;
-					target.removeChild(targetChildren[targetPos]);
 				}
 			}
 		}

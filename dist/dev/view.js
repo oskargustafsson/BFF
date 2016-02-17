@@ -55,6 +55,7 @@
         } else {
           this.el = newEl;
         }
+        this.doPatch || this.el.setAttribute('patch-ignore', '');
       },
       requestRender: function() {
         if (this.__private.isRenderRequested) {
