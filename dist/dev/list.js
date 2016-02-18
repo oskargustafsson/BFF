@@ -305,6 +305,9 @@
     listFunctions.toJSON = function() {
       return this.toArray();
     };
+    listFunctions.propertiesToJSON = function() {
+      return Record.prototype.toJSON.call(this);
+    };
     listFunctions.addEventListener = function(eventName) {
       if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName) || this.__private.reEmittingEvents[eventName]) {
         return;

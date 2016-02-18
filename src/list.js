@@ -392,6 +392,10 @@
 			return this.toArray();
 		};
 
+		listFunctions.propertiesToJSON = function propertiesToJSON() {
+			return Record.prototype.toJSON.call(this);
+		};
+
 		listFunctions.addEventListener = function addEventListener(eventName) {
 			if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName) || this.__private.reEmittingEvents[eventName]) { return; }
 			this.__private.reEmittingEvents[eventName] = true;

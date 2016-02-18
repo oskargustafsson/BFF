@@ -60,12 +60,13 @@
 				if (RUNTIME_CHECKS && !this.getHtml) { throw 'You must implement getHtml() in order to use render()'; }
 
 				var newEl = this.parseHtml(this.getHtml());
+				this.doPatch || newEl.setAttribute('patch-ignore', '');
+
 				if (this.el) {
 					patch(this.el, newEl, patchOptions);
 				} else {
 					this.el = newEl;
 				}
-				this.doPatch || this.el.setAttribute('patch-ignore', '');
 			},
 
 			requestRender: function () {
