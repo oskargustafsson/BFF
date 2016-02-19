@@ -37,7 +37,7 @@ define(function (require) {
 			'throws an error if the callback arg is not a function': function () {
 				var emitter = extend({}, eventEmitter);
 				expect(function () {
-					 emitter.addEventListener('kwanzaa').to.throw();
+					emitter.addEventListener('kwanzaa').to.throw();
 				});
 			},
 
@@ -85,7 +85,7 @@ define(function (require) {
 			'throws an error if the callback to removeEventListener arg is not a function': function () {
 				var emitter = extend({}, eventEmitter);
 				expect(function () {
-					 emitter.removeEventListener('kwanzaa', undefined).to.throw();
+					emitter.removeEventListener('kwanzaa', undefined).to.throw();
 				});
 			},
 
