@@ -58,7 +58,20 @@
 			 * @returns {undefined}
 			 */
 			listenTo: function listenTo(eventEmitters, eventNames, callback, context, useCapture) {
-				if (RUNTIME_CHECKS && !eventEmitters) { throw 'First argument must not be falsy'; }
+				if (RUNTIME_CHECKS) {
+					if (!eventEmitters || !(eventEmitters.addEventListener || eventEmitters instanceof Array)) {
+						throw '"eventEmitters" argument must be an event emitter or an array of event emitters';
+					}
+					if (typeof eventNames !== 'string' && !(eventNames instanceof Array)) {
+						throw '"eventNames" argument must be a string or an array of strings';
+					}
+					if (typeof callback !== 'function') {
+						throw '"callback" argument must be a function';
+					}
+					if (useCapture !== undefined && typeof useCapture !== 'boolean') {
+						throw '"useCapture" argument must be a boolean value';
+					}
+				}
 
 				// Convenience functionality that allows you to listen to all items in an Array or NodeList
 				// BFF Lists have this kind of functionality built it, so don't handle that case here
@@ -84,8 +97,13 @@
 			 * @returns {undefined}
 			 */
 			stopListening: function stopListening(eventEmitter, eventName) {
-				if (RUNTIME_CHECKS && (eventEmitter || arguments.length === 1) && !(eventEmitter || {}).removeEventListener) {
-					throw 'First argument is not an event emitter';
+				if (RUNTIME_CHECKS) {
+					if (arguments.length > 0 && (!eventEmitter || !eventEmitter.addEventListener)) {
+						throw '"eventEmitter" argument must be an event emitter';
+					}
+					if (arguments.length > 1 && typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
 				}
 
 				if (!this.__private || !this.__private.listeningTo) { return; } // Not listening to anything? We are done.

@@ -36,8 +36,19 @@
     }
     var EventListener = {
       listenTo: function(eventEmitters, eventNames, callback, context, useCapture) {
-        if (true && !eventEmitters) {
-          throw 'First argument must not be falsy';
+        if (true) {
+          if (!eventEmitters || !(eventEmitters.addEventListener || eventEmitters instanceof Array)) {
+            throw '"eventEmitters" argument must be an event emitter or an array of event emitters';
+          }
+          if ('string' != typeof eventNames && !(eventNames instanceof Array)) {
+            throw '"eventNames" argument must be a string or an array of strings';
+          }
+          if ('function' != typeof callback) {
+            throw '"callback" argument must be a function';
+          }
+          if (void 0 !== useCapture && 'boolean' != typeof useCapture) {
+            throw '"useCapture" argument must be a boolean value';
+          }
         }
         eventEmitters = eventEmitters instanceof Array || 'undefined' != typeof NodeList && eventEmitters instanceof NodeList ? eventEmitters : [ eventEmitters ];
         eventNames = eventNames instanceof Array ? eventNames : [ eventNames ];
@@ -48,8 +59,13 @@
         }
       },
       stopListening: function(eventEmitter, eventName) {
-        if (true && (eventEmitter || 1 === arguments.length) && !(eventEmitter || {}).removeEventListener) {
-          throw 'First argument is not an event emitter';
+        if (true) {
+          if (arguments.length > 0 && (!eventEmitter || !eventEmitter.addEventListener)) {
+            throw '"eventEmitter" argument must be an event emitter';
+          }
+          if (arguments.length > 1 && 'string' != typeof eventName) {
+            throw '"eventName" argument must be a string';
+          }
         }
         if (!this.__private || !this.__private.listeningTo) {
           return;

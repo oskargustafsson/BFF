@@ -8,11 +8,13 @@
       return 'function' === getType(val) ? val : SOLVERS[val];
     }
     function extend(target, source, onConflict, defaultOnConflict) {
-      if (true && !(target instanceof Object)) {
-        throw '"target" argument must be an object';
-      }
-      if (true && !(source instanceof Object)) {
-        throw '"source" argument must be an object';
+      if (true) {
+        if ('object' != typeof target) {
+          throw '"target" argument must be an object';
+        }
+        if ('object' != typeof source) {
+          throw '"source" argument must be an object';
+        }
       }
       var isOnConflictObject = 'object' === getType(onConflict);
       defaultOnConflict = getSolverFunction(isOnConflictObject ? defaultOnConflict : onConflict) || SOLVERS.crash;

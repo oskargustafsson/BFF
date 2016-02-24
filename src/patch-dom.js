@@ -221,6 +221,19 @@
 
 		return function patchDom(target, source, options) {
 			options = options || {};
+
+			if (RUNTIME_CHECKS) {
+				if (!(target instanceof HTMLElement)) {
+					throw 'target argument must be an HTMLElement';
+				}
+				if (!(source instanceof HTMLElement)) {
+					throw 'source argument must be an HTMLElement';
+				}
+				if (options.ignoreSubtreeOf !== undefined && typeof options.ignoreSubtreeOf !== 'string') {
+					throw 'ignoreSubtreeOf option must be a valid CSS selector string';
+				}
+			}
+
 			var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);
 			patchRecursive(target, source, ignoreSubtreeOf);
 			return target;

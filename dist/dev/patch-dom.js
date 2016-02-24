@@ -189,6 +189,17 @@
     var preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
     return function(target, source, options) {
       options = options || {};
+      if (true) {
+        if (!(target instanceof HTMLElement)) {
+          throw 'target argument must be an HTMLElement';
+        }
+        if (!(source instanceof HTMLElement)) {
+          throw 'source argument must be an HTMLElement';
+        }
+        if (void 0 !== options.ignoreSubtreeOf && 'string' != typeof options.ignoreSubtreeOf) {
+          throw 'ignoreSubtreeOf option must be a valid CSS selector string';
+        }
+      }
       var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);
       patchRecursive(target, source, ignoreSubtreeOf);
       return target;

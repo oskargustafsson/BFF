@@ -11,8 +11,10 @@
 		function getSolverFunction(val) { return getType(val) === 'function' ? val : SOLVERS[val]; }
 
 		function extend(target, source, onConflict, defaultOnConflict) {
-			if (RUNTIME_CHECKS && !(target instanceof Object)) { throw '"target" argument must be an object'; }
-			if (RUNTIME_CHECKS && !(source instanceof Object)) { throw '"source" argument must be an object'; }
+			if (RUNTIME_CHECKS) {
+				if (typeof target !== 'object') { throw '"target" argument must be an object'; }
+				if (typeof source !== 'object') { throw '"source" argument must be an object'; }
+			}
 
 			var isOnConflictObject = getType(onConflict) === 'object';
 			defaultOnConflict = getSolverFunction(isOnConflictObject ? defaultOnConflict : onConflict) || SOLVERS.crash;
