@@ -19,6 +19,5 @@
 	"disallowMixedSpacesAndTabs": true,
 	"disallowKeywordsOnNewLine": [ "else" ],
 	"requireLineFeedAtFileEnd": true,
-	"maximumLineLength": 120,
 	"excludeFiles": ["node_modules/**"]
 }

@@ -105,32 +105,49 @@
 			var targetChildren = target.childNodes;
 			var sourceChildren = source.childNodes;
 
-			var i, n, targetPos, sourcePos, substitution, insertion, deletion, targetChild, sourceChild;
+			var i, n, targetPos, sourcePos, targetChild, sourceChild;
 			var nTargetChildren = targetChildren.length;
 			var nSourceChildren = sourceChildren.length;
 
+			var nLeadingSameTypeChildren = 0;
+
 			var nIgnoredTargetChildren = 0;
 			var nTargetChildrenToIgnore = 0;
+			var allChildrenMatchSoFar = true;
+
 			for (i = 0; i < nTargetChildren; ++i) {
-				shouldIgnoreNode(targetChildren[i]) && nTargetChildrenToIgnore++;
+				if (shouldIgnoreNode(targetChildren[i])) {
+					nTargetChildrenToIgnore++;
+				} else if (allChildrenMatchSoFar) {
+					if (areOfSameType(targetChildren[i + nTargetChildrenToIgnore], sourceChildren[i])) {
+						childrenToPatch.push(targetChildren[i + nTargetChildrenToIgnore]);
+						childrenToPatch.push(sourceChildren[i]);
+						nLeadingSameTypeChildren++;
+					} else {
+						allChildrenMatchSoFar = false;
+					}
+				}
 			}
 
 			if (nTargetChildren - nTargetChildrenToIgnore === 0 && nSourceChildren === 0) { return; }
 
+			var levMatSizeX = nTargetChildren - nLeadingSameTypeChildren;
+			var levMatSizeY = nSourceChildren - nLeadingSameTypeChildren;
+
 			var levMat;
-			if (preallocLevMatSizeX < nTargetChildren || preallocLevMatSizeY < nSourceChildren) {
-				// The preallocated matrix is too small
-				if (preallocLevMatSizeX <= nTargetChildren && preallocLevMatSizeY <= nSourceChildren) {
+			if (preallocLevMatSizeX < levMatSizeX || preallocLevMatSizeY < levMatSizeY) {
+				// The preallocated matrix is too small.
+				if (preallocLevMatSizeX <= levMatSizeX && preallocLevMatSizeY <= levMatSizeY) {
 					// The needed matrix is bigger or equal to the preallocated one i all dimensions, so let's grow the
-					// preallocated one
-					preallocLevMatSizeX = nTargetChildren;
-					preallocLevMatSizeY = nSourceChildren;
+					// preallocated one.
+					preallocLevMatSizeX = levMatSizeX;
+					preallocLevMatSizeY = levMatSizeY;
 					preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
 					levMat = preallocLevMat;
 				} else {
 					// The needed matrix is larger than the preallocated one in some, but not all dimensions. This
-					// should be quite an edge case, so use a temporary matrix for this operation
-					levMat = makeLevMat(nTargetChildren, nSourceChildren);
+					// should be quite an edge case, so just use a temporary matrix for this operation.
+					levMat = makeLevMat(levMatSizeX, levMatSizeY);
 				}
 			} else {
 				// The needed matrix fits inside the preallocated one, so just use that one. This should be the most
@@ -138,8 +155,8 @@
 				levMat = preallocLevMat;
 			}
 
-			for (targetPos = 1; targetPos + nIgnoredTargetChildren <= nTargetChildren; targetPos++) {
-				targetChild = targetChildren[targetPos + nIgnoredTargetChildren - 1];
+			for (targetPos = 1; targetPos + nIgnoredTargetChildren <= nTargetChildren - nLeadingSameTypeChildren; targetPos++) {
+				targetChild = targetChildren[targetPos + nIgnoredTargetChildren + nLeadingSameTypeChildren - 1];
 
 				if (shouldIgnoreNode(targetChild)) {
 					nIgnoredTargetChildren++;
@@ -147,8 +164,8 @@
 					continue;
 				}
 
-				for (sourcePos = 1; sourcePos <= nSourceChildren; ++sourcePos) {
-					if (areOfSameType(targetChild, sourceChildren[sourcePos - 1])) {
+				for (sourcePos = 1; sourcePos <= nSourceChildren - nLeadingSameTypeChildren; ++sourcePos) {
+					if (areOfSameType(targetChild, sourceChildren[sourcePos + nLeadingSameTypeChildren - 1])) {
 						levMat[targetPos][sourcePos] = levMat[targetPos - 1][sourcePos - 1];
 					} else {
 						levMat[targetPos][sourcePos] = 1 + Math.min(
@@ -159,21 +176,21 @@
 				}
 			}
 
-			targetPos = nTargetChildren - nTargetChildrenToIgnore;
-			sourcePos = nSourceChildren;
+			targetPos = nTargetChildren - nLeadingSameTypeChildren - nTargetChildrenToIgnore;
+			sourcePos = nSourceChildren - nLeadingSameTypeChildren;
 			while (targetPos > 0 || sourcePos > 0) {
-				targetChild = targetChildren[targetPos + nTargetChildrenToIgnore - 1];
+				targetChild = targetChildren[targetPos + nLeadingSameTypeChildren + nTargetChildrenToIgnore - 1];
 
 				if (shouldIgnoreNode(targetChild)) {
 					nTargetChildrenToIgnore--;
 					continue;
 				}
 
-				substitution = targetPos > 0 && sourcePos > 0 ? levMat[targetPos - 1][sourcePos - 1] : Infinity;
-				insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : Infinity;
-				deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : Infinity;
+				var substitution = targetPos > 0 && sourcePos > 0 ? levMat[targetPos - 1][sourcePos - 1] : Infinity;
+				var insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : Infinity;
+				var deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : Infinity;
 
-				sourceChild = sourceChildren[sourcePos - 1];
+				sourceChild = sourceChildren[sourcePos + nLeadingSameTypeChildren - 1];
 
 				if (substitution <= insertion && substitution <= deletion) {
 					if (substitution < levMat[targetPos][sourcePos]) {

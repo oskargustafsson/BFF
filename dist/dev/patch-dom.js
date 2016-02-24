@@ -94,57 +94,73 @@
       }
       var targetChildren = target.childNodes;
       var sourceChildren = source.childNodes;
-      var i, n, targetPos, sourcePos, substitution, insertion, deletion, targetChild, sourceChild;
+      var i, n, targetPos, sourcePos, targetChild, sourceChild;
       var nTargetChildren = targetChildren.length;
       var nSourceChildren = sourceChildren.length;
+      var nLeadingSameTypeChildren = 0;
       var nIgnoredTargetChildren = 0;
       var nTargetChildrenToIgnore = 0;
+      var allChildrenMatchSoFar = true;
       for (i = 0; nTargetChildren > i; ++i) {
-        shouldIgnoreNode(targetChildren[i]) && nTargetChildrenToIgnore++;
+        if (shouldIgnoreNode(targetChildren[i])) {
+          nTargetChildrenToIgnore++;
+        } else {
+          if (allChildrenMatchSoFar) {
+            if (areOfSameType(targetChildren[i + nTargetChildrenToIgnore], sourceChildren[i])) {
+              childrenToPatch.push(targetChildren[i + nTargetChildrenToIgnore]);
+              childrenToPatch.push(sourceChildren[i]);
+              nLeadingSameTypeChildren++;
+            } else {
+              allChildrenMatchSoFar = false;
+            }
+          }
+        }
       }
       if (nTargetChildren - nTargetChildrenToIgnore === 0 && 0 === nSourceChildren) {
         return;
       }
+      var levMatSizeX = nTargetChildren - nLeadingSameTypeChildren;
+      var levMatSizeY = nSourceChildren - nLeadingSameTypeChildren;
       var levMat;
-      if (nTargetChildren > preallocLevMatSizeX || nSourceChildren > preallocLevMatSizeY) {
-        if (nTargetChildren >= preallocLevMatSizeX && nSourceChildren >= preallocLevMatSizeY) {
-          preallocLevMatSizeX = nTargetChildren;
-          preallocLevMatSizeY = nSourceChildren;
+      if (levMatSizeX > preallocLevMatSizeX || levMatSizeY > preallocLevMatSizeY) {
+        if (levMatSizeX >= preallocLevMatSizeX && levMatSizeY >= preallocLevMatSizeY) {
+          preallocLevMatSizeX = levMatSizeX;
+          preallocLevMatSizeY = levMatSizeY;
           preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
           levMat = preallocLevMat;
         } else {
-          levMat = makeLevMat(nTargetChildren, nSourceChildren);
+          levMat = makeLevMat(levMatSizeX, levMatSizeY);
         }
       } else {
         levMat = preallocLevMat;
       }
-      for (targetPos = 1; nTargetChildren >= targetPos + nIgnoredTargetChildren; targetPos++) {
-        targetChild = targetChildren[targetPos + nIgnoredTargetChildren - 1];
+      for (targetPos = 1; nTargetChildren - nLeadingSameTypeChildren >= targetPos + nIgnoredTargetChildren; targetPos++) {
+        targetChild = targetChildren[targetPos + nIgnoredTargetChildren + nLeadingSameTypeChildren - 1];
         if (shouldIgnoreNode(targetChild)) {
           nIgnoredTargetChildren++;
           targetPos--;
           continue;
         }
-        for (sourcePos = 1; nSourceChildren >= sourcePos; ++sourcePos) {
-          if (areOfSameType(targetChild, sourceChildren[sourcePos - 1])) {
+        for (sourcePos = 1; nSourceChildren - nLeadingSameTypeChildren >= sourcePos; ++sourcePos) {
+          if (areOfSameType(targetChild, sourceChildren[sourcePos + nLeadingSameTypeChildren - 1])) {
             levMat[targetPos][sourcePos] = levMat[targetPos - 1][sourcePos - 1];
           } else {
             levMat[targetPos][sourcePos] = 1 + Math.min(levMat[targetPos - 1][sourcePos - 1], levMat[targetPos][sourcePos - 1], levMat[targetPos - 1][sourcePos]);
           }
         }
       }
-      targetPos = nTargetChildren - nTargetChildrenToIgnore;
-      sourcePos = nSourceChildren;
+      targetPos = nTargetChildren - nLeadingSameTypeChildren - nTargetChildrenToIgnore;
+      sourcePos = nSourceChildren - nLeadingSameTypeChildren;
       while (targetPos > 0 || sourcePos > 0) {
-        targetChild = targetChildren[targetPos + nTargetChildrenToIgnore - 1];
+        targetChild = targetChildren[targetPos + nLeadingSameTypeChildren + nTargetChildrenToIgnore - 1];
         if (shouldIgnoreNode(targetChild)) {
           nTargetChildrenToIgnore--;
           continue;
         }
-        substitution = targetPos > 0 && sourcePos > 0 ? levMat[targetPos - 1][sourcePos - 1] : 1 / 0;
-        insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : 1 / 0;
-        deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : 1 / 0;
-        sourceChild = sourceChildren[sourcePos - 1];
+        var substitution = targetPos > 0 && sourcePos > 0 ? levMat[targetPos - 1][sourcePos - 1] : 1 / 0;
+        var insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : 1 / 0;
+        var deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : 1 / 0;
+        sourceChild = sourceChildren[sourcePos + nLeadingSameTypeChildren - 1];
         if (insertion >= substitution && deletion >= substitution) {
           if (substitution < levMat[targetPos][sourcePos]) {
             target.replaceChild(sourceChild, targetChild);
