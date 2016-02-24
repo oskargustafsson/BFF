@@ -1,6 +1,17 @@
 !function() {
   'use strict';
   function moduleFactory() {
+    function makeLevMat(xSize, ySize) {
+      var i, levMat = new Array(xSize + 1);
+      for (i = 0; xSize >= i; ++i) {
+        levMat[i] = new Array(ySize + 1);
+        levMat[i][0] = i;
+      }
+      for (i = 0; ySize >= i; ++i) {
+        levMat[0][i] = i;
+      }
+      return levMat;
+    }
     function areOfSameType(target, source) {
       if (!source) {
         return false;
@@ -94,12 +105,18 @@
       if (nTargetChildren - nTargetChildrenToIgnore === 0 && 0 === nSourceChildren) {
         return;
       }
-      var levMat = [];
-      for (targetPos = 0; nTargetChildren >= targetPos; ++targetPos) {
-        levMat[targetPos] = [ targetPos ];
-      }
-      for (sourcePos = 0; nSourceChildren >= sourcePos; ++sourcePos) {
-        levMat[0][sourcePos] = sourcePos;
+      var levMat;
+      if (nTargetChildren > preallocLevMatSizeX || nSourceChildren > preallocLevMatSizeY) {
+        if (nTargetChildren >= preallocLevMatSizeX && nSourceChildren >= preallocLevMatSizeY) {
+          preallocLevMatSizeX = nTargetChildren;
+          preallocLevMatSizeY = nSourceChildren;
+          preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
+          levMat = preallocLevMat;
+        } else {
+          levMat = makeLevMat(nTargetChildren, nSourceChildren);
+        }
+      } else {
+        levMat = preallocLevMat;
       }
       for (targetPos = 1; nTargetChildren >= targetPos + nIgnoredTargetChildren; targetPos++) {
         targetChild = targetChildren[targetPos + nIgnoredTargetChildren - 1];
@@ -151,6 +168,9 @@
         patchRecursive(childrenToPatch[i], childrenToPatch[i + 1], ignoreSubtreeOf);
       }
     }
+    var preallocLevMatSizeX = 63;
+    var preallocLevMatSizeY = 63;
+    var preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
     return function(target, source, options) {
       options = options || {};
       var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);

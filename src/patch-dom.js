@@ -4,6 +4,25 @@
 
 	function moduleFactory() {
 
+		function makeLevMat(xSize, ySize) {
+			var i, levMat = new Array(xSize + 1);
+
+			for (i = 0; i <= xSize; ++i) {
+				levMat[i] = new Array(ySize + 1);
+				levMat[i][0] = i;
+			}
+
+			for (i = 0; i <= ySize; ++i) {
+				levMat[0][i] = i;
+			}
+
+			return levMat;
+		}
+
+		var preallocLevMatSizeX = 63;
+		var preallocLevMatSizeY = 63;
+		var preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
+
 		function areOfSameType(target, source) {
 			if (!source) { return false; }
 			if (target.nodeName === source.nodeName) { return true; }
@@ -98,14 +117,25 @@
 
 			if (nTargetChildren - nTargetChildrenToIgnore === 0 && nSourceChildren === 0) { return; }
 
-			var levMat = [];
-
-			for (targetPos = 0; targetPos <= nTargetChildren; ++targetPos) {
-				levMat[targetPos] = [ targetPos ];
-			}
-
-			for (sourcePos = 0; sourcePos <= nSourceChildren; ++sourcePos) {
-				levMat[0][sourcePos] = sourcePos;
+			var levMat;
+			if (preallocLevMatSizeX < nTargetChildren || preallocLevMatSizeY < nSourceChildren) {
+				// The preallocated matrix is too small
+				if (preallocLevMatSizeX <= nTargetChildren && preallocLevMatSizeY <= nSourceChildren) {
+					// The needed matrix is bigger or equal to the preallocated one i all dimensions, so let's grow the
+					// preallocated one
+					preallocLevMatSizeX = nTargetChildren;
+					preallocLevMatSizeY = nSourceChildren;
+					preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
+					levMat = preallocLevMat;
+				} else {
+					// The needed matrix is larger than the preallocated one in some, but not all dimensions. This
+					// should be quite an edge case, so use a temporary matrix for this operation
+					levMat = makeLevMat(nTargetChildren, nSourceChildren);
+				}
+			} else {
+				// The needed matrix fits inside the preallocated one, so just use that one. This should be the most
+				// common case.
+				levMat = preallocLevMat;
 			}
 
 			for (targetPos = 1; targetPos + nIgnoredTargetChildren <= nTargetChildren; targetPos++) {
