@@ -16,7 +16,6 @@
 	"disallowKeywords": ["with", "eval"],
 	"disallowMultipleLineStrings": true,
 	"disallowMultipleLineBreaks": true,
-	"validateLineBreaks": "LF",
 	"disallowMixedSpacesAndTabs": true,
 	"disallowKeywordsOnNewLine": [ "else" ],
 	"requireLineFeedAtFileEnd": true,

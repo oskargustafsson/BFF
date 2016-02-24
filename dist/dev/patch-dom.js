@@ -67,6 +67,7 @@
     }
     function patchRecursive(target, source, ignoreSubtreeOf) {
       var targetParent = target.parentNode;
+      var childrenToPatch = [];
       if (areOfSameType(target, source)) {
         patchNode(target, source);
       } else {
@@ -82,12 +83,12 @@
       }
       var targetChildren = target.childNodes;
       var sourceChildren = source.childNodes;
-      var targetPos, sourcePos, substitution, insertion, deletion, targetChild, sourceChild;
+      var i, n, targetPos, sourcePos, substitution, insertion, deletion, targetChild, sourceChild;
       var nTargetChildren = targetChildren.length;
       var nSourceChildren = sourceChildren.length;
       var nIgnoredTargetChildren = 0;
       var nTargetChildrenToIgnore = 0;
-      for (var i = 0; nTargetChildren > i; ++i) {
+      for (i = 0; nTargetChildren > i; ++i) {
         shouldIgnoreNode(targetChildren[i]) && nTargetChildrenToIgnore++;
       }
       if (nTargetChildren - nTargetChildrenToIgnore === 0 && 0 === nSourceChildren) {
@@ -131,7 +132,8 @@
           if (substitution < levMat[targetPos][sourcePos]) {
             target.replaceChild(sourceChild, targetChild);
           } else {
-            patchRecursive(targetChild, sourceChild, ignoreSubtreeOf);
+            childrenToPatch.push(targetChild);
+            childrenToPatch.push(sourceChild);
           }
           targetPos--;
           sourcePos--;
@@ -144,6 +146,9 @@
             targetPos--;
           }
         }
+      }
+      for (i = 0, n = childrenToPatch.length; n > i; i += 2) {
+        patchRecursive(childrenToPatch[i], childrenToPatch[i + 1], ignoreSubtreeOf);
       }
     }
     return function(target, source, options) {

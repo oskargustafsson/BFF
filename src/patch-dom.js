@@ -65,6 +65,8 @@
 		function patchRecursive(target, source, ignoreSubtreeOf) {
 			var targetParent = target.parentNode;
 
+			var childrenToPatch = [];
+
 			// Patch the current node
 			if (areOfSameType(target, source)) {
 				patchNode(target, source);
@@ -84,13 +86,13 @@
 			var targetChildren = target.childNodes;
 			var sourceChildren = source.childNodes;
 
-			var targetPos, sourcePos, substitution, insertion, deletion, targetChild, sourceChild;
+			var i, n, targetPos, sourcePos, substitution, insertion, deletion, targetChild, sourceChild;
 			var nTargetChildren = targetChildren.length;
 			var nSourceChildren = sourceChildren.length;
 
 			var nIgnoredTargetChildren = 0;
 			var nTargetChildrenToIgnore = 0;
-			for (var i = 0; i < nTargetChildren; ++i) {
+			for (i = 0; i < nTargetChildren; ++i) {
 				shouldIgnoreNode(targetChildren[i]) && nTargetChildrenToIgnore++;
 			}
 
@@ -148,8 +150,9 @@
 						// Substitute
 						target.replaceChild(sourceChild, targetChild);
 					} else {
-						// Patch
-						patchRecursive(targetChild, sourceChild, ignoreSubtreeOf);
+						// Add to patch list
+						childrenToPatch.push(targetChild);
+						childrenToPatch.push(sourceChild);
 					}
 					targetPos--;
 					sourcePos--;
@@ -162,6 +165,10 @@
 					target.removeChild(targetChild);
 					targetPos--;
 				}
+			}
+
+			for (i = 0, n = childrenToPatch.length; i < n; i += 2) {
+				patchRecursive(childrenToPatch[i], childrenToPatch[i + 1], ignoreSubtreeOf);
 			}
 		}
 
