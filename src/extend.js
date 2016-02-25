@@ -1,4 +1,60 @@
 /* global RUNTIME_CHECKS, define */
+
+/**
+ * A function that extends a target object with the properties of a source object recursively, with options
+ * describing how to handle conflicting properties. Note that the target property is mutated and also returned,
+ * i.e. no new object is when invoking this function.
+ *
+ * The function comes with a set of named built-in conflict-solving functions:
+ * * _crash_: Throws an error when a property conflic occurs. This is the default solver function.
+ * * _useTarget_: Uses the target's property, i.e. leaves the target property unchanged.
+ * * _useSource_: Uses the source's property, i.e. overwrites the target property with the source property.
+ * * _merge_: Tries to merge the values in an intuitive way.
+ *     * Objects are merged recursively.
+ *     * Arrays are concatenated.
+ *     * Functions are combined, so that the target's function is first called, then the source's. Both functions are passed the same arguments.
+ *     * Numbers and strings added using the + operator.
+ *     * Boolean values are or:ed using the || operator (i.e. Boolean addition).
+ *     * If the source and target types are not the same, use the source value.
+ * The caller also has the option to specify custom solver functions.
+ *
+ * **Examples**
+ * ```javascript
+ * extend(
+ *   { a: { b: 'b', c: 'c' } },
+ *   { a: { c: 'c', d: 'd' } },
+ *   'useSource');
+ * // Returns { a: { c: 'c', d: 'd' } }
+ * ```
+ * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it encounters. This is how e.g. jQuery.extend and _.assign behaves.
+ * ```javascript
+ * extend(
+ *   { a: { b: 'b', c: 'c' } },
+ *   { a: { c: 'c', d: 'd' } },
+ *   'merge');
+ * // Returns { a: { b: 'b', c: 'c', d: 'd' } }
+ * ```
+ * Here we see that the 'merge' solver works recursively.
+ * ```javascript
+ * extend(
+ *   { a: { b: 'b' }, num: 1 },
+ *   { a: { c: 'c' }, num: 2 },
+ *   { object: 'merge' }, 'useSource');
+ * // Returns { a: { b: 'b', c: 'c' }, num: 2 }
+ * ```
+ * The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types.
+ * This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves
+ * ```javascript
+ * extend(
+ *   { a: { b: 'b' }, num: 1 },
+ *   { a: { c: 'c' }, num: 2, newProp: 3 },
+ *   function (target, source, prop) { target[prop] = 42; });
+ * // Returns { a: 42, num: 42, newProp: 3 }
+ * ```
+ * Above we see a (fairly useless) custom conflict solver function.
+ * @module bff/extend
+ */
+
 (function () {
 	'use strict';
 
@@ -10,6 +66,18 @@
 		function getType(item) { return item === null ? 'null' : item instanceof Array ? 'array' : typeof item; }
 		function getSolverFunction(val) { return getType(val) === 'function' ? val : SOLVERS[val]; }
 
+		/**
+		 * @function extend
+		 * @arg {Object} target - The object that will be extende with new properties.
+		 * @arg {Object} source - The object that provides the new properties.
+		 * @arg {string|function|Object} [onConflict] - Specifies how to handle cases where a property exists both on
+		 * the target and on the source.
+		 * * a _string_ argument will be used to identify one of the built in solver functions. Valid values are 'useTarget', 'useSouce', 'crash' and 'merge'.
+		 * * a _function_ argument will be used as-is as a solver for all conflicts.
+		 * * an _Object_ argument should have keys that correspond to value types, i.e. 'object', 'array', 'function', 'string', 'number', 'boolean', 'null' or 'undefined'. The object values can be either strings or functions, which will be used as solver functions for the corresponding key value types.
+		 * @arg {string|function} [defaultOnConflict] - Specifies a default solver, in the same manner as the onConflict argument. Can only be used if onConflict is an object.
+		 * @returns {Object} The extended object
+		 */
 		function extend(target, source, onConflict, defaultOnConflict) {
 			if (RUNTIME_CHECKS) {
 				if (typeof target !== 'object') { throw '"target" argument must be an object'; }
@@ -17,8 +85,13 @@
 				if (arguments.length > 2 && [ 'object', 'function', 'string' ].indexOf(typeof onConflict) === -1) {
 					throw '"onConflict" argument must be an string (' + Object.keys(SOLVERS).join(', ') + '), object or function';
 				}
-				if (arguments.length > 3 && [ 'function', 'string' ].indexOf(typeof defaultOnConflict) === -1) {
-					throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
+				if (arguments.length > 3) {
+					if (typeof onConflict !== 'object') {
+						throw 'There is no point in specifying a defaultOnConflict of onConflict is not an object';
+					}
+					if ([ 'function', 'string' ].indexOf(typeof defaultOnConflict) === -1) {
+						throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
+					}
 				}
 			}
 
@@ -32,9 +105,11 @@
 			});
 
 			for (var prop in source) {
-				target.hasOwnProperty(prop) ?
-						solverFunctions[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict) :
-						target[prop] = source[prop];
+				if (target.hasOwnProperty(prop)) {
+					solverFunctions[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict);
+				} else {
+					target[prop] = source[prop];
+				}
 			}
 
 			return target;
@@ -56,12 +131,12 @@
 				var targetProp = target[prop];
 				var targetPropType = getType(targetProp);
 
-				if (RUNTIME_CHECKS && targetPropType !== sourcePropType) {
-					throw 'Failed to mixin property ' + prop + ', source and target values are of differing types: ' +
-							targetPropType + ' and ' + sourcePropType;
+				if (targetPropType !== sourcePropType) {
+					target[prop] = source[prop];
+					return;
 				}
 
-				switch (getType(targetProp)) {
+				switch (targetPropType) {
 				case 'object':
 					extend(targetProp, sourceProp, onConflict, defaultOnConflict);
 					break;

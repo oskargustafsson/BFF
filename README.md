@@ -73,3 +73,4 @@ TO DO before 1.0
 * FTs
 
 #### Extend
+* Add UTs that mirrors the JSDoc examples

@@ -18,8 +18,13 @@
         if (arguments.length > 2 && -1 === [ 'object', 'function', 'string' ].indexOf(typeof onConflict)) {
           throw '"onConflict" argument must be an string (' + Object.keys(SOLVERS).join(', ') + '), object or function';
         }
-        if (arguments.length > 3 && -1 === [ 'function', 'string' ].indexOf(typeof defaultOnConflict)) {
-          throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
+        if (arguments.length > 3) {
+          if ('object' != typeof onConflict) {
+            throw 'There is no point in specifying a defaultOnConflict of onConflict is not an object';
+          }
+          if (-1 === [ 'function', 'string' ].indexOf(typeof defaultOnConflict)) {
+            throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
+          }
         }
       }
       var isOnConflictObject = 'object' === getType(onConflict);
@@ -30,7 +35,11 @@
         solverFunctions[type] = getSolverFunction(onConflict[type]) || defaultOnConflict;
       });
       for (var prop in source) {
-        target.hasOwnProperty(prop) ? solverFunctions[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict) : target[prop] = source[prop];
+        if (target.hasOwnProperty(prop)) {
+          solverFunctions[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict);
+        } else {
+          target[prop] = source[prop];
+        }
       }
       return target;
     }
@@ -49,10 +58,11 @@
         var sourcePropType = getType(sourceProp);
         var targetProp = target[prop];
         var targetPropType = getType(targetProp);
-        if (true && targetPropType !== sourcePropType) {
-          throw 'Failed to mixin property ' + prop + ', source and target values are of differing types: ' + targetPropType + ' and ' + sourcePropType;
+        if (targetPropType !== sourcePropType) {
+          target[prop] = source[prop];
+          return;
         }
-        switch (getType(targetProp)) {
+        switch (targetPropType) {
          case 'object':
           extend(targetProp, sourceProp, onConflict, defaultOnConflict);
           break;

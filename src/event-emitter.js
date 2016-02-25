@@ -6,7 +6,7 @@
 		/**
 		 * A mixin, providing event emitting capabilities to an object. Events are simply strings. When they are
 		 * emitted, zero or more parameters can be passed as arguments to the listening functions.
-		 * @exports bff/event-emitter
+		 * @module bff/event-emitter
 		 * @mixin
 		 */
 		var EventEmitter = {
