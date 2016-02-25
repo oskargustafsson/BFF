@@ -14,6 +14,12 @@
 			if (RUNTIME_CHECKS) {
 				if (typeof target !== 'object') { throw '"target" argument must be an object'; }
 				if (typeof source !== 'object') { throw '"source" argument must be an object'; }
+				if (arguments.length > 2 && [ 'object', 'function', 'string' ].indexOf(typeof onConflict) === -1) {
+					throw '"onConflict" argument must be an string (' + Object.keys(SOLVERS).join(', ') + '), object or function';
+				}
+				if (arguments.length > 3 && [ 'function', 'string' ].indexOf(typeof defaultOnConflict) === -1) {
+					throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
+				}
 			}
 
 			var isOnConflictObject = getType(onConflict) === 'object';

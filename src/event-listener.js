@@ -16,14 +16,13 @@
 		}
 
 		function setupListeners(self, eventEmitter, eventName, callback, context, useCapture) {
-			if (RUNTIME_CHECKS && !eventEmitter.removeEventListener) {
-				throw 'First argument is not an event emitter';
-			}
-			if (RUNTIME_CHECKS && typeof eventName !== 'string') {
-				throw 'Second argument is not a string';
-			}
-			if (RUNTIME_CHECKS && typeof callback !== 'function') {
-				throw 'Third argument must be a function'; // Catch a common cause of errors
+			if (RUNTIME_CHECKS) {
+				if (!eventEmitter.addEventListener) {
+					throw '"eventEmitter" argument must be an event emitter';
+				}
+				if (typeof eventName !== 'string') {
+					throw '"eventName" argument must be a string';
+				}
 			}
 
 			self.__private || Object.defineProperty(self, '__private', { writable: true, value: {}, });
@@ -34,7 +33,7 @@
 
 			listeningToEvent.push({ callback: callback, emitter: eventEmitter });
 
-			eventEmitter.addEventListener(eventName, callback, !!useCapture);
+			eventEmitter.addEventListener(eventName, callback, useCapture);
 		}
 
 		/**
@@ -68,7 +67,7 @@
 					if (typeof callback !== 'function') {
 						throw '"callback" argument must be a function';
 					}
-					if (useCapture !== undefined && typeof useCapture !== 'boolean') {
+					if (arguments.length > 4 && typeof useCapture !== 'boolean') {
 						throw '"useCapture" argument must be a boolean value';
 					}
 				}
@@ -82,7 +81,7 @@
 
 				for (var i = 0; i < eventEmitters.length; ++i) {
 					for (var j = 0; j < eventNames.length; ++j) {
-						setupListeners(this, eventEmitters[i], eventNames[j], callback, context, useCapture);
+						setupListeners(this, eventEmitters[i], eventNames[j], callback, context, !!useCapture);
 					}
 				}
 			},
@@ -98,7 +97,7 @@
 			 */
 			stopListening: function stopListening(eventEmitter, eventName) {
 				if (RUNTIME_CHECKS) {
-					if (arguments.length > 0 && (!eventEmitter || !eventEmitter.addEventListener)) {
+					if (!!eventEmitter && !eventEmitter.addEventListener) {
 						throw '"eventEmitter" argument must be an event emitter';
 					}
 					if (arguments.length > 1 && typeof eventName !== 'string') {

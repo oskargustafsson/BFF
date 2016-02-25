@@ -36,6 +36,9 @@
       };
     }
     function Record(values) {
+      if (true && void 0 !== values && 'object' != typeof values) {
+        throw '"values" argument must be an object';
+      }
       if (!this.__private) {
         throw 'Record an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
       }
@@ -99,6 +102,14 @@
     extend(Record.prototype, eventEmitter);
     extend(Record.prototype, eventListener);
     Record.withProperties = function(schema, dontPreventExtensions) {
+      if (true) {
+        if ('object' != typeof schema) {
+          throw '"schema" argument must be an object';
+        }
+        if (arguments.length > 1 && 'boolean' != typeof dontPreventExtensions) {
+          throw '"dontPreventExtensions" must be a boolean value';
+        }
+      }
       var RecordSubclass = function(values) {
         this.__private || Object.defineProperty(this, '__private', {
           writable: true,

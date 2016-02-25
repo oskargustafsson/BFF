@@ -224,12 +224,15 @@
 
 			if (RUNTIME_CHECKS) {
 				if (!(target instanceof HTMLElement)) {
-					throw 'target argument must be an HTMLElement';
+					throw '"target" argument must be an HTMLElement';
 				}
 				if (!(source instanceof HTMLElement)) {
-					throw 'source argument must be an HTMLElement';
+					throw '"source" argument must be an HTMLElement';
 				}
-				if (options.ignoreSubtreeOf !== undefined && typeof options.ignoreSubtreeOf !== 'string') {
+				if (arguments.length > 2 && typeof options !== 'object') {
+					throw '"options" argument must be an object';
+				}
+				if ('ignoreSubtreeOf' in options && typeof options.ignoreSubtreeOf !== 'string') {
 					throw 'ignoreSubtreeOf option must be a valid CSS selector string';
 				}
 			}

@@ -47,6 +47,12 @@
 
 		function isEmitter(obj) { return !!(obj && obj.addEventListener); } // Quack!
 
+		function reemitItemEvent(self, item, strippedEventName, eventName) {
+			self.listenTo(item, strippedEventName, function reemitItemEvent() {
+				self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments))); // TODO: better solution
+			});
+		}
+
 		function onItemAdded(self, item, index) {
 			if (!isEmitter(item)) {
 				self.emit(ITEM_ADDED_EVENT, item, index, self);
@@ -77,12 +83,6 @@
 			isEmitter(oldItem) ?
 				oldItem.emit(REPLACED_EVENT, newItem, oldItem, index, self) :
 				self.emit(ITEM_REPLACED_EVENT, newItem, oldItem, index, self);
-		}
-
-		function reemitItemEvent(self, item, strippedEventName, eventName) {
-			self.listenTo(item, strippedEventName, function reemitItemEvent() {
-				self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments))); // TODO: better solution
-			});
 		}
 
 		function makeSetter(index) {
@@ -225,6 +225,12 @@
 		 * @returns {any[]} Array of removed items
 		 */
 		listFunctions.splice = function splice(start, nItemsToRemove) {
+			if (RUNTIME_CHECKS) {
+				if (arguments.length < 2) { throw '"start" and "nItemsToRemove" arguments are mandatory'; }
+				if (typeof start !== 'number') { throw '"start" argument must be a number'; }
+				if (typeof nItemsToRemove !== 'number') { throw '"nItemsToRemove" argument must be a number'; }
+			}
+
 			var i;
 			var oldLength = this.length;
 
@@ -309,6 +315,10 @@
 		};
 
 		listFunctions.filterMut = function filterMut(predicate, thisArg) {
+			if (RUNTIME_CHECKS) {
+				if (typeof predicate !== 'function') { throw '"predicate" argument must be a function'; }
+			}
+
 			var removeCount = 0;
 			for (var i = this.length - 1; i >= -1; --i) {
 				if (i > -1 && !predicate.call(thisArg, this[i], i, this)) {
@@ -330,11 +340,20 @@
 		};
 
 		listFunctions.pushAll = listFunctions.concatMut = function pushAll(items) {
+			if (RUNTIME_CHECKS && (!items || items.length === undefined)) {
+				throw '"items" argument must have a length property';
+			}
 			items.length && this.push.apply(this, items);
 			return this.length;
 		};
 
 		listFunctions.sliceMut = function sliceMut(begin, end) {
+			if (RUNTIME_CHECKS) {
+				if (arguments.length < 2) { throw '"begin" and "end" arguments are mandatory'; }
+				if (typeof begin !== 'number') { throw '"begin" argument must be a number'; }
+				if (typeof end !== 'number') { throw '"end" argument must be a number'; }
+			}
+
 			var length = this.length;
 
 			end = (typeof end !== 'undefined') ? end : length;
@@ -359,6 +378,8 @@
 		};
 
 		listFunctions.mapMut = function mapMut(callback, thisArg) {
+			if (RUNTIME_CHECKS && typeof callback !== 'function') { throw '"callback" argument must be a function'; }
+
 			for (var i = 0, length = this.length; i < length; ++i) {
 				this[i] = callback.call(thisArg, this[i], i, this);
 			}
@@ -366,12 +387,16 @@
 		};
 
 		listFunctions.find = function find(callback, thisArg) {
+			if (RUNTIME_CHECKS && typeof callback !== 'function') { throw '"callback" argument must be a function'; }
+
 			for (var i = 0, length = this.length; i < length; ++i) {
 				if (callback.call(thisArg, this[i], i, this)) { return this[i]; }
 			}
 		};
 
 		listFunctions.findIndex = function findIndex(callback, thisArg) {
+			if (RUNTIME_CHECKS && typeof callback !== 'function') { throw '"callback" argument must be a function'; }
+
 			for (var i = 0, length = this.length; i < length; ++i) {
 				if (callback.call(thisArg, this[i], i, this)) { return i; }
 			}
@@ -379,6 +404,10 @@
 		};
 
 		listFunctions.includes = function includes(item, fromIndex) {
+			if (RUNTIME_CHECKS && arguments.length > 1 && typeof fromIndex !== 'number') {
+				throw '"fromIndex" number must be a number';
+			}
+
 			fromIndex = fromIndex || 0;
 			var index = this.__private.array.indexOf(item);
 			return index !== -1 && index >= fromIndex;
@@ -397,6 +426,10 @@
 		};
 
 		listFunctions.addEventListener = function addEventListener(eventName) {
+			if (RUNTIME_CHECKS && typeof eventName !== 'string') {
+				throw '"eventName" argument must be a string';
+			}
+
 			if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName) || this.__private.reEmittingEvents[eventName]) { return; }
 			this.__private.reEmittingEvents[eventName] = true;
 
@@ -408,6 +441,10 @@
 		};
 
 		listFunctions.removeEventListener = function removeEventListener(eventName) {
+			if (RUNTIME_CHECKS && typeof eventName !== 'string') {
+				throw '"eventName" argument must be a string';
+			}
+
 			if (!ITEM_EVENT_TOKEN_MATCHER.test(eventName)) { return; }
 
 			// Check if we still need to re-emit this event
@@ -438,7 +475,6 @@
 			extend(schema, {
 				length: {
 					getter: function () { return this.__private.array.length; },
-					//getter: function () { return this.__private && this.__private.array ? this.__private.array.length : 0; },
 					setter: false,
 				},
 				first: {
@@ -454,6 +490,10 @@
 			var RecordSubclass = Record.withProperties(schema, true);
 
 			function List(items) {
+				if (RUNTIME_CHECKS && arguments.length > 0 && (!items || items.length === undefined)) {
+					throw '"items" argument must have a length property';
+				}
+
 				this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
 				this.__private.array = [];
 				this.__private.reEmittingEvents = {};
@@ -482,10 +522,6 @@
 				RecordSubclass.call(this);
 
 				items = items || [];
-
-				if (RUNTIME_CHECKS && items.length === undefined) {
-					throw 'Items argument must be an Array or List';
-				}
 
 				items.length && this.pushAll(items);
 			}

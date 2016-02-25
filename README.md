@@ -27,11 +27,11 @@ Run tests in browser
 TO DO before 1.0
 ----------------
 ### General
-* Add input validation (of calling arguments) to all exposed functions
 * Complete documentation
     * Docblocks
     * Make available online
 * Implement toString() for all modules
+* Remove all names from function expressions, Uglify apprenly removes them anyway
 
 ### List
 * UTs for all functions
@@ -45,9 +45,10 @@ TO DO before 1.0
 
 ### Record
 * Cache calculated property values
-* How to destroy Records? Will they be garbage collected as-is?
+* How to destroy Records? Will they be garbage collected in their current state?
 
 ### Event emitter
+* Alternate to emit(): emitArr(eventName, argumentsArray)
 * Calling addEventListener() with the same arguments multiple times should have no effect. Maybe.
 
 ### Event listener
@@ -55,6 +56,8 @@ TO DO before 1.0
 * Option: useCapture
 
 ### View
+* Move makeSubclass function from View.prototype to View
+* Parent/child view; trigger event when destroy() is called and remove the child view from any possible parent views
 * FTs
 
 ### Patch DOM

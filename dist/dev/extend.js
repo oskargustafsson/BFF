@@ -15,6 +15,12 @@
         if ('object' != typeof source) {
           throw '"source" argument must be an object';
         }
+        if (arguments.length > 2 && -1 === [ 'object', 'function', 'string' ].indexOf(typeof onConflict)) {
+          throw '"onConflict" argument must be an string (' + Object.keys(SOLVERS).join(', ') + '), object or function';
+        }
+        if (arguments.length > 3 && -1 === [ 'function', 'string' ].indexOf(typeof defaultOnConflict)) {
+          throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
+        }
       }
       var isOnConflictObject = 'object' === getType(onConflict);
       defaultOnConflict = getSolverFunction(isOnConflictObject ? defaultOnConflict : onConflict) || SOLVERS.crash;

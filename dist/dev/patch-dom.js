@@ -191,12 +191,15 @@
       options = options || {};
       if (true) {
         if (!(target instanceof HTMLElement)) {
-          throw 'target argument must be an HTMLElement';
+          throw '"target" argument must be an HTMLElement';
         }
         if (!(source instanceof HTMLElement)) {
-          throw 'source argument must be an HTMLElement';
+          throw '"source" argument must be an HTMLElement';
         }
-        if (void 0 !== options.ignoreSubtreeOf && 'string' != typeof options.ignoreSubtreeOf) {
+        if (arguments.length > 2 && 'object' != typeof options) {
+          throw '"options" argument must be an object';
+        }
+        if ('ignoreSubtreeOf' in options && 'string' != typeof options.ignoreSubtreeOf) {
           throw 'ignoreSubtreeOf option must be a valid CSS selector string';
         }
       }
