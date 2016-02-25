@@ -6,6 +6,14 @@ BFF is a collection of standalone modules, designed with the intent of making it
 
 Its ambition is to be a helper library rather than a framework, to be mixed and matched with home grown or third-party components. As such, each BFF module provides a specific service, with a minimal interface. All modules are AMD and CommonJS compatible.
 
+#### Distinguishing features
+* Modular, light weight, and no external dependencies.
+* Two versions; _development_ and _production_. The former with lots of runtime error checking, the latter minified and without error checks, for optimal performance.
+* Fast and fool-proof event system - uses inversion-of-control to make cleaning up event listeners more or less automatic.
+* Data modules (Record and List) combine event system with [getters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get) and [setters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set), to create a type safe data layer (in development mode) that can be manipulated using terse syntax.
+* Data modules support calculated properties, similar to [signals](http://elm-lang.org/guide/reactivity#signals) in [FRP](https://en.wikipedia.org/wiki/Functional_reactive_programming), whose values are derived from one or more other properties - and still emits events when their calculated values change.
+* View module that combines the best parts of Backbone.js views with React-like DOM patching to provide a structured approach to building SPAs, with very little boilerplate code, while maintaining separation of concerns.
+
 Demos
 -----
 [Todo application](http://oskargustafsson.github.io/BFF-todos-example/) ([source](https://github.com/oskargustafsson/BFF-todos-example/))
@@ -26,14 +34,14 @@ Run tests in browser
 
 TO DO before 1.0
 ----------------
-### General
+#### General
 * Complete documentation
     * Docblocks
     * Make available online
 * Implement toString() for all modules
 * Remove all names from function expressions, Uglify apprenly removes them anyway
 
-### List
+#### List
 * UTs for all functions
 * UT: Props that depend on 'length' should trigger own change events when length changes
 * Option to mixin Lodash functions
@@ -43,25 +51,25 @@ TO DO before 1.0
     * Using Proxies? (FF + IE12)
     * Listening for internal Array "length" changes?
 
-### Record
+#### Record
 * Cache calculated property values
 * How to destroy Records? Will they be garbage collected in their current state?
 
-### Event emitter
+#### Event emitter
 * UTs for emitArgsAsArray()
 
-### Event listener
+#### Event listener
 * Write UTs for listenTo(anArray, ...)
 * Option: useCapture
 
-### View
+#### View
 * Move makeSubclass function from View.prototype to View
 * Parent/child view; trigger event when destroy() is called and remove the child view from any possible parent views
 * FTs
 
-### Patch DOM
+#### Patch DOM
 * Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
 * SVG support
 * FTs
 
-### Extend
+#### Extend
