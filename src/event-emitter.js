@@ -15,7 +15,6 @@
 			 * except for the event name argument.
 			 * @arg {string} eventName - Identifier string for the event.
 			 * @arg {...any} [eventArguments] - Zero or more arguments that event listeners will be called with.
-			 * @returns {undefined}
 			 */
 			emit: function emit(eventName) {
 				if (RUNTIME_CHECKS && typeof eventName !== 'string') {
@@ -39,7 +38,6 @@
 			 * @arg {string} eventName - Identifier string for the event.
 			 * @arg {array} [argsArray] - An array of arguments with which the callbacks will be called. Each item in
 			 *     the array will be provided as an individual argument to the callbacks.
-			 * @returns {undefined}
 			 */
 			emitArgsAsArray: function emitArgsArray(eventName, argsArray) {
 				if (RUNTIME_CHECKS) {
@@ -66,7 +64,6 @@
 			 * same function twice till throw an error, as that is rarely ever the intention and a common source of errors.
 			 * @arg {string} eventName - Identifier string for the event that is to be listened to.
 			 * @arg {function} callback - The function that will be called when the event is emitted.
-			 * @returns {undefined}
 			 */
 			addEventListener: function addEventListener(eventName, callback) {
 				if (RUNTIME_CHECKS) {
@@ -94,7 +91,6 @@
 			 * @arg {string} eventName - Identifier string for the event in question.
 			 * @arg {function} [callback] - If not given, all event listeners to the provided eventName will be removed. If
 			 *     given, only the given callback will be removed from the given eventName.
-			 * @returns {undefined}
 			 */
 			removeEventListener: function removeEventListener(eventName, callback) {
 				if (RUNTIME_CHECKS) {

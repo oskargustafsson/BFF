@@ -37,10 +37,10 @@
 		}
 
 		/**
-		 * A mixin, providing event listening capabilities to a class. This is an inversion-of-control with regards to
+		 * A mixin, providing event listening capabilities to an obbect. This is an inversion-of-control with regards to
 		 * regular event listening; the listener maintains a list of the events it is listening to. This allows the listener
-		 * to remove some or all its event listeners, for instance when it is disabled or destroyed and easily avoid leaking
-		 * listeners. Caveat: don't mix eventEmitter.removeEventListener and eventListener.stopListening throughout a
+		 * to remove some or all its event listeners, for instance when it is disabled or destroyed. This is an easy way to
+		 * avoid leaking listeners. Caveat: don't mix eventEmitter.removeEventListener and eventListener.stopListening throughout a
 		 * project, as that could result in memory leaks.
 		 * @exports bff/event-listener
 		 * @mixin
@@ -48,13 +48,13 @@
 		var EventListener = {
 
 			/**
-			 * Start listening to an event on a specified event emitting object.
+			 * Start listening to an event on a specified event emitting object. Both eventEmitters and eventNames
+			 * arguments can be arrays. The total amount of listeners added will be the Cartesian product of the two lists.
 			 * @arg {(Object|Array|NodeList)} eventEmitters - One or more event emitters that will be listened to.
-			 * @arg {string} eventName - Identifier string for the event that will be listented to.
+			 * @arg {string|Array} eventNames - One or more string identifiers for events that will be listented to.
 			 * @arg {function} callback - The function that will be called when the event is emitted.
-			 * @arg {any} [context] - The context with which the callback will be called (e.g. what "this" will be). Will
-			 *     default to the caller of .listenTo, if not provided.
-			 * @returns {undefined}
+			 * @arg {any} [context] - The context with which the callback will be called (i.e. what "this" will be).
+			 *     Will default to the caller of .listenTo, if not provided.
 			 */
 			listenTo: function listenTo(eventEmitters, eventNames, callback, context, useCapture) {
 				if (RUNTIME_CHECKS) {
@@ -89,11 +89,8 @@
 			/**
 			 * Stop listening to events. If no arguments are provided, the listener removes all its event listeners. Providing
 			 * any or both of the optional arguments will filter the list of event listeners removed.
-			 * @arg {Object} [eventEmitter] - If provided, only event listeners listening to the given event emitter will be
-			 *     removed.
-			 * @arg {string} [eventName] - If provided, only event listeners listening to the given event name will be
-			 *     removed.
-			 * @returns {undefined}
+			 * @arg {Object} [eventEmitter] - If provided, only callbacks attached to the given event emitter will be removed.
+			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.
 			 */
 			stopListening: function stopListening(eventEmitter, eventName) {
 				if (RUNTIME_CHECKS) {
