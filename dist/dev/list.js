@@ -6,7 +6,7 @@
     }
     function reemitItemEvent(self, item, strippedEventName, eventName) {
       self.listenTo(item, strippedEventName, function() {
-        self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments)));
+        self.emitArgsAsArray(eventName, arguments);
       });
     }
     function onItemAdded(self, item, index) {

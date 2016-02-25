@@ -4,14 +4,15 @@
 
 	function moduleFactory() {
 		/**
-		 * A mixin, providing event emitting capabilities to a class. Events are simply string identifiers. When they are
+		 * A mixin, providing event emitting capabilities to an object. Events are simply strings. When they are
 		 * emitted, zero or more parameters can be passed as arguments to the listening functions.
 		 * @exports bff/event-emitter
 		 * @mixin
 		 */
 		var EventEmitter = {
 			/**
-			 * Emit an event.
+			 * Emit an event. Callbacks will be called with the same arguments as this function was called with,
+			 * except for the event name argument.
 			 * @arg {string} eventName - Identifier string for the event.
 			 * @arg {...any} [eventArguments] - Zero or more arguments that event listeners will be called with.
 			 * @returns {undefined}
@@ -28,7 +29,35 @@
 
 				for (var i = 0, n = listenersForEvent.length; i < n; ++i) {
 					var listener = listenersForEvent[i];
-					listener.call.apply(listener, arguments); // Call the listener without the first item in the "arguments" array
+					// Call the listener without the first item in the "arguments" array
+					listener.call.apply(listener, arguments);
+				}
+			},
+
+			/**
+			 * Emit an event. Callbacks will be called with arguments given as an an array in the second argument
+			 * @arg {string} eventName - Identifier string for the event.
+			 * @arg {array} [argsArray] - An array of arguments with which the callbacks will be called. Each item in
+			 *     the array will be provided as an individual argument to the callbacks.
+			 * @returns {undefined}
+			 */
+			emitArgsAsArray: function emitArgsArray(eventName, argsArray) {
+				if (RUNTIME_CHECKS) {
+					if (typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
+					if (arguments.length > 1 && (!argsArray || argsArray.length === undefined)) {
+						throw '"argsArray" must have a length property';
+					}
+				}
+
+				if (!this.__private || !this.__private.listeners) { return; }
+
+				var listenersForEvent = this.__private.listeners[eventName];
+				if (!listenersForEvent) { return; }
+
+				for (var i = 0, n = listenersForEvent.length; i < n; ++i) {
+					listenersForEvent[i].apply(undefined, argsArray);
 				}
 			},
 
@@ -40,11 +69,13 @@
 			 * @returns {undefined}
 			 */
 			addEventListener: function addEventListener(eventName, callback) {
-				if (RUNTIME_CHECKS && typeof eventName !== 'string') {
-					throw '"eventName" argument must be a string';
-				}
-				if (RUNTIME_CHECKS && typeof callback !== 'function') {
-					throw '"callback" argument must be a function'; // Catch a common cause of errors
+				if (RUNTIME_CHECKS) {
+					if (typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
+					if (typeof callback !== 'function') {
+						throw '"callback" argument must be a function';
+					}
 				}
 
 				this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
@@ -66,11 +97,13 @@
 			 * @returns {undefined}
 			 */
 			removeEventListener: function removeEventListener(eventName, callback) {
-				if (RUNTIME_CHECKS && typeof eventName !== 'string') {
-					throw '"eventName" argument must be a string';
-				}
-				if (RUNTIME_CHECKS && arguments.length === 2 && typeof callback !== 'function') {
-					throw '"callback" argument must be a function'; // Catch a common cause of errors
+				if (RUNTIME_CHECKS) {
+					if (typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
+					if (arguments.length === 2 && typeof callback !== 'function') {
+						throw '"callback" argument must be a function'; // Catch a common cause of errors
+					}
 				}
 
 				// No listeners at all? We are done.

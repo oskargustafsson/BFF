@@ -49,7 +49,8 @@
 
 		function reemitItemEvent(self, item, strippedEventName, eventName) {
 			self.listenTo(item, strippedEventName, function reemitItemEvent() {
-				self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments))); // TODO: better solution
+				//self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments))); // TODO: better solution
+				self.emitArgsAsArray(eventName, arguments);
 			});
 		}
 

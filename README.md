@@ -48,8 +48,7 @@ TO DO before 1.0
 * How to destroy Records? Will they be garbage collected in their current state?
 
 ### Event emitter
-* Alternate to emit(): emitArr(eventName, argumentsArray)
-* Calling addEventListener() with the same arguments multiple times should have no effect. Maybe.
+* UTs for emitArgsAsArray()
 
 ### Event listener
 * Write UTs for listenTo(anArray, ...)

@@ -18,12 +18,34 @@
           listener.call.apply(listener, arguments);
         }
       },
-      addEventListener: function(eventName, callback) {
-        if (true && 'string' != typeof eventName) {
-          throw '"eventName" argument must be a string';
+      emitArgsAsArray: function(eventName, argsArray) {
+        if (true) {
+          if ('string' != typeof eventName) {
+            throw '"eventName" argument must be a string';
+          }
+          if (arguments.length > 1 && (!argsArray || void 0 === argsArray.length)) {
+            throw '"argsArray" must have a length property';
+          }
         }
-        if (true && 'function' != typeof callback) {
-          throw '"callback" argument must be a function';
+        if (!this.__private || !this.__private.listeners) {
+          return;
+        }
+        var listenersForEvent = this.__private.listeners[eventName];
+        if (!listenersForEvent) {
+          return;
+        }
+        for (var i = 0, n = listenersForEvent.length; n > i; ++i) {
+          listenersForEvent[i].apply(void 0, argsArray);
+        }
+      },
+      addEventListener: function(eventName, callback) {
+        if (true) {
+          if ('string' != typeof eventName) {
+            throw '"eventName" argument must be a string';
+          }
+          if ('function' != typeof callback) {
+            throw '"callback" argument must be a function';
+          }
         }
         this.__private || Object.defineProperty(this, '__private', {
           writable: true,
@@ -37,11 +59,13 @@
         listenersForEvent.push(callback);
       },
       removeEventListener: function(eventName, callback) {
-        if (true && 'string' != typeof eventName) {
-          throw '"eventName" argument must be a string';
-        }
-        if (true && 2 === arguments.length && 'function' != typeof callback) {
-          throw '"callback" argument must be a function';
+        if (true) {
+          if ('string' != typeof eventName) {
+            throw '"eventName" argument must be a string';
+          }
+          if (2 === arguments.length && 'function' != typeof callback) {
+            throw '"callback" argument must be a function';
+          }
         }
         if (!this.__private || !this.__private.listeners) {
           return;
