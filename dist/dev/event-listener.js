@@ -33,7 +33,7 @@
       });
       eventEmitter.addEventListener(eventName, callback, useCapture);
     }
-    var EventListener = {
+    var eventListener = {
       listenTo: function(eventEmitters, eventNames, callback, context, useCapture) {
         if (true) {
           if (!eventEmitters || !(eventEmitters.addEventListener || eventEmitters instanceof Array)) {
@@ -81,7 +81,7 @@
         }
       }
     };
-    return EventListener;
+    return eventListener;
   }
   if ('function' == typeof define && define.amd) {
     define(moduleFactory);

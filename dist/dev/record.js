@@ -90,11 +90,12 @@
     var PRECHANGE_EVENT = 'prechange';
     var CHANGE_EVENT = 'change';
     Record.prototype.toJSON = function() {
-      var obj = {};
+      var jsonObj = {};
       for (var propName in this.__private.values) {
-        obj[propName] = this[propName];
+        var val = this[propName];
+        jsonObj[propName] = val instanceof Object ? val.toJSON ? val.toJSON() : JSON.parse(JSON.stringify(val)) : val;
       }
-      return obj;
+      return jsonObj;
     };
     Record.prototype.toString = function() {
       return JSON.stringify(this);

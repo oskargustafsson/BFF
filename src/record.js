@@ -120,11 +120,13 @@
 		// toJSON() actually returns an object, which is a bit misleading. For compatibility reasons.
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior
 		Record.prototype.toJSON = function toJSON() {
-			var obj = {};
+			var jsonObj = {};
 			for (var propName in this.__private.values) {
-				obj[propName] = this[propName];
+				var val = this[propName];
+				jsonObj[propName] = val instanceof Object ?
+						(val.toJSON ? val.toJSON() : JSON.parse(JSON.stringify(val))) : val;
 			}
-			return obj;
+			return jsonObj;
 		};
 
 		// Override, to get nicer prints

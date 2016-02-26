@@ -2,14 +2,15 @@
 (function () {
 	'use strict';
 
+	/**
+	 * A mixin, providing event emitting capabilities to an object. Events are simply strings. When they are
+	 * emitted, zero or more parameters can be passed as arguments to the listening functions.
+	 * @module bff/event-emitter
+	 * @mixin
+	 */
 	function moduleFactory() {
-		/**
-		 * A mixin, providing event emitting capabilities to an object. Events are simply strings. When they are
-		 * emitted, zero or more parameters can be passed as arguments to the listening functions.
-		 * @module bff/event-emitter
-		 * @mixin
-		 */
-		var EventEmitter = {
+
+		var eventEmitter = {
 			/**
 			 * Emit an event. Callbacks will be called with the same arguments as this function was called with,
 			 * except for the event name argument.
@@ -120,7 +121,7 @@
 
 		};
 
-		return EventEmitter;
+		return eventEmitter;
 
 	}
 

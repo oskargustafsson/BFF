@@ -1,7 +1,7 @@
 !function() {
   'use strict';
   function moduleFactory() {
-    var EventEmitter = {
+    var eventEmitter = {
       emit: function(eventName) {
         if (true && 'string' != typeof eventName) {
           throw '"eventName" argument must be a string';
@@ -86,7 +86,7 @@
         0 === listenersForEvent.length && delete this.__private.listeners[eventName];
       }
     };
-    return EventEmitter;
+    return eventEmitter;
   }
   if ('function' == typeof define && define.amd) {
     define(moduleFactory);

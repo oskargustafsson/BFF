@@ -271,7 +271,7 @@
     listFunctions.clear = function() {
       return this.splice(0, this.length);
     };
-    listFunctions.pushAll = listFunctions.concatMut = function(items) {
+    listFunctions.pushAll = function(items) {
       if (true && (!items || void 0 === items.length)) {
         throw '"items" argument must have a length property';
       }
@@ -312,22 +312,22 @@
       }
       return this;
     };
-    listFunctions.find = function(callback, thisArg) {
-      if (true && 'function' != typeof callback) {
-        throw '"callback" argument must be a function';
+    listFunctions.find = function(predicate, thisArg) {
+      if (true && 'function' != typeof predicate) {
+        throw '"predicate" argument must be a function';
       }
       for (var i = 0, length = this.length; length > i; ++i) {
-        if (callback.call(thisArg, this[i], i, this)) {
+        if (predicate.call(thisArg, this[i], i, this)) {
           return this[i];
         }
       }
     };
-    listFunctions.findIndex = function(callback, thisArg) {
-      if (true && 'function' != typeof callback) {
-        throw '"callback" argument must be a function';
+    listFunctions.findIndex = function(predicate, thisArg) {
+      if (true && 'function' != typeof predicate) {
+        throw '"predicate" argument must be a function';
       }
       for (var i = 0, length = this.length; length > i; ++i) {
-        if (callback.call(thisArg, this[i], i, this)) {
+        if (predicate.call(thisArg, this[i], i, this)) {
           return i;
         }
       }
@@ -345,7 +345,12 @@
       return this.__private.array.slice();
     };
     listFunctions.toJSON = function() {
-      return this.toArray();
+      var jsonObj = new Array(this.length);
+      for (var i = 0, n = jsonObj.length; n > i; ++i) {
+        var item = this[i];
+        jsonObj[i] = item instanceof Object ? item.toJSON ? item.toJSON() : JSON.parse(JSON.stringify(item)) : item;
+      }
+      return jsonObj;
     };
     listFunctions.propertiesToJSON = function() {
       return Record.prototype.toJSON.call(this);

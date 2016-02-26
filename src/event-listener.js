@@ -45,7 +45,7 @@
 		 * @module bff/event-listener
 		 * @mixin
 		 */
-		var EventListener = {
+		var eventListener = {
 
 			/**
 			 * Start listening to an event on a specified event emitting object. Both eventEmitters and eventNames
@@ -117,7 +117,7 @@
 
 		};
 
-		return EventListener;
+		return eventListener;
 
 	}
 

@@ -322,30 +322,31 @@
 			 */
 			'forEach',
 			/**
+			 * Mirrors Array.every behavior.
 			 * @func every
 			 * @instance
-			 * Mirrors Array.every behavior.
 			 * @arg {module:bff/list~predicateCallback} predicate - Executed once per List item.
 			 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
 			 * @returns {boolean} true if all items passes the predicate test, false otherwise.
 			 */
 			'every',
 			/**
+			 * Mirrors Array.some behavior.
 			 * @func some
 			 * @instance
-			 * Mirrors Array.some behavior.
 			 * @arg {module:bff/list~predicateCallback} predicate - Executed once per List item.
 			 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
 			 * @returns {boolean} true if at least one item passes the predicate test, false otherwise.
 			 */
 			'some',
 			/**
+			 * Mirrors Array.indexOf behavior.
 			 * @func indexOf
 			 * @instance
 			 * @arg {any} searchItem - The item to locate within the List.
 			 * @arg {number} [fromIndex] - The index to start the search at. If the index is greater than or equal to the
 			 *     List's length, -1 is returned, which means the List will not be searched. If the provided index
-			 *     value is a negative number, it is taken as the offset from the end of the List. Mirrors Array.indexOf behavior.
+			 *     value is a negative number, it is taken as the offset from the end of the List.
 			 * @returns {number} The first index at which a given item can be found in the List, or -1 if it is not present.
 			 */
 			'indexOf',
@@ -421,7 +422,7 @@
 			 * @func filter
 			 * @instance
 			 * @arg {module:bff/list~predicateCallback} predicate - Executed once per List item.
-			 * @returns {List}
+			 * @returns {List} The new List.
 			 */
 			'filter',
 			/**
@@ -433,7 +434,7 @@
 			 *     be relative to the end of the List instead of the beginning.
 			 * @arg {number} [end] Index that specifies the end of the range. Exclusive. A negative index will
 			 *     be relative to the end of the List instead of the beginning.
-			 * @returns {List}
+			 * @returns {List} The new List.
 			 */
 			'slice',
 			/**
@@ -443,13 +444,22 @@
 			 * @instance
 			 * @arg {module:bff/module~mapCallback} callback - Executed once per List item.
 			 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
-			 * @returns {List}
+			 * @returns {List} The new List.
 			 */
 			'map'
 		].forEach(function (funcName) {
 			listFunctions[funcName] = delegateCreator(funcName);
 		});
 
+		/**
+		 * Returns a new List comprised of the List on which it is called joined with the List(s), Array(s) and/or
+		 * value(s) provided as arguments. Mirrors the behavior of Array.concat.
+		 * @func concat
+		 * @instance
+		 * @arg {...any} value - A List, Array or value that will be concatenated with the original List. Lists and
+		 *     Arrays will be deconstructed and each item added to the new List.
+		 * @returns {List} The new List.
+		 */
 		listFunctions.concat = function concat() {
 			for (var i = 0, n = arguments.length; i < n; ++i) {
 				var argument = arguments[i];
@@ -460,6 +470,16 @@
 			return new this.constructor(this.__private.array.concat.apply(this.__private.array, arguments));
 		};
 
+		/**
+		 * Mutates the List by removing all items that does not pass the predicate function test.
+		 * @func filterMut
+		 * @instance
+		 * @arg {module:bff/list~predicateCallback} predicate - Called once per List item to determine whether the item should be removed.
+		 * @arg {any} [thisArg] - Value to use as "this" when executing predicate callback.
+		 * @emits module:bff/list#change:length
+		 * @emits module:bff/list#item:removed
+		 * @returns {List} The filtered List.
+		 */
 		listFunctions.filterMut = function filterMut(predicate, thisArg) {
 			if (RUNTIME_CHECKS) {
 				if (typeof predicate !== 'function') { throw '"predicate" argument must be a function'; }
@@ -477,15 +497,41 @@
 			return this;
 		};
 
+		/**
+		 * Mutates the List by removing all occurances of the provided item.
+		 * @func remove
+		 * @instance
+		 * @arg {any} item - The item to remove from the list.
+		 * @emits module:bff/list#change:length
+		 * @emits module:bff/list#item:removed
+		 * @returns {List} The List, without any occurances of 'item'.
+		 */
 		listFunctions.remove = function remove(item) {
 			return this.filterMut(function (listItem) { return item !== listItem; });
 		};
 
+		/**
+		 * Mutates the List by removing all items.
+		 * @func clear
+		 * @instance
+		 * @emits module:bff/list#change:length
+		 * @emits module:bff/list#item:removed
+		 * @returns {List} The List, now empty.
+		 */
 		listFunctions.clear = function clear() {
 			return this.splice(0, this.length);
 		};
 
-		listFunctions.pushAll = listFunctions.concatMut = function pushAll(items) {
+		/**
+		 * Mutates the List by adding the items comprising the provided List or Array to the end of the List.
+		 * @func pushAll
+		 * @instance
+		 * @arg {module:bff/list|Array} items - The items that will be appended to the List.
+		 * @emits module:bff/list#change:length
+		 * @emits module:bff/list#item:added
+		 * @returns {List} The List, with new items appended.
+		 */
+		listFunctions.pushAll = function pushAll(items) {
 			if (RUNTIME_CHECKS && (!items || items.length === undefined)) {
 				throw '"items" argument must have a length property';
 			}
@@ -493,6 +539,18 @@
 			return this.length;
 		};
 
+		/**
+		 * Mutates the List by removing all elements outside of range specified by the begin and end arguments.
+		 * @func slice
+		 * @instance
+		 * @arg {number} [begin] Index that specifies the beginning of the range. Inclusive. A negative index will
+		 *     be relative to the end of the List instead of the beginning.
+		 * @arg {number} [end] Index that specifies the end of the range. Exclusive. A negative index will
+		 *     be relative to the end of the List instead of the beginning.
+		 * @emits module:bff/list#change:length
+		 * @emits module:bff/list#item:removed
+		 * @returns {List} The List, sans the items outside of the specified range.
+		 */
 		listFunctions.sliceMut = function sliceMut(begin, end) {
 			if (RUNTIME_CHECKS) {
 				if (arguments.length < 2) { throw '"begin" and "end" arguments are mandatory'; }
@@ -523,6 +581,15 @@
 			return this;
 		};
 
+		/**
+		 * Replaces all items in the List with new items, generated by the callback function.
+		 * @func mapMut
+		 * @instance
+		 * @arg {module:bff/module~mapCallback} callback - Executed once per List item to produce new items.
+		 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
+		 * @emits module:bff/list#item:replaced
+		 * @returns {List} The List, with all items updated.
+		 */
 		listFunctions.mapMut = function mapMut(callback, thisArg) {
 			if (RUNTIME_CHECKS && typeof callback !== 'function') { throw '"callback" argument must be a function'; }
 
@@ -532,23 +599,47 @@
 			return this;
 		};
 
-		listFunctions.find = function find(callback, thisArg) {
-			if (RUNTIME_CHECKS && typeof callback !== 'function') { throw '"callback" argument must be a function'; }
+		/**
+		 * Returns the first item in the List that passes the predicate function test, or undefined if no item passes.
+		 * @func find
+		 * @instance
+		 * @arg {module:bff/list~predicateCallback} predicate - Called once per List item to in order to find a matching item.
+		 * @returns {any|undefined} The matching item, if any.
+		 */
+		listFunctions.find = function find(predicate, thisArg) {
+			if (RUNTIME_CHECKS && typeof predicate !== 'function') { throw '"predicate" argument must be a function'; }
 
 			for (var i = 0, length = this.length; i < length; ++i) {
-				if (callback.call(thisArg, this[i], i, this)) { return this[i]; }
+				if (predicate.call(thisArg, this[i], i, this)) { return this[i]; }
 			}
 		};
 
-		listFunctions.findIndex = function findIndex(callback, thisArg) {
-			if (RUNTIME_CHECKS && typeof callback !== 'function') { throw '"callback" argument must be a function'; }
+		/**
+		 * Returns the index of the first item in the List that passes the predicate function test, or -1 if no item passes.
+		 * @func findIndex
+		 * @instance
+		 * @arg {module:bff/list~predicateCallback} predicate - Called once per List item to in order to find a matching item.
+		 * @returns {number} The position of the matching item, or -1 if none matches.
+		 */
+		listFunctions.findIndex = function findIndex(predicate, thisArg) {
+			if (RUNTIME_CHECKS && typeof predicate !== 'function') { throw '"predicate" argument must be a function'; }
 
 			for (var i = 0, length = this.length; i < length; ++i) {
-				if (callback.call(thisArg, this[i], i, this)) { return i; }
+				if (predicate.call(thisArg, this[i], i, this)) { return i; }
 			}
 			return -1;
 		};
 
+		/**
+		 * Returns whether the provided item is part of the List.
+		 * @func includes
+		 * @instance
+		 * @arg {any} item
+		 * @arg {number} [fromIndex] - The index to start the search at. If the index is greater than or equal to the
+		 *     List's length, -1 is returned, which means the List will not be searched. If the provided index
+		 *     value is a negative number, it is taken as the offset from the end of the List.
+		 * @returns {boolean} True if the item is part of the List, false otherwise.
+		 */
 		listFunctions.includes = function includes(item, fromIndex) {
 			if (RUNTIME_CHECKS && arguments.length > 1 && typeof fromIndex !== 'number') {
 				throw '"fromIndex" number must be a number';
@@ -559,18 +650,53 @@
 			return index !== -1 && index >= fromIndex;
 		};
 
+		/**
+		 * Returns an newly created Array, containing all the items of the List. List properties are not copied to the
+		 * Array object. The items are copied shallowly.
+		 * @func toArray
+		 * @instance
+		 * @returns {Array}
+		 */
 		listFunctions.toArray = function toArray() {
 			return this.__private.array.slice();
 		};
 
+		/**
+		 * Returns a newly created Array representation of the List, containing deep copies of all the List's items,
+		 * but not its properties.
+		 * @func toJSON
+		 * @instance
+		 * @returns {Array}
+		 */
 		listFunctions.toJSON = function toJSON() {
-			return this.toArray();
+			var jsonObj = new Array(this.length);
+			for (var i = 0, n = jsonObj.length; i < n; ++i) {
+				var item = this[i];
+				jsonObj[i] = item instanceof Object ?
+						(item.toJSON ? item.toJSON() : JSON.parse(JSON.stringify(item))) : item;
+			}
+			return jsonObj;
 		};
 
+		/**
+		 * Returns a newly created Object containing the List's deep copied properties.
+		 * @func propertiesToJSON
+		 * @instance
+		 * @returns {Object}
+		 */
 		listFunctions.propertiesToJSON = function propertiesToJSON() {
 			return Record.prototype.toJSON.call(this);
 		};
 
+		/**
+		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides the option to listen to
+		 * events emitted from any item in the List. To add a listener to an item event, prepend the event name with
+		 * 'item:'. For instance, to listen for the 'change' event on all the list items (even ones added after the
+		 * listener was created), add a listener for the 'item:change' event.
+		 * @func addEventListener
+		 * @instance
+		 * @arg {string} - Identifier string for the event.
+		 */
 		listFunctions.addEventListener = function addEventListener(eventName) {
 			if (RUNTIME_CHECKS && typeof eventName !== 'string') {
 				throw '"eventName" argument must be a string';
@@ -586,6 +712,13 @@
 			}
 		};
 
+		/**
+		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides functionality for
+		 * removing "item" event listeners, e.g. for stop listening to events like "items:change".
+		 * @func removeEventListener
+		 * @instance
+		 * @arg {string} - Identifier string for the event.
+		 */
 		listFunctions.removeEventListener = function removeEventListener(eventName) {
 			if (RUNTIME_CHECKS && typeof eventName !== 'string') {
 				throw '"eventName" argument must be a string';
@@ -681,7 +814,9 @@
 		}
 
 		/**
-		 * Represents a list of items.
+		 * Maintains a list of items. The idea is to stay as true as possible to the native Array interface, but augment
+		 * its usefulness by triggering events whenever the list is updated, as well as adding convenience functions for
+		 * mutating the List in place.
 		 * @constructor
 		 * @alias module:bff/list
 		 * @mixes bff/event-emitter
@@ -690,6 +825,17 @@
 		 * @arg {(Array|List)} [items] - Items that will be added to the List on creation.
 		 */
 		var List = withProperties({});
+
+		/**
+		 * Creates a new List constructor function, that creates List instances with the properties provided to this
+		 * function.
+		 * @func withProperties
+		 * @static
+		 * @arg {object} schema - An object describing the properties that will be part of all new instances created by
+		 *     the returned constructor function. The property descriptions should be on the same format at the schema
+		 *     specified for {@link module:bff/record#withProperties}, with the only exception that setters are not allowed.
+		 * @returns {function} New constructor function based on the provided schema.
+		 */
 		List.withProperties = withProperties;
 
 		return List;
