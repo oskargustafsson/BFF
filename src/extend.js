@@ -68,6 +68,7 @@
 
 		/**
 		 * @function extend
+		 * @instance
 		 * @arg {Object} target - The object that will be extende with new properties.
 		 * @arg {Object} source - The object that provides the new properties.
 		 * @arg {string|function|Object} [onConflict] - Specifies how to handle cases where a property exists both on

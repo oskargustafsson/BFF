@@ -1,9 +1,13 @@
 /* global RUNTIME_CHECKS, define */
+
+/**
+ * @module bff/list
+ */
+
 (function () {
 	'use strict';
 
 	function moduleFactory(extend, eventEmitter, Record) {
-
 		var ADDED_EVENT = 'added';
 		var REPLACED_EVENT = 'replaced';
 		var REMOVED_EVENT = 'removed';
@@ -42,6 +46,30 @@
 
 		var PRECHANGE_EVENT = 'prechange';
 		var CHANGE_EVENT = 'change';
+
+		/**
+		 * @callback module:bff/list~forEachCallback
+		 * @param {any} item - Current List item.
+		 * @param {number} index - Item position in List.
+		 * @param {module:bff/list} list - List being iterated over.
+		 */
+
+		/**
+		 * Executes the given function once per List item. Mirrors Array.forEach behavior.
+		 * @func
+		 * @arg {module:bff/list~forEachCallback} callback - The function that will be called once per List item.
+		 * @arg {any} thisArg - Value to use as "this" when executing callback.
+		 * @returns {undefined}
+		 */
+
+		/**
+		 * @callback module:bff/list~reduceCallback
+		 * @param {any} previousItem - The value previously returned in the last invocation of the callback, or
+		 *     initialValue, if supplied. Usually an aggregate of previous items.
+		 * @param {any} item - Current List item being processed.
+		 * @param {number} index - Item position in List.
+		 * @param {module:bff/list} list - List being iterated over.
+		 */
 
 		var ITEM_EVENT_TOKEN_MATCHER = /item:/;
 
@@ -122,6 +150,8 @@
 
 		/**
 		 * Add one or more items to the end of the List. Mirrors Array.push behavior.
+		 * @func push
+		 * @instance
 		 * @arg {...any} item - Each item argument will be pushed onto the List.
 		 * @emits module:bff/list#change:length
 		 * @emits module:bff/list#item:added
@@ -146,6 +176,8 @@
 
 		/**
 		 * Add one or more items to the beginning of the List. Mirrors Array.unshift behavior.
+		 * @func unshift
+		 * @instance
 		 * @arg {...any} item - Each item argument will be pushed onto the List.
 		 * @emits module:bff/list#change:length
 		 * @emits module:bff/list#item:added
@@ -170,6 +202,8 @@
 
 		/**
 		 * Remove and return one item from the end of the List. Mirrors Array.pop behavior.
+		 * @func pop
+		 * @instance
 		 * @emits module:bff/list#change:length
 		 * @emits module:bff/list#item:removed
 		 * @returns {any} Removed item
@@ -190,6 +224,8 @@
 
 		/**
 		 * Remove and return one item from the beginning of the List. Mirrors Array.shift behavior.
+		 * @func shift
+		 * @instance
 		 * @emits module:bff/list#change:length
 		 * @emits module:bff/list#item:removed
 		 * @returns {any} Removed item
@@ -211,6 +247,8 @@
 		/**
 		 * Changes the content of the List by removing existing elements and/or adding new elements. Mirrors Array.splice
 		 * behavior.
+		 * @func splice
+		 * @instance
 		 * @arg {number} start - Index at which to start changing the array. If greater than the length of the array, actual
 		 *     starting index will be set to the length of the array. If negative, will begin that many elements from the
 		 *     end.
@@ -258,35 +296,12 @@
 		};
 
 		/**
-		 * @callback module:bff/list~forEachCallback
-		 * @param {any} item - Current List item.
-		 * @param {number} index - Item position in List.
-		 * @param {module:bff/list} list - List being iterated over.
-		 */
-
-		/**
-		 * Executes the given function once per List item. Mirrors Array.forEach behavior.
-		 * @func
-		 * @arg {module:bff/list~forEachCallback} callback - The function that will be called once per List item.
-		 * @arg {any} thisArg - Value to use as "this" when executing callback.
-		 * @returns {undefined}
-		 */
-
-		/**
-		 * @callback module:bff/list~reduceCallback
-		 * @param {any} previousItem - The value previously returned in the last invocation of the callback, or
-		 *     initialValue, if supplied. Usually an aggregate of previous items.
-		 * @param {any} item - Current List item being processed.
-		 * @param {number} index - Item position in List.
-		 * @param {module:bff/list} list - List being iterated over.
-		 */
-
-		/**
 		 * Applies a function against an accumulator and each value of the array (from left-to-right) to reduce it to a
 		 *     single value. Mirrors Array.reduce behavior.
-		 * @func
+		 * @func reduce
+		 * @instance
 		 * @arg {module:bff/list~reduceCallback} callback - The function that will be called once per List item.
-		 * @arg {any} initialVale - Value to use as the first argument to the first call of the callback.
+		 * @arg {any} initialValue - Value to use as the first argument to the first call of the callback.
 		 * @returns {any} Aggregated value
 		 */
 
