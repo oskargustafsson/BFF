@@ -1,12 +1,12 @@
 /* global RUNTIME_CHECKS, define */
 
 /**
- * A function that extends a target object with the properties of a source object recursively, with options
- * describing how to handle conflicting properties. Note that the target property is mutated and also returned,
- * i.e. no new object is when invoking this function.
+ * A function that extends a target object with the properties of a source object, with options for describing property
+ * collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking
+ * this function.
  *
  * The function comes with a set of named built-in conflict-solving functions:
- * * _crash_: Throws an error when a property conflic occurs. This is the default solver function.
+ * * _crash_: Throws an error when a property conflict occurs. This is the default solver function.
  * * _useTarget_: Uses the target's property, i.e. leaves the target property unchanged.
  * * _useSource_: Uses the source's property, i.e. overwrites the target property with the source property.
  * * _merge_: Tries to merge the values in an intuitive way.
