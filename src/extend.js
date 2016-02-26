@@ -26,7 +26,8 @@
  *   'useSource');
  * // Returns { a: { c: 'c', d: 'd' } }
  * ```
- * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it encounters. This is how e.g. jQuery.extend and _.assign behaves.
+ * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it
+ * encounters. This is how e.g. jQuery.extend and _.assign behaves.
  * ```javascript
  * extend(
  *   { a: { b: 'b', c: 'c' } },
@@ -67,16 +68,25 @@
 		function getSolverFunction(val) { return getType(val) === 'function' ? val : SOLVERS[val]; }
 
 		/**
+		 * @callback module:bff/extend~conflictSolver
+		 * @param {Object} target
+		 * @param {Object} source
+		 * @param {string} prop - The name of the conflicting property.
+		 * @param {string|module:bff/extend~conflictSolver|Object} onConflict - The same onConflict argumet passed to the extend() call.
+		 * @param {string|module:bff/extend~conflictSolver} defaultOnConflict - The same defaultOnConfluct argumet passed to the extend() call.
+		 */
+
+		/**
 		 * @function extend
 		 * @instance
 		 * @arg {Object} target - The object that will be extende with new properties.
 		 * @arg {Object} source - The object that provides the new properties.
-		 * @arg {string|function|Object} [onConflict] - Specifies how to handle cases where a property exists both on
+		 * @arg {string|module:bff/extend~conflictSolver|Object} [onConflict] - Specifies how to handle cases where a property exists both on
 		 * the target and on the source.
 		 * * a _string_ argument will be used to identify one of the built in solver functions. Valid values are 'useTarget', 'useSouce', 'crash' and 'merge'.
 		 * * a _function_ argument will be used as-is as a solver for all conflicts.
 		 * * an _Object_ argument should have keys that correspond to value types, i.e. 'object', 'array', 'function', 'string', 'number', 'boolean', 'null' or 'undefined'. The object values can be either strings or functions, which will be used as solver functions for the corresponding key value types.
-		 * @arg {string|function} [defaultOnConflict] - Specifies a default solver, in the same manner as the onConflict argument. Can only be used if onConflict is an object.
+		 * @arg {string|module:bff/extend~conflictSolver} [defaultOnConflict] - Specifies a default solver, in the same manner as the onConflict argument. Can only be used if onConflict is an object.
 		 * @returns {Object} The extended object
 		 */
 		function extend(target, source, onConflict, defaultOnConflict) {

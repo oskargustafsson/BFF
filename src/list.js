@@ -55,11 +55,19 @@
 		 */
 
 		/**
-		 * Executes the given function once per List item. Mirrors Array.forEach behavior.
-		 * @func
-		 * @arg {module:bff/list~forEachCallback} callback - The function that will be called once per List item.
-		 * @arg {any} thisArg - Value to use as "this" when executing callback.
-		 * @returns {undefined}
+		 * @callback module:bff/list~mapCallback
+		 * @param {any} item - Current List item.
+		 * @param {number} index - Item position in List.
+		 * @param {module:bff/list} list - List being iterated over.
+		 * @returns {any} Transformed object.
+		 */
+
+		/**
+		 * @callback module:bff/list~predicateCallback
+		 * @param {any} item - Current List item.
+		 * @param {number} index - Item position in List.
+		 * @param {module:bff/list} list - List being iterated over.
+		 * @returns {boolean} true if the item passes the test, false otherwise
 		 */
 
 		/**
@@ -69,6 +77,16 @@
 		 * @param {any} item - Current List item being processed.
 		 * @param {number} index - Item position in List.
 		 * @param {module:bff/list} list - List being iterated over.
+		 * @returns {any} The aggregated value.
+		 */
+
+		/**
+		 * Compares _itemA_ and _itemB_ arguments according to some sorting criterion. Should return -1 if _itemA_ comes
+		 * before _itemB_, 0 if _itemA_ is equal to _itemB_, 1 if _itemB_ comes before _itemA_.
+		 * @callback module:bff/list~compareFunction
+		 * @param {any} itemA - A list item.
+		 * @param {any} itemB - Another list item.
+		 * @returns {number}.
 		 */
 
 		var ITEM_EVENT_TOKEN_MATCHER = /item:/;
@@ -77,7 +95,6 @@
 
 		function reemitItemEvent(self, item, strippedEventName, eventName) {
 			self.listenTo(item, strippedEventName, function reemitItemEvent() {
-				//self.emit.apply(self, [ eventName ].concat(Array.prototype.slice.call(arguments))); // TODO: better solution
 				self.emitArgsAsArray(eventName, arguments);
 			});
 		}
@@ -245,16 +262,16 @@
 		};
 
 		/**
-		 * Changes the content of the List by removing existing elements and/or adding new elements. Mirrors Array.splice
+		 * Changes the content of the List by removing existing items and/or adding new items. Mirrors Array.splice
 		 * behavior.
 		 * @func splice
 		 * @instance
 		 * @arg {number} start - Index at which to start changing the array. If greater than the length of the array, actual
-		 *     starting index will be set to the length of the array. If negative, will begin that many elements from the
+		 *     starting index will be set to the length of the array. If negative, will begin that many items from the
 		 *     end.
-		 * @arg {number} nItemsToRemove - An integer indicating the number of old array elements to remove. If
-		 *     nItemsToRemove is greater than the number of elements left in the array starting at start, then all of the
-		 *     elements through the end of the array will be deleted.
+		 * @arg {number} nItemsToRemove - An integer indicating the number of old array items to remove. If
+		 *     nItemsToRemove is greater than the number of items left in the array starting at start, then all of the
+		 *     items through the end of the array will be deleted.
 		 * @arg {...any} [itemToAdd] - Item that will be added to the array, starting at the index specified in the first
 		 *     argument.
 		 * @emits module:bff/list#change:length
@@ -295,30 +312,143 @@
 			return deletedItems;
 		};
 
-		/**
-		 * Applies a function against an accumulator and each value of the array (from left-to-right) to reduce it to a
-		 *     single value. Mirrors Array.reduce behavior.
-		 * @func reduce
-		 * @instance
-		 * @arg {module:bff/list~reduceCallback} callback - The function that will be called once per List item.
-		 * @arg {any} initialValue - Value to use as the first argument to the first call of the callback.
-		 * @returns {any} Aggregated value
-		 */
+		[
+			/**
+			 * Executes the given function once per List item. Mirrors Array.forEach behavior.
+			 * @func forEach
+			 * @instance
+			 * @arg {module:bff/list~forEachCallback} callback - The function that will be called once per List item.
+			 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
+			 */
+			'forEach',
+			/**
+			 * @func every
+			 * @instance
+			 * Mirrors Array.every behavior.
+			 * @arg {module:bff/list~predicateCallback} predicate - Executed once per List item.
+			 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
+			 * @returns {boolean} true if all items passes the predicate test, false otherwise.
+			 */
+			'every',
+			/**
+			 * @func some
+			 * @instance
+			 * Mirrors Array.some behavior.
+			 * @arg {module:bff/list~predicateCallback} predicate - Executed once per List item.
+			 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
+			 * @returns {boolean} true if at least one item passes the predicate test, false otherwise.
+			 */
+			'some',
+			/**
+			 * @func indexOf
+			 * @instance
+			 * @arg {any} searchItem - The item to locate within the List.
+			 * @arg {number} [fromIndex] - The index to start the search at. If the index is greater than or equal to the
+			 *     List's length, -1 is returned, which means the List will not be searched. If the provided index
+			 *     value is a negative number, it is taken as the offset from the end of the List. Mirrors Array.indexOf behavior.
+			 * @returns {number} The first index at which a given item can be found in the List, or -1 if it is not present.
+			 */
+			'indexOf',
+			/**
+			 * @func lastIndexOf
+			 * @instance
+			 * @arg {any} searchItem - The item to locate within the List.
+			 * @arg {number} [fromIndex] - The index at which to start searching backwards. Defaults to the List's length
+			 *     minus one, i.e. the whole List will be searched. If the index is greater than or equal to the length
+			 *     of the List, the whole List will be searched. If negative, it is taken as the offset from the end
+			 *     of the List. Mirrors Array.lastIndexOf behavior.
+			 * @returns {number} The last index at which a given item can be found in the List, or -1 if it is not present.
+			 */
+			'lastIndexOf',
+			/**
+			 * @func join
+			 * @instance
+			 * @arg {string} [separator] - Specifies a string to separate each item of the List. If omitted, the List
+			 *     items are separated with a comma. Mirrors Array.join behavior.
+			 * @returns {string} The stringified List items, joined by the 'separator' string argument.
+			 */
+			'join',
+			/**
+			 * Applies a function against an accumulator and each value of the List (from left-to-right) to reduce it to a
+			 * single value. Mirrors Array.reduce behavior.
+			 * @func reduce
+			 * @instance
+			 * @arg {module:bff/list~reduceCallback} callback - The function that will be called once per List item.
+			 * @arg {any} initialValue - Value to use as the first argument to the first call of the callback.
+			 * @returns {any} Aggregated value
+			 */
+			'reduce',
+			/**
+			 * Applies a function against an accumulator and each value of the List (from right-to-left) to reduce it to a
+			 * single value. Mirrors Array.reduceRight behavior.
+			 * @func reduceRight
+			 * @instance
+			 * @arg {module:bff/list~reduceCallback} callback - The function that will be called once per List item.
+			 * @arg {any} initialValue - Value to use as the first argument to the first call of the callback.
+			 * @returns {any} Aggregated value
+			 */
+			'reduceRight'
+		].forEach(function (funcName) {
+			listFunctions[funcName] = Array.prototype[funcName];
+		});
 
-		[ 'forEach', 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduce', 'reduceRight' ]
-				.forEach(function (funcName) {
-					listFunctions[funcName] = Array.prototype[funcName];
-				});
+		[
+			/**
+			 * Sorts the items of the List in place. The sort is not necessarily stable. The default sort order is
+			 * according to string Unicode code points, unless a custom comparator finction is provided. Mirrors the
+			 * behavior of Array.sort. No events are emitted by this operation.
+			 * @func sort
+			 * @instance
+			 * @arg {module:bff/list~compareFunction} [comparator] - A function that specifies the ordering of two
+			 *     arbitrary List items. Called multiple times in order to produce a total ordering of the items.
+			 * @returns {List} The sorted list.
+			 */
+			'sort',
+			/**
+			 * Reverses the List in place. Mirros the behavior of Array.reverse. No events are emitted by this operation.
+			 * @func reverse
+			 * @instance
+			 */
+			'reverse'
+		].forEach(function (funcName) {
+			listFunctions[funcName] = delegate(funcName);
+		});
 
-		[ 'sort', 'reverse' ]
-				.forEach(function (funcName) {
-					listFunctions[funcName] = delegate(funcName);
-				});
-
-		[ 'filter', 'slice', 'map' ]
-				.forEach(function (funcName) {
-					listFunctions[funcName] = delegateCreator(funcName);
-				});
+		[
+			/**
+			 * Creates a new List with all items that pass the test implemented by the predicate function test. The
+			 * original list is unchanged. Mirrors the behavior of Array.filter.
+			 * @func filter
+			 * @instance
+			 * @arg {module:bff/list~predicateCallback} predicate - Executed once per List item.
+			 * @returns {List}
+			 */
+			'filter',
+			/**
+			 * Creates a new List from the range of current items specified by the begin and end arguments. Mirrors the
+			 * behavior of Array.slice.
+			 * @func slice
+			 * @instance
+			 * @arg {number} [begin] Index that specifies the beginning of the range. Inclusive. A negative index will
+			 *     be relative to the end of the List instead of the beginning.
+			 * @arg {number} [end] Index that specifies the end of the range. Exclusive. A negative index will
+			 *     be relative to the end of the List instead of the beginning.
+			 * @returns {List}
+			 */
+			'slice',
+			/**
+			 * Creates a new List with the results of calling a provided callback function on every element in the List.
+			 * Mirrors the behavior of Array.map.
+			 * @func map
+			 * @instance
+			 * @arg {module:bff/module~mapCallback} callback - Executed once per List item.
+			 * @arg {any} [thisArg] - Value to use as "this" when executing callback.
+			 * @returns {List}
+			 */
+			'map'
+		].forEach(function (funcName) {
+			listFunctions[funcName] = delegateCreator(funcName);
+		});
 
 		listFunctions.concat = function concat() {
 			for (var i = 0, n = arguments.length; i < n; ++i) {

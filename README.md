@@ -44,12 +44,6 @@ TO DO before 1.0
 #### List
 * UTs for all functions
 * UT: Props that depend on 'length' should trigger own change events when length changes
-* Option to mixin Lodash functions
-    * or just implement some lodash funcs like union and intersection
-* Throw error message if user tries to assign to list[-1] or list[list.length]
-* Explore if there is a way to check if the user assigns outside of the array and throw an error.
-    * Using Proxies? (FF + IE12)
-    * Listening for internal Array "length" changes?
 
 #### Record
 * Cache calculated property values
@@ -59,7 +53,7 @@ TO DO before 1.0
 * UTs for emitArgsAsArray()
 
 #### Event listener
-* Write UTs for listenTo(anArray, ...)
+* UTs for listenTo(anArray, ...)
 * Option: useCapture
 
 #### View
