@@ -42,7 +42,7 @@
 		 * to remove some or all its event listeners, for instance when it is disabled or destroyed. This is an easy way to
 		 * avoid leaking listeners. Caveat: don't mix eventEmitter.removeEventListener and eventListener.stopListening throughout a
 		 * project, as that could result in memory leaks.
-		 * @module bff/event-listener
+		 * @exports bff/event-listener
 		 * @mixin
 		 */
 		var eventListener = {
@@ -50,6 +50,7 @@
 			/**
 			 * Start listening to an event on a specified event emitting object. Both eventEmitters and eventNames
 			 * arguments can be arrays. The total amount of listeners added will be the Cartesian product of the two lists.
+			 * @instance
 			 * @arg {(Object|Array|NodeList)} eventEmitters - One or more event emitters that will be listened to.
 			 * @arg {string|Array} eventNames - One or more string identifiers for events that will be listented to.
 			 * @arg {function} callback - The function that will be called when the event is emitted.
@@ -89,6 +90,7 @@
 			/**
 			 * Stop listening to events. If no arguments are provided, the listener removes all its event listeners. Providing
 			 * any or both of the optional arguments will filter the list of event listeners removed.
+			 * @instance
 			 * @arg {Object} [eventEmitter] - If provided, only callbacks attached to the given event emitter will be removed.
 			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.
 			 */

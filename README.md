@@ -50,11 +50,9 @@ TO DO before 1.0
 * How to destroy Records? Will they be garbage collected in their current state?
 
 #### Event emitter
-* JSDoc is broken
 * UTs for emitArgsAsArray()
 
 #### Event listener
-* JSDoc is broken
 * UTs for listenTo(anArray, ...)
 * Option: useCapture
 

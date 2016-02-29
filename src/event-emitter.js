@@ -2,18 +2,19 @@
 (function () {
 	'use strict';
 
-	/**
-	 * A mixin, providing event emitting capabilities to an object. Events are simply strings. When they are
-	 * emitted, zero or more parameters can be passed as arguments to the listening functions.
-	 * @module bff/event-emitter
-	 * @mixin
-	 */
 	function moduleFactory() {
 
+		/**
+		 * A mixin, providing event emitting capabilities to an object. Events are simply strings. When they are
+		 * emitted, zero or more parameters can be passed as arguments to the listening functions.
+		 * @exports bff/event-emitter
+		 * @mixin
+		 */
 		var eventEmitter = {
 			/**
 			 * Emit an event. Callbacks will be called with the same arguments as this function was called with,
 			 * except for the event name argument.
+			 * @instance
 			 * @arg {string} eventName - Identifier string for the event.
 			 * @arg {...any} [eventArguments] - Zero or more arguments that event listeners will be called with.
 			 */
@@ -36,6 +37,7 @@
 
 			/**
 			 * Emit an event. Callbacks will be called with arguments given as an an array in the second argument
+			 * @instance
 			 * @arg {string} eventName - Identifier string for the event.
 			 * @arg {array} [argsArray] - An array of arguments with which the callbacks will be called. Each item in
 			 *     the array will be provided as an individual argument to the callbacks.
@@ -63,6 +65,7 @@
 			/**
 			 * Add an event listener function that will be called whenever the given event is emitted. Trying to add the exact
 			 * same function twice till throw an error, as that is rarely ever the intention and a common source of errors.
+			 * @instance
 			 * @arg {string} eventName - Identifier string for the event that is to be listened to.
 			 * @arg {function} callback - The function that will be called when the event is emitted.
 			 */
@@ -89,6 +92,7 @@
 
 			/**
 			 * Removes an event listener function. If the function was never a listener, do nothing.
+			 * @instance
 			 * @arg {string} eventName - Identifier string for the event in question.
 			 * @arg {function} [callback] - If not given, all event listeners to the provided eventName will be removed. If
 			 *     given, only the given callback will be removed from the given eventName.
