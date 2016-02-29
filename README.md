@@ -36,8 +36,10 @@ TO DO before 1.0
 ----------------
 #### General
 * Complete documentation
-    * Docblocks
+    * Docblocks for all public functions
     * Make available online
+    * @link not working
+    * Normalize capitalization of types (e.g. Object vs. object)
 * Implement toString() for all modules
 * Remove all names from function expressions, Uglify apprenly removes them anyway
 
