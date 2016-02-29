@@ -40,7 +40,7 @@
         throw '"values" argument must be an object';
       }
       if (!this.__private) {
-        throw 'Record an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
+        throw 'Record is an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
       }
       this.__private.values = {};
       this.__private.previousValues = {};

@@ -2,6 +2,20 @@
 (function () {
 	'use strict';
 
+	/**
+	 * A [Record](https://en.wikipedia.org/wiki/Record_(computer_science) is the basic entity of the data layer. In
+	 * difference to regular JS objects, it has a predefined set of properties. The properties are specified by
+	 * "subclassing" the abstract Record constructor by calling `Record.withProperties(...)` and providing a properties
+	 * schema. For more details, see {@link module:bff/record#withProperties}.
+	 *
+	 * The major advantages of using a predefined (i.e. known and finite) set of properties are:
+	 * * Each property gets a custom setter, that emits a change event whenever the property value changes. The setter
+	 *   can also do types checks on the assigned value (which it does in dev. mode).
+	 * * The record instances can be locked using Object.preventExtensions, with the nice effect that trying to assign
+	 *   a value to an undeclared property will throw an error.
+	 *
+	 * @exports bff/record
+	 */
 	function moduleFactory(extend, eventEmitter, eventListener) {
 
 		var PRECHANGE_EVENT = 'prechange';
@@ -54,13 +68,21 @@
 					function getter() { return this.__private.values[propName]; };
 		}
 
+		/**
+		 * Creates a new Record (subclass) with an optional set of initial values.
+		 * @alias module:bff/record
+		 * @constructor
+		 * @mixes bff/event-emitter
+		 * @mixes bff/event-listener
+		 * @arg {Object|module:bff/record} [values] - An object containing initial values for the Record to be created.
+		 */
 		function Record(values) {
 			if (RUNTIME_CHECKS && values !== undefined && typeof values !== 'object') {
 				throw '"values" argument must be an object';
 			}
 
 			if (!this.__private) {
-				throw 'Record an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
+				throw 'Record is an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
 			}
 
 			this.__private.values = {};
@@ -117,8 +139,12 @@
 			}
 		}
 
-		// toJSON() actually returns an object, which is a bit misleading. For compatibility reasons.
-		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior
+		/**
+		 * Returns a newly created Object containing the Records's deep copied properties. The fact that this function
+		 * returns an Object and not a strin is a bit misleading, but this naming convension is used for conformity
+		 * reasons, see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior}
+		 * @returns {Object}
+		 */
 		Record.prototype.toJSON = function toJSON() {
 			var jsonObj = {};
 			for (var propName in this.__private.values) {
@@ -129,7 +155,9 @@
 			return jsonObj;
 		};
 
-		// Override, to get nicer prints
+		/**
+		 * @returns {string} A human readable string representation of the Record.
+		 */
 		Record.prototype.toString = function toString() {
 			return JSON.stringify(this);
 		};

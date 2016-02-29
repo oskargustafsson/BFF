@@ -815,7 +815,7 @@
 		var List = withProperties({});
 
 		/**
-		 * Creates a new List constructor function, that creates List instances with the properties provided to this
+		 * Creates a new List constructor function, that will create List instances with the properties provided to this
 		 * function.
 		 * @func
 		 * @static
