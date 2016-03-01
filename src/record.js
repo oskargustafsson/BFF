@@ -177,17 +177,34 @@
 		 *     type: [ 'number', undefined ],
 		 *     defaultValue: 0,
 		 *   },
+		 *   someData: {},
 		 * })
 		 * ```
-		 * Here we see a schema with four properties. The first two (_firstName_ and _lastName_) use a shorthand syntax
+		 * Here we see a schema with five properties. The first two (_firstName_ and _lastName_) use a shorthand syntax
 		 * to declare string properties. The _fullName_ property is a calculated property that depends on _firstName_
-		 * and _lastName_. Finally, the _age_ property is either a number or undefined (properties can't be undefined by
-		 * default), with a default value of 0.
+		 * and _lastName_. The _age_ property is either a number or undefined (properties can't be undefined by
+		 * default), with a default value of 0. Finally, the _someData_ property can be of any type.
 		 * @func
 		 * @static
 		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by
-		 *     the returned constructor function. Each key/value pair describes a single property. Property descriptor
-		 *     objects can have the following properties:
+		 * the returned constructor function. Each key/value pair describes a single property. Property descriptor
+		 * objects can have the following properties:
+		 * * _type_: A string or array of strings specifying the type of the property. If omitted, no type checking will
+		 * be performed, otherwise types are checked by applying the typeof operator to the assigned value and then
+		 * checking to see if the returned type string is part of the schema types.
+		 * * _defaultValue_: An initial value that will be assigned to all new instances of this property upon creation.
+		 * * _setter_: A function that will be called to transform the assigned value before it is stored on the property.
+		 * Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.
+		 * * _getter_: A function that will be run to transform the read value before it is returned. Shouldn't have any
+		 * side effects, as it might be called internally to determine when events should be triggered.
+		 *
+		 * All schema descriptor properties are optional. An empty schema descriptor can be replaced with any falsy value for the same effect, which means that:
+		 * `someData: {}`, `someData: undefined`, `someData: null` and `someData: false` all declares a property named someData, which can hold any type of data.
+		 *
+		 * There is also a shorthand syntax for specifying typed properties, because it is such a common use case, e.g.:
+		 * `aProp: 'string'` is equal to `aProp: { type: 'string' }` and e.g.
+		 * `aProp: [ 'string', 'undefined' ]` is equal to `aProp: { type: [ 'string', 'undefined' ] }`
+		 *
 		 * @returns {function} New constructor function based on the provided schema.
 		 */
 		Record.withProperties = function withProperties(schema, dontPreventExtensions) {
