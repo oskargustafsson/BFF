@@ -14,13 +14,19 @@
 	 * The three major issues to deal with when re-rendering an entire view are:
 	 * * _Loss of view state._ This is a generic problem, that thankfully has an easy solution; store all application state in the data layer. A typical way of doing this is to assign a view state model to views that are not stateless.
 	 * * _Loss of event listeners_. The typical solution to this is event delegation, which is also the soliution that BFF Views provide. All event listeners are registered on the view's root element and as long as the root elements is not replaced, the event listeners will be unaffecte by a re-render.
-	 * * _Visual flickering_. Replacing large chunks of the visual DOM may cause flickering. BFF Views works around this issue by using an approach similar to that of React, namely by differentially updating the DOM. This means doing an offline diff and then only updating the parts of the DOM that have actually changed.
+	 * * _Visual flickering_. Replacing large chunks of the visual DOM may cause flickering. BFF Views work around this issue by using an approach similar to that of React, namely by differentially updating the DOM. This means doing an offline diff and then only updating the parts of the DOM that have actually changed.
 	 * @exports bff/view
 	 */
 	function moduleFactory(extend, eventListener, patch, List) {
 
 		var HTML_PARSER_EL = document.createElement('div');
 
+		/**
+		 * Creates a new View instance.
+		 * @constructor
+		 * @mixes module:bff/event-listener
+		 * @alias module:bff/view
+		 */
 		function View() {
 			Object.defineProperty(this, '__private', { writable: true, value: {}, });
 
@@ -48,12 +54,20 @@
 
 		extend(View.prototype, {
 
+			/**
+			 * Destroys a view instance by removing its children, stop listening to all events and finally removing itself from the DOM.
+			 */
 			destroy: function destroy() {
 				this.removeChildren();
 				this.stopListening();
 				this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
 			},
 
+			/**
+			 * Creates a subclass constructor function, that will create view instances with the properties (typically functions) provded to this function.
+			 * @arg {object} properties - The properties with which the View subclass' prototype will be extended.
+			 * @returns {function}
+			 */
 			makeSubclass: function makeSubclass(properties) {
 				if (RUNTIME_CHECKS && typeof properties !== 'object') {
 					throw '"properties" argument must be an object';
@@ -75,6 +89,10 @@
 				return Constructor;
 			},
 
+			/**
+			 * Creates a DOM representation of the view, based on the HTML string returned by the getHtml() function and then assigns it to the view's `el` property. If the view already has an `el`, it will be patched instead of replaced, so that delegated event listeners will be preserved.
+			 * @arg {Object} [patchOptions] - Options object forwarded to the `patch()` function, in case it is called.
+			 */
 			render: function render(patchOptions) {
 				if (RUNTIME_CHECKS) {
 					if (!this.getHtml) {
@@ -95,6 +113,9 @@
 				}
 			},
 
+			/**
+			 * Requests an animation frame, in which `render()` is called. Can be called several times during a tick witout any performance penalty.
+			 */
 			requestRender: function requestRender() {
 				if (this.__private.isRenderRequested) { return; }
 				this.__private.isRenderRequested = true;
@@ -106,6 +127,11 @@
 				});
 			},
 
+			/**
+			 * Helper function that parses an HTML string into an HTMLElement hierarchy and returns the first element in the NodeList, unless the returnAll flag is true, in which case the whole node list is returned.
+			 * @arg {string} htmlString - The string to be parsed
+			 * @arg {boolean} returnAll - If true will return all top level elements
+			 */
 			parseHtml: function parseHtml(htmlString, returnAll) {
 				if (RUNTIME_CHECKS) {
 					if (typeof htmlString !== 'string') {
@@ -120,6 +146,10 @@
 				return returnAll ? HTML_PARSER_EL.childNodes : HTML_PARSER_EL.firstChild;
 			},
 
+			/**
+			 * Scoped query selector, that only queries this view's DOM subtree.
+			 * @arg {string} queryString - CSS selector string
+			 */
 			$: function $(queryString) {
 				if (RUNTIME_CHECKS && typeof queryString !== 'string') {
 					throw '"queryString" argument must be a string';
@@ -128,6 +158,11 @@
 				return this.el.querySelector(queryString);
 			},
 
+			/**
+			 * Helper function that forces the view's root element to be repainted. Useful when re-triggering CSS animations.
+			 * @arg {HTMLElement} [el] Element that will be forced to repaint. If not specified, will default to the view's root element.
+			 * @returns {number} Useless/arbitrary value, but the function needs to return it to prevent browser JS optimizations from interfering with the forced repaint.
+			 */
 			forceRepaint: function forceRepaint(el) {
 				if (RUNTIME_CHECKS && arguments.length > 0 && !(el instanceof HTMLElement)) {
 					throw '"el" argument must be an HTMLElement';
@@ -135,6 +170,11 @@
 				return (el || this.el).offsetHeight;
 			},
 
+			/**
+			 * Adds another view as a child to the view. A child view will be automatically added to this view's root element and destroyed whenever its parent view is destroyed.
+			 * @arg {module:bff/view} {childView} - The view that will be added to the list of this view's children.
+			 * @arg {HTMLElement} [optional] - An element to which the child view's root element will be appended. If not specified, it will be appended to this view's root element.
+			 */
 			addChild: function addChild(childView, el) {
 				if (RUNTIME_CHECKS) {
 					if (!(childView instanceof View)) {
