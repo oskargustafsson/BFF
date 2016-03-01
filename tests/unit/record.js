@@ -448,102 +448,71 @@ define(function (require) {
 			'type checking': {
 
 				'throws an error if the passed value is of the wrong type': function () {
-						var Record = AbstractRecord.withProperties({
-							race: { type: 'string', },
-						});
-						expect(new Record({ race: 'human' }).race).to.equal('human');
-						expect(function () {
-							new Record({ race: 4 });
-						}).to.throw();
+					var Record = AbstractRecord.withProperties({
+						race: { type: 'string', },
+					});
+
+					expect(new Record({ race: 'human' }).race).to.equal('human');
+					expect(function () { new Record({ race: 4 }); }).to.throw();
 				},
 
 				'throws an error if the passed value is of the wrong type (alt. syntax)': function () {
-						var Record = AbstractRecord.withProperties({
-							race: 'string',
-						});
-						expect(new Record({ race: 'human' }).race).to.equal('human');
-						expect(function () {
-							new Record({ race: 4 });
-						}).to.throw();
+					var Record = AbstractRecord.withProperties({
+						race: 'string',
+					});
+
+					expect(new Record({ race: 'human' }).race).to.equal('human');
+					expect(function () { new Record({ race: 4 }); }).to.throw();
 				},
 
 				'throws an error if a default value has not been provided': function () {
-						var Record = AbstractRecord.withProperties({
-							race: 'string',
-						});
+					var Record = AbstractRecord.withProperties({
+						race: 'string',
+					});
 
-						expect(function () {
-							new Record();
-						}).to.throw();
-
-						expect(function () {
-							new Record({ race: undefined });
-						}).to.throw();
+					expect(function () { new Record(); }).to.throw();
+					expect(function () { new Record({ race: undefined }); }).to.throw();
 				},
 
-			},
-
-			'forbidden value checking': {
-
-				'throws an error when a forbidden value is passed to constructor': function () {
+				'allows specifying multiple types (1/2)': function () {
 					var Record = AbstractRecord.withProperties({
-						race: { type: 'string', forbiddenValues: [ 'cow' ] },
+						race: { type: [ 'string', 'number', 'undefined' ], },
 					});
+
+					expect(new Record().race).to.equal(undefined);
+					expect(new Record({ race: 'human' }).race).to.equal('human');
+					expect(new Record({ race: 3 }).race).to.equal(3);
+					expect(new Record({ race: undefined }).race).to.equal(undefined);
+					expect(function () { new Record({ race: null }); }).to.throw();
+					expect(function () { new Record({ race: {} }); }).to.throw();
+					expect(function () { new Record({ race: false }); }).to.throw();
+				},
+
+				'allows specifying multiple types (2/2)': function () {
+					var Record = AbstractRecord.withProperties({
+						race: { type: [ 'string', 'number' ], },
+					});
+
+					expect(new Record({ race: 'human' }).race).to.equal('human');
+					expect(new Record({ race: 3 }).race).to.equal(3);
 					expect(function () { new Record(); }).to.throw();
 					expect(function () { new Record({ race: undefined }); }).to.throw();
 					expect(function () { new Record({ race: null }); }).to.throw();
-					expect(function () { new Record({ race: 'cow' }); }).to.throw();
+					expect(function () { new Record({ race: {} }); }).to.throw();
+					expect(function () { new Record({ race: false }); }).to.throw();
+				},
+
+				'allows specifying multiple types (alt. syntax)': function () {
+					var Record = AbstractRecord.withProperties({
+						race: [ 'string', 'number', 'undefined' ],
+					});
+
 					expect(new Record({ race: 'human' }).race).to.equal('human');
-				},
-
-				'throws an error when a forbidden value is assigned': function () {
-					var Record = AbstractRecord.withProperties({
-						race: { type: 'string', forbiddenValues: [ 'cow' ] },
-					});
-					var record = new Record({ race: 'human' });
-					//expect(function () { delete record.race; }).to.throw();
-					expect(function () { record.race = undefined; }).to.throw();
-					expect(function () { record.race = null; }).to.throw();
-					expect(function () { record.race = 'cow'; }).to.throw();
-					// Error checking should not change the behavior, just throw errors
-					expect(record.race).to.equal('cow');
-				},
-
-			},
-
-			'allowed value checking': {
-
-				'does not throw an error if the assigned value is in the list of allowed values': function () {
-					var Record = AbstractRecord.withProperties({
-						race: {
-							type: 'string',
-							allowedValues: [ 3, undefined ],
-						},
-					});
-
-					var record = new Record({ race: 3 });
-					expect(record.race).to.equal(3);
-
-					record = new Record();
-					expect(record.race).to.equal(undefined);
-				},
-
-				'throws an error if the value has been explicitly listed as forbidden': function () {
-					var Record = AbstractRecord.withProperties({
-						race: {
-							type: 'string',
-							allowedValues: [ 3, undefined ],
-							forbiddenValues: [ 3, undefined ],
-						},
-					});
-
-					expect(function () {
-						new Record({ race: 3 });
-					}).to.throw();
-
-					expect(function () {
-						new Record();
-					}).to.throw();
+					expect(new Record({ race: 3 }).race).to.equal(3);
+					expect(new Record({ race: undefined }).race).to.equal(undefined);
+					expect(function () { new Record({ race: null }); }).to.throw();
+					expect(function () { new Record({ race: {} }); }).to.throw();
+					expect(function () { new Record({ race: false }); }).to.throw();
 				},
 
 			},

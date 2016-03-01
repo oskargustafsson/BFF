@@ -50,6 +50,7 @@ TO DO before 1.0
 #### Record
 * Cache calculated property values
 * How to destroy Records? Will they be garbage collected in their current state?
+* Use constructors (Number, String, ...) instead of string identifiers for type declarations (maybe)
 
 #### Event emitter
 * UTs for emitArgsAsArray()

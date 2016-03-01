@@ -23,13 +23,8 @@
 
 		function validateInput(val, propName, propSchema) {
 			var type = typeof val;
-			if (propSchema.type && type !== propSchema.type &&
-					(!propSchema.allowedValues || propSchema.allowedValues.indexOf(val) === -1)) {
-				throw 'Property ' + propName + ' is of type ' + propSchema.type + ' and can not be assigned a value of type ' +
-						type + '. You can add an "allowedValues" array to the schema to allow specific values';
-			}
-			if (propSchema.forbiddenValues && propSchema.forbiddenValues.indexOf(val) !== -1) {
-				throw 'Property ' + propName + ' is not allowed to be ' + val;
+			if ('type' in propSchema && propSchema.type.indexOf(type) === -1) {
+				throw 'Property ' + propName + ' is of type ' + propSchema.type + ' and can not be assigned a value of type ' + type;
 			}
 		}
 
@@ -165,6 +160,36 @@
 		extend(Record.prototype, eventEmitter);
 		extend(Record.prototype, eventListener);
 
+		/**
+		 * Creates a new Record constructor function, that will create Record instances with the property schema
+		 * provided to this function. The various aspects of the property schema are described in detail below, but let's
+		 * start with an example.
+		 * ```javascript
+		 * var Person = Record.withProperties({
+		 *   firstName: 'string',
+		 *   lastName: 'string',
+		 *   fullName: {
+		 *     setter: false,
+		 *     getter: function () { return this.firstName + ' ' + this.lastName; },
+		 *     dependencies: [ 'firstName', 'lastName' ],
+		 *   },
+		 *   age: {
+		 *     type: [ 'number', undefined ],
+		 *     defaultValue: 0,
+		 *   },
+		 * })
+		 * ```
+		 * Here we see a schema with four properties. The first two (_firstName_ and _lastName_) use a shorthand syntax
+		 * to declare string properties. The _fullName_ property is a calculated property that depends on _firstName_
+		 * and _lastName_. Finally, the _age_ property is either a number or undefined (properties can't be undefined by
+		 * default), with a default value of 0.
+		 * @func
+		 * @static
+		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by
+		 *     the returned constructor function. Each key/value pair describes a single property. Property descriptor
+		 *     objects can have the following properties:
+		 * @returns {function} New constructor function based on the provided schema.
+		 */
 		Record.withProperties = function withProperties(schema, dontPreventExtensions) {
 			if (RUNTIME_CHECKS) {
 				if (typeof schema !== 'object') {
@@ -189,7 +214,21 @@
 			for (var propName in schema) {
 				var propSchema = schema[propName] = schema[propName] || {};
 
-				typeof propSchema === 'string' && (propSchema = schema[propName] = { type: propSchema });
+				if (typeof propSchema === 'string' || propSchema instanceof Array) {
+					propSchema = schema[propName] = { type: propSchema };
+				}
+
+				if ('type' in propSchema && !(propSchema.type instanceof Array)) {
+					propSchema.type = [ propSchema.type ];
+				}
+
+				if (RUNTIME_CHECKS && propSchema.type) {
+					for (var i = 0, n = propSchema.type.length; i < n; ++i) {
+						if (typeof propSchema.type[i] !== 'string') {
+							throw 'All property type identifiers must be strings; ' + propName + '\'s is not';
+						}
+					}
+				}
 
 				props[propName] = {
 					enumerable: true,

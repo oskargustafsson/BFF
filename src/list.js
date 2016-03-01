@@ -815,8 +815,8 @@
 		var List = withProperties({});
 
 		/**
-		 * Creates a new List constructor function, that will create List instances with the properties provided to this
-		 * function.
+		 * Creates a new List constructor function, that will create List instances with the property schema
+		 * provided to this function
 		 * @func
 		 * @static
 		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by

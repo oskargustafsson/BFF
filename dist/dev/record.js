@@ -3,11 +3,8 @@
   function moduleFactory(extend, eventEmitter, eventListener) {
     function validateInput(val, propName, propSchema) {
       var type = typeof val;
-      if (propSchema.type && type !== propSchema.type && (!propSchema.allowedValues || -1 === propSchema.allowedValues.indexOf(val))) {
-        throw 'Property ' + propName + ' is of type ' + propSchema.type + ' and can not be assigned a value of type ' + type + '. You can add an "allowedValues" array to the schema to allow specific values';
-      }
-      if (propSchema.forbiddenValues && -1 !== propSchema.forbiddenValues.indexOf(val)) {
-        throw 'Property ' + propName + ' is not allowed to be ' + val;
+      if ('type' in propSchema && -1 === propSchema.type.indexOf(type)) {
+        throw 'Property ' + propName + ' is of type ' + propSchema.type + ' and can not be assigned a value of type ' + type;
       }
     }
     function makeSetter(propName, propSchema) {
@@ -125,9 +122,21 @@
       var props = {};
       for (var propName in schema) {
         var propSchema = schema[propName] = schema[propName] || {};
-        'string' == typeof propSchema && (propSchema = schema[propName] = {
-          type: propSchema
-        });
+        if ('string' == typeof propSchema || propSchema instanceof Array) {
+          propSchema = schema[propName] = {
+            type: propSchema
+          };
+        }
+        if ('type' in propSchema && !(propSchema.type instanceof Array)) {
+          propSchema.type = [ propSchema.type ];
+        }
+        if (true && propSchema.type) {
+          for (var i = 0, n = propSchema.type.length; n > i; ++i) {
+            if ('string' != typeof propSchema.type[i]) {
+              throw 'All property type identifiers must be strings; ' + propName + '\'s is not';
+            }
+          }
+        }
         props[propName] = {
           enumerable: true,
           get: false === propSchema.getter ? void 0 : makeGetter(propName, propSchema),
