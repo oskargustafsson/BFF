@@ -3,7 +3,18 @@
 	'use strict';
 
 	/**
-	 * Encapsulates the functionality that typically belong in an MVC view. Note that BFF lacks a separate controller module and without going into details, it is not wrong to combine 
+	 * Encapsulates typical MVC view functionality. Note that BFF lacks a separate controller module and it is not wrong put controller logic in BFF Views.
+	 * 
+	 * The intended way to combine BFF Records/Lists and Views into some kind or MVC-like pattern is as follows:
+	 * * Views listen to DOM events, and reacts to those by mutating data layer entities (such as models or lists of models)
+	 * * Views also listen to data layer events and reacts to those, possibly by further mutating the data layer (i.e. controller logic), but most importantly by re-rendering themselves.
+	 * 
+	 * Another way of describing the above is that the views should, besides listening to user generated events, always strive to visually represent the data layer as truthfully as possible. A powerful and simple approach to achieving this is to re-render the whole view whenever the data layer changes.
+	 * 
+	 * The three major issues to deal with when re-rendering an entire view are:
+	 * * _Loss of view state._ This is a generic problem, that thankfully has an easy solution; store all application state in the data layer. A typical way of doing this is to assign a view state model to views that are not stateless.
+	 * * _Loss of event listeners_. The typical solution to this is event delegation, which is also the soliution that BFF Views provide. All event listeners are registered on the view's root element and as long as the root elements is not replaced, the event listeners will be unaffecte by a re-render.
+	 * * _Visual flickering_. Replacing large chunks of the visual DOM may cause flickering. BFF Views works around this issue by using an approach similar to that of React, namely by differentially updating the DOM. This means doing an offline diff and then only updating the parts of the DOM that have actually changed.
 	 * @exports bff/view
 	 */
 	function moduleFactory(extend, eventListener, patch, List) {
