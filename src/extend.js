@@ -1,64 +1,63 @@
 /* global RUNTIME_CHECKS, define */
 
-/**
- * A function that extends a target object with the properties of a source object, with options for describing property
- * collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking
- * this function.
- *
- * The function comes with a set of named built-in conflict-solving functions:
- * * _crash_: Throws an error when a property conflict occurs. This is the default solver function.
- * * _useTarget_: Uses the target's property, i.e. leaves the target property unchanged.
- * * _useSource_: Uses the source's property, i.e. overwrites the target property with the source property.
- * * _merge_: Tries to merge the values in an intuitive way.
- *     * Objects are merged recursively.
- *     * Arrays are concatenated.
- *     * Functions are combined, so that the target's function is first called, then the source's. Both functions are passed the same arguments.
- *     * Numbers and strings added using the + operator.
- *     * Boolean values are or:ed using the || operator (i.e. Boolean addition).
- *     * If the source and target types are not the same, use the source value.
- * The caller also has the option to specify custom solver functions.
- *
- * **Examples**
- * ```javascript
- * extend(
- *   { a: { b: 'b', c: 'c' } },
- *   { a: { c: 'c', d: 'd' } },
- *   'useSource');
- * // Returns { a: { c: 'c', d: 'd' } }
- * ```
- * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it
- * encounters. This is how e.g. jQuery.extend and _.assign behaves.
- * ```javascript
- * extend(
- *   { a: { b: 'b', c: 'c' } },
- *   { a: { c: 'c', d: 'd' } },
- *   'merge');
- * // Returns { a: { b: 'b', c: 'c', d: 'd' } }
- * ```
- * Here we see that the 'merge' solver works recursively.
- * ```javascript
- * extend(
- *   { a: { b: 'b' }, num: 1 },
- *   { a: { c: 'c' }, num: 2 },
- *   { object: 'merge' }, 'useSource');
- * // Returns { a: { b: 'b', c: 'c' }, num: 2 }
- * ```
- * The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types.
- * This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves
- * ```javascript
- * extend(
- *   { a: { b: 'b' }, num: 1 },
- *   { a: { c: 'c' }, num: 2, newProp: 3 },
- *   function (target, source, prop) { target[prop] = 42; });
- * // Returns { a: 42, num: 42, newProp: 3 }
- * ```
- * Above we see a (fairly useless) custom conflict solver function.
- * @module bff/extend
- */
-
 (function () {
 	'use strict';
 
+	/**
+	 * A function that extends a target object with the properties of a source object, with options for describing property
+	 * collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking
+	 * this function.
+	 *
+	 * The function comes with a set of named built-in conflict-solving functions:
+	 * * _crash_: Throws an error when a property conflict occurs. This is the default solver function.
+	 * * _useTarget_: Uses the target's property, i.e. leaves the target property unchanged.
+	 * * _useSource_: Uses the source's property, i.e. overwrites the target property with the source property.
+	 * * _merge_: Tries to merge the values in an intuitive way.
+	 *     * Objects are merged recursively.
+	 *     * Arrays are concatenated.
+	 *     * Functions are combined, so that the target's function is first called, then the source's. Both functions are passed the same arguments.
+	 *     * Numbers and strings added using the + operator.
+	 *     * Boolean values are or:ed using the || operator (i.e. Boolean addition).
+	 *     * If the source and target types are not the same, use the source value.
+	 * The caller also has the option to specify custom solver functions.
+	 *
+	 * **Examples**
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b', c: 'c' } },
+	 *   { a: { c: 'c', d: 'd' } },
+	 *   'useSource');
+	 * // Returns { a: { c: 'c', d: 'd' } }
+	 * ```
+	 * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it
+	 * encounters. This is how e.g. jQuery.extend and _.assign behaves.
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b', c: 'c' } },
+	 *   { a: { c: 'c', d: 'd' } },
+	 *   'merge');
+	 * // Returns { a: { b: 'b', c: 'c', d: 'd' } }
+	 * ```
+	 * Here we see that the 'merge' solver works recursively.
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b' }, num: 1 },
+	 *   { a: { c: 'c' }, num: 2 },
+	 *   { object: 'merge' }, 'useSource');
+	 * // Returns { a: { b: 'b', c: 'c' }, num: 2 }
+	 * ```
+	 * The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types.
+	 * This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b' }, num: 1 },
+	 *   { a: { c: 'c' }, num: 2, newProp: 3 },
+	 *   function (target, source, prop) { target[prop] = 42; });
+	 * // Returns { a: 42, num: 42, newProp: 3 }
+	 * ```
+	 * Above we see a (fairly useless) custom conflict solver function.
+	 * @module bff/extend
+	 */
 	function moduleFactory() {
 
 		var TYPES = [ 'object', 'array', 'function', 'string', 'number', 'boolean', 'null', 'undefined' ];
@@ -77,7 +76,7 @@
 		 */
 
 		/**
-		 * @function extend
+		 * @func extend
 		 * @instance
 		 * @arg {Object} target - The object that will be extende with new properties.
 		 * @arg {Object} source - The object that provides the new properties.

@@ -38,6 +38,7 @@ TO DO before 1.0
 * Complete documentation
     * Docblocks for all public functions
     * Make available online
+    * Single function modules (extend, patch-dom) not correct
     * @link not working
     * Normalize capitalization of types (e.g. Object vs. object)
     * Remove line breaks

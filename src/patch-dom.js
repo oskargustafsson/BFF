@@ -2,6 +2,9 @@
 (function () {
 	'use strict';
 
+	/**
+	 * @module bff/patch-dom
+	 */
 	function moduleFactory() {
 
 		function makeLevMat(xSize, ySize) {
@@ -219,6 +222,20 @@
 			}
 		}
 
+		/**
+		 * Patches the target element and its child elements such that it will be identical to the source element and its child structure. It achieves this by recursively _patching_, _removing_ or _adding_ elements in the target element hierarchy. The overall logic of the algorithm goes as follows:
+		 * * If the target and source elements have differing node type types (e.g. a `<div>` and a `<span>` tag) the target element is replaced by the source element.
+		 * * Otherwise, if the target and source elements are of the same type (e.g. two `<div>` tags), the attributes of the target element will be replaced by those of the target element. Then the target and source elements' children lists are compared using a version of the Levenshtein algorithm. This results in the children of the target element being either patched (by calling `patchDom` recursively) or removed. Child elements only present in the source child list will also be added to the target child list at their respective positions.
+		 *
+		 * If any encountered target elements has a `patch-ignore` attribute, that node and its children will not be patched.
+		 *
+		 * @func patchDom
+		 * @instance
+		 * @arg {HTMLElement} target - The element (hierarchy) to be patched. Will be identical to the source element (hierarchy) after the function call completes.
+		 * @arg {HTMLElement} source - The element (hierarchy) that the target (hierarchy) will be transformed into.
+		 * @arg {Object} [options] - Options that will be recursively passed down to all patchDom calls. Currently only one options is implemented:
+		 * * _ignoreSubtreeOf_: A CSS selector string that identifies any elements, whose subtrees will not be patched.
+		 */
 		return function patchDom(target, source, options) {
 			options = options || {};
 
