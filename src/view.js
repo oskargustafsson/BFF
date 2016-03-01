@@ -2,6 +2,10 @@
 (function () {
 	'use strict';
 
+	/**
+	 * Encapsulates the functionality that typically belong in an MVC view. Note that BFF lacks a separate controller module and without going into details, it is not wrong to combine 
+	 * @exports bff/view
+	 */
 	function moduleFactory(extend, eventListener, patch, List) {
 
 		var HTML_PARSER_EL = document.createElement('div');
