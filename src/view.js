@@ -4,13 +4,13 @@
 
 	/**
 	 * Encapsulates typical MVC view functionality. Note that BFF lacks a separate controller module and it is not wrong put controller logic in BFF Views.
-	 * 
+	 *
 	 * The intended way to combine BFF Records/Lists and Views into some kind or MVC-like pattern is as follows:
 	 * * Views listen to DOM events, and reacts to those by mutating data layer entities (such as models or lists of models)
 	 * * Views also listen to data layer events and reacts to those, possibly by further mutating the data layer (i.e. controller logic), but most importantly by re-rendering themselves.
-	 * 
+	 *
 	 * Another way of describing the above is that the views should, besides listening to user generated events, always strive to visually represent the data layer as truthfully as possible. A powerful and simple approach to achieving this is to re-render the whole view whenever the data layer changes.
-	 * 
+	 *
 	 * The three major issues to deal with when re-rendering an entire view are:
 	 * * _Loss of view state._ This is a generic problem, that thankfully has an easy solution; store all application state in the data layer. A typical way of doing this is to assign a view state model to views that are not stateless.
 	 * * _Loss of event listeners_. The typical solution to this is event delegation, which is also the soliution that BFF Views provide. All event listeners are registered on the view's root element and as long as the root elements is not replaced, the event listeners will be unaffecte by a re-render.
@@ -47,7 +47,7 @@
 			};
 
 			this.__private.childViews = new List();
-			this.listenTo(this.__private.childViews, 'item:removed', this.onChildRemoved);
+			this.listenTo(this.__private.childViews, 'item:removed', function (childView) { childView.destroy(); });
 		}
 
 		extend(View.prototype, eventListener);
@@ -55,6 +55,7 @@
 		extend(View.prototype, {
 
 			/**
+			 * @instance
 			 * Destroys a view instance by removing its children, stop listening to all events and finally removing itself from the DOM.
 			 */
 			destroy: function destroy() {
@@ -65,6 +66,8 @@
 
 			/**
 			 * Creates a subclass constructor function, that will create view instances with the properties (typically functions) provded to this function.
+			 * TODO: move this to View.makeSubclass
+			 * @instance
 			 * @arg {object} properties - The properties with which the View subclass' prototype will be extended.
 			 * @returns {function}
 			 */
@@ -91,6 +94,7 @@
 
 			/**
 			 * Creates a DOM representation of the view, based on the HTML string returned by the getHtml() function and then assigns it to the view's `el` property. If the view already has an `el`, it will be patched instead of replaced, so that delegated event listeners will be preserved.
+			 * @instance
 			 * @arg {Object} [patchOptions] - Options object forwarded to the `patch()` function, in case it is called.
 			 */
 			render: function render(patchOptions) {
@@ -114,6 +118,7 @@
 			},
 
 			/**
+			 * @instance
 			 * Requests an animation frame, in which `render()` is called. Can be called several times during a tick witout any performance penalty.
 			 */
 			requestRender: function requestRender() {
@@ -129,6 +134,7 @@
 
 			/**
 			 * Helper function that parses an HTML string into an HTMLElement hierarchy and returns the first element in the NodeList, unless the returnAll flag is true, in which case the whole node list is returned.
+			 * @instance
 			 * @arg {string} htmlString - The string to be parsed
 			 * @arg {boolean} returnAll - If true will return all top level elements
 			 */
@@ -148,6 +154,7 @@
 
 			/**
 			 * Scoped query selector, that only queries this view's DOM subtree.
+			 * @instance
 			 * @arg {string} queryString - CSS selector string
 			 */
 			$: function $(queryString) {
@@ -160,6 +167,7 @@
 
 			/**
 			 * Helper function that forces the view's root element to be repainted. Useful when re-triggering CSS animations.
+			 * @instance
 			 * @arg {HTMLElement} [el] Element that will be forced to repaint. If not specified, will default to the view's root element.
 			 * @returns {number} Useless/arbitrary value, but the function needs to return it to prevent browser JS optimizations from interfering with the forced repaint.
 			 */
@@ -172,7 +180,8 @@
 
 			/**
 			 * Adds another view as a child to the view. A child view will be automatically added to this view's root element and destroyed whenever its parent view is destroyed.
-			 * @arg {module:bff/view} {childView} - The view that will be added to the list of this view's children.
+			 * @instance
+			 * @arg {module:bff/view} childView - The view that will be added to the list of this view's children.
 			 * @arg {HTMLElement} [optional] - An element to which the child view's root element will be appended. If not specified, it will be appended to this view's root element.
 			 */
 			addChild: function addChild(childView, el) {
@@ -191,6 +200,11 @@
 				return childView;
 			},
 
+			/**
+			 * Removes a specified view from this view's list of child views and destroy the view.
+			 * @instance
+			 * @arg {module:bff/view} childView - The view to remove.
+			 */
 			removeChild: function removeChild(childView) {
 				if (RUNTIME_CHECKS && !(childView instanceof View)) {
 					throw '"childView" argument must be a BFF View';
@@ -200,16 +214,13 @@
 				return childView;
 			},
 
+			/**
+			 * Removes a specified view from this view's list of child views and destroy the view.
+			 * @instance
+			 * @arg {module:bff/view} childView - The view to remove.
+			 */
 			removeChildren: function removeChildren() {
 				this.__private.childViews.clear();
-			},
-
-			onChildRemoved: function onChildRemoved(childView) {
-				if (RUNTIME_CHECKS && !(childView instanceof View)) {
-					throw '"childView" argument must be a BFF View';
-				}
-
-				childView.destroy();
 			},
 
 			// Based on https://github.com/ftlabs/ftdomdelegate/blob/master/lib/delegate.js

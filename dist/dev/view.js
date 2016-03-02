@@ -22,7 +22,9 @@
         }
       };
       this.__private.childViews = new List();
-      this.listenTo(this.__private.childViews, 'item:removed', this.onChildRemoved);
+      this.listenTo(this.__private.childViews, 'item:removed', function(childView) {
+        childView.destroy();
+      });
     }
     var HTML_PARSER_EL = document.createElement('div');
     extend(View.prototype, eventListener);
@@ -123,12 +125,6 @@
       },
       removeChildren: function() {
         this.__private.childViews.clear();
-      },
-      onChildRemoved: function(childView) {
-        if (true && !(childView instanceof View)) {
-          throw '"childView" argument must be a BFF View';
-        }
-        childView.destroy();
       },
       listenTo: function(selectorStr, eventName, callback, context, useCapture) {
         if ('string' != typeof selectorStr) {

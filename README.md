@@ -44,6 +44,7 @@ TO DO before 1.0
     * Remove line breaks
 * Implement toString() for all modules
 * Remove all names from function expressions, Uglify apprenly removes them anyway
+* IE9 support
 
 #### List
 * UTs for all functions
