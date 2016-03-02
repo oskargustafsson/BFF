@@ -118,8 +118,8 @@
 			},
 
 			/**
-			 * @instance
 			 * Requests an animation frame, in which `render()` is called. Can be called several times during a tick witout any performance penalty.
+			 * @instance
 			 */
 			requestRender: function requestRender() {
 				if (this.__private.isRenderRequested) { return; }
@@ -215,17 +215,24 @@
 			},
 
 			/**
-			 * Removes a specified view from this view's list of child views and destroy the view.
+			 * Removes all child views of this view.
 			 * @instance
-			 * @arg {module:bff/view} childView - The view to remove.
 			 */
 			removeChildren: function removeChildren() {
 				this.__private.childViews.clear();
 			},
 
-			// Based on https://github.com/ftlabs/ftdomdelegate/blob/master/lib/delegate.js
-			listenTo: function listenTo(selectorStr, eventName, callback, context, useCapture) {
 
+			/**
+			 * Augments {@link module:bff/event-listener#listenTo} with functionality for listening to delegated DOM events, by specifying a CSS selector string instead of an event emitter. The actual listener will implicitly be registered on this view's root element.
+			 * @instance
+			 * @arg {string|Object|Array|NodeList} selectorStr - The CSS selector string that will be used to filter all events bubbling up to the listener. If anything other than a string passed, the original listenTo implementation will be used.
+			 * @arg {string|Array} eventName - One or more string identifiers for events that will be listented to.
+			 * @arg {function} callback - The function that will be called when the event is emitted.
+			 * @arg {any} [context] - The context with which the callback will be called (i.e. what "this" will be).
+			 *     Will default to the caller of .listenTo, if not provided.
+			 */
+			listenTo: function listenTo(selectorStr, eventName, callback, context, useCapture) {
 				if (typeof selectorStr !== 'string') {
 					eventListener.listenTo.apply(this, arguments);
 					return;
@@ -262,6 +269,12 @@
 				delegatesForEvent[selectorStr].push(callback.bind(context || this));
 			},
 
+			/**
+			 * Augments {@link module:bff/event-listener#stopListening} with functionality for stop listening to delegated DOM events.
+			 * @instance
+			 * @arg {string|Object} [selectorStr] - If provided, only delegated event callbacks for the given selector string will be removed. If anything other than a string passed, the original stopListening implementation will be used.
+			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.
+			 */
 			stopListening: function stopListening(selectorStr, eventName) {
 				if (typeof selectorStr !== 'string') {
 					eventListener.stopListening.apply(this, arguments);

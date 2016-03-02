@@ -51,7 +51,7 @@
 			 * Start listening to an event on a specified event emitting object. Both eventEmitters and eventNames
 			 * arguments can be arrays. The total amount of listeners added will be the Cartesian product of the two lists.
 			 * @instance
-			 * @arg {(Object|Array|NodeList)} eventEmitters - One or more event emitters that will be listened to.
+			 * @arg {Object|Array|NodeList} eventEmitters - One or more event emitters that will be listened to.
 			 * @arg {string|Array} eventNames - One or more string identifiers for events that will be listented to.
 			 * @arg {function} callback - The function that will be called when the event is emitted.
 			 * @arg {any} [context] - The context with which the callback will be called (i.e. what "this" will be).
