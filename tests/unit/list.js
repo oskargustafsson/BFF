@@ -1004,6 +1004,49 @@ define(function (require) {
 
 			},
 
+			'"toJSON" method returns a deep copied plain array representation of the list': function () {
+				var list = new List([ 'a string', 1337, false, { key: 'val' }, [ 'inside array' ] ]);
+				var jsonObj = list.toJSON();
+
+				expect(Object.keys(jsonObj).length).to.equal(5);
+				expect(jsonObj[0]).to.equal('a string');
+				expect(jsonObj[1]).to.equal(1337);
+				expect(jsonObj[2]).to.equal(false);
+				expect(jsonObj[3]).to.deep.equal({ key: 'val' });
+				expect(jsonObj[4]).to.deep.equal([ 'inside array' ]);
+
+				expect(jsonObj[0]).to.equal(list[0]);
+				expect(jsonObj[1]).to.equal(list[1]);
+				expect(jsonObj[2]).to.equal(list[2]);
+				expect(jsonObj[3]).to.deep.equal(list[3]);
+				expect(jsonObj[4]).to.deep.equal(list[4]);
+				// Test that objects are actually deep copied
+				expect(jsonObj[3]).to.not.equal(list[3]);
+				expect(jsonObj[4]).to.not.equal(list[4]);
+			},
+
+			'"toString" method returns a string containing all list items': function () {
+				var list = new List([ 'a string', 1337, false, { key: 'val' }, [ 'inside array' ] ]);
+
+				var str = list.toString();
+
+				expect(str).to.contain('a string');
+				expect(str).to.contain('1337');
+				expect(str).to.contain('false');
+				expect(str).to.contain('key');
+				expect(str).to.contain('val');
+				expect(str).to.contain('inside array');
+			},
+
+			'"toString" method to returns a valid JSON string representation of the list': function () {
+				var list = new List([ 'a string', 1337, false, { key: 'val' }, [ 'inside array' ] ]);
+				var jsonStr = list.toString();
+				var parsedObj = JSON.parse(jsonStr);
+
+				expect(parsedObj).to.deep.equal(list.toJSON());
+				expect(parsedObj).to.deep.equal(JSON.parse(JSON.stringify(parsedObj)));
+			},
+
 		};
 
 	});

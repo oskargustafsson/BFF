@@ -549,7 +549,7 @@ define(function (require) {
 
 			},
 
-			'"toJSON" method returns a plain object representation of the record': function () {
+			'"toJSON" method returns a deep copied plain object representation of the record': function () {
 				var Record = AbstractRecord.withProperties({
 					firstName: 'string',
 					lastName: 'string',
@@ -561,25 +561,33 @@ define(function (require) {
 						},
 					},
 					age: 'number',
+					complexProp: 'object',
 				});
 				var record = new Record({
 					firstName: 'Boutros',
 					lastName: 'Boutros-Ghali',
 					age: 46,
+					complexProp: { a: [ 1337 ] },
 				});
 
 				var jsonObj = record.toJSON();
 
-				expect(Object.keys(jsonObj).length).to.equal(4);
+				expect(Object.keys(jsonObj).length).to.equal(5);
 				expect(jsonObj.firstName).to.equal('Boutros');
 				expect(jsonObj.lastName).to.equal('Boutros-Ghali');
 				expect(jsonObj.fullName).to.equal('Boutros Boutros-Ghali');
 				expect(jsonObj.age).to.equal(46);
+				expect(jsonObj.complexProp).to.deep.equal({ a: [ 1337 ] });
+				//expect(jsonObj.complexProp.a.length).to.equal(1);
+				//expect(jsonObj.complexProp.a[0]).to.equal(1337);
 
 				expect(jsonObj.firstName).to.equal(record.firstName);
 				expect(jsonObj.lastName).to.equal(record.lastName);
 				expect(jsonObj.fullName).to.equal(record.fullName);
 				expect(jsonObj.age).to.equal(record.age);
+				expect(jsonObj.complexProp).to.deep.equal(record.complexProp);
+				// Test that objects are actually deep copied
+				expect(jsonObj.complexProp).not.to.equal(record.complexProp);
 			},
 
 			'"toString" method returns a string containing all properties and their respective values': function () {

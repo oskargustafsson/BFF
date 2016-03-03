@@ -52,6 +52,7 @@ define({
 		'tests/unit/extend',
 		'tests/unit/record',
 		'tests/unit/list',
+		'tests/unit/view',
 	],
 
 	// Functional test suite(s) to execute against each browser once non-functional tests are completed

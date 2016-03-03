@@ -6,7 +6,7 @@
 	"templates": {
 		"cleverLinks": false,
 		"monospaceLinks": false,
-		"dateFormat": "ddd MMM Do YYYY",
+		"dateFormat": "MMM YYYY",
 		"outputSourceFiles": true,
 		"outputSourcePath": true,
 		"systemName": "BFF",

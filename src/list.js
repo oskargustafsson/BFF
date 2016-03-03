@@ -728,6 +728,13 @@
 
 		extend(listFunctions, eventEmitter, { 'function': 'merge' });
 
+		/**
+		 * @returns {string} A human readable string representation of the List.
+		 */
+		listFunctions.toString = function toString() {
+			return JSON.stringify(this, undefined, 2);
+		};
+
 		function withProperties(schema) {
 			for (var propName in schema) {
 				var propertySchema = schema[propName];

@@ -387,6 +387,9 @@
     extend(listFunctions, eventEmitter, {
       function: 'merge'
     });
+    listFunctions.toString = function() {
+      return JSON.stringify(this, void 0, 2);
+    };
     var List = withProperties({});
     List.withProperties = withProperties;
     return List;

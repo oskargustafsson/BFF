@@ -44,7 +44,6 @@ TO DO before 1.0
     * @link not working
     * Normalize capitalization of types (e.g. Object vs. object)
     * Remove line breaks
-* Implement toString() for all modules
 * Remove all names from function expressions, Uglify apprenly removes them anyway
 * IE9 support
 
@@ -65,7 +64,7 @@ TO DO before 1.0
 * Option: useCapture
 
 #### View
-* Move makeSubclass function from View.prototype to View
+* Move makeSubclass function from View.prototype to View. Also makeSubclass(ConstructorFunc, props)
 * View.stopListening probably not working if no arg is passed
 * Parent/child view; trigger event when destroy() is called and remove the child view from any possible parent views
 * FTs

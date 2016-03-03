@@ -154,7 +154,7 @@
 		 * @returns {string} A human readable string representation of the Record.
 		 */
 		Record.prototype.toString = function toString() {
-			return JSON.stringify(this);
+			return JSON.stringify(this, undefined, 2);
 		};
 
 		extend(Record.prototype, eventEmitter);

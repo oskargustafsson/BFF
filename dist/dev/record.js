@@ -95,7 +95,7 @@
       return jsonObj;
     };
     Record.prototype.toString = function() {
-      return JSON.stringify(this);
+      return JSON.stringify(this, void 0, 2);
     };
     extend(Record.prototype, eventEmitter);
     extend(Record.prototype, eventListener);

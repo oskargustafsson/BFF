@@ -295,6 +295,22 @@
 				}
 			},
 
+			/**
+			 * @instance
+			 * @returns {string} A human readable representation of the View, containing valuable debugging information.
+			 */
+			toString: function () {
+				return JSON.stringify({
+					'element': this.el && {
+						type: '<' + this.el.nodeName + '>',
+						children: this.el.childNodes.length,
+					},
+					'child views': this.__private.childViews.length,
+					'event listeners': Object.keys(this.__private.listeningTo),
+					'delegated events': Object.keys(this.__private.eventDelegates),
+				}, undefined, 2);
+			},
+
 		}, 'useSource');
 
 		return View;

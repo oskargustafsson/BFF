@@ -176,6 +176,17 @@
           delete this.__private.eventDelegates[eventName];
           eventListener.stopListening.call(this, this.el, eventName);
         }
+      },
+      toString: function() {
+        return JSON.stringify({
+          element: this.el && {
+            type: '<' + this.el.nodeName + '>',
+            children: this.el.childNodes.length
+          },
+          'child views': this.__private.childViews.length,
+          'event listeners': Object.keys(this.__private.listeningTo),
+          'delegated events': Object.keys(this.__private.eventDelegates)
+        }, void 0, 2);
       }
     }, 'useSource');
     return View;
