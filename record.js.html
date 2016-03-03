@@ -224,7 +224,7 @@
 		 * reasons, see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior}
 		 * @returns {Object}
 		 */
-		Record.prototype.toJSON = function toJSON() {
+		Record.prototype.toJSON = function () {
 			var jsonObj = {};
 			for (var propName in this.__private.values) {
 				var val = this[propName];
@@ -237,7 +237,7 @@
 		/**
 		 * @returns {string} A human readable string representation of the Record.
 		 */
-		Record.prototype.toString = function toString() {
+		Record.prototype.toString = function () {
 			return JSON.stringify(this, undefined, 2);
 		};
 
@@ -291,7 +291,7 @@
 		 *
 		 * @returns {function} New constructor function based on the provided schema.
 		 */
-		Record.withProperties = function withProperties(schema, dontPreventExtensions) {
+		Record.withProperties = function (schema, dontPreventExtensions) {
 			if (RUNTIME_CHECKS) {
 				if (typeof schema !== 'object') {
 					throw '"schema" argument must be an object';
