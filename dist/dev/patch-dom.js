@@ -184,10 +184,7 @@
         patchRecursive(childrenToPatch[i], childrenToPatch[i + 1], ignoreSubtreeOf);
       }
     }
-    var preallocLevMatSizeX = 63;
-    var preallocLevMatSizeY = 63;
-    var preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
-    return function(target, source, options) {
+    function patchDom(target, source, options) {
       options = options || {};
       if (true) {
         if (!(target instanceof HTMLElement)) {
@@ -206,7 +203,11 @@
       var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);
       patchRecursive(target, source, ignoreSubtreeOf);
       return target;
-    };
+    }
+    var preallocLevMatSizeX = 63;
+    var preallocLevMatSizeY = 63;
+    var preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
+    return patchDom;
   }
   if ('function' == typeof define && define.amd) {
     define(moduleFactory);

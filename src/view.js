@@ -3,6 +3,7 @@
 	'use strict';
 
 	/**
+	 * ## bff/view
 	 * Encapsulates typical MVC view functionality. Note that BFF lacks a separate controller module and it is not wrong put controller logic in BFF Views.
 	 *
 	 * The intended way to combine BFF Records/Lists and Views into some kind or MVC-like pattern is as follows:

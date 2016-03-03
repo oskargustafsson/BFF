@@ -82,6 +82,10 @@
 
 <header>
     
+        
+            
+        
+    
 </header>
 
 
@@ -89,7 +93,22 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>A function that extends a target object with the properties of a source object, with options for describing property collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking this function.</p>
+            <div class="description"><h2>bff/extend</h2></div>
+        
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="module:bff/extend"><span class="type-signature"></span>(require("bff/extend"))(target, source, <span class="optional">onConflict</span>, <span class="optional">defaultOnConflict</span>)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>A function that extends a target object with the properties of a source object, with options for describing property collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking this function.</p>
 <p>The function comes with a set of named built-in conflict-solving functions:</p>
 <ul>
 <li><em>crash</em>: Throws an error when a property conflict occurs. This is the default solver function.</li>
@@ -125,88 +144,8 @@
   { a: { b: 'b' }, num: 1 },
   { a: { c: 'c' }, num: 2, newProp: 3 },
   function (target, source, prop) { target[prop] = 42; });
-// Returns { a: 42, num: 42, newProp: 3 }</code></pre><p>Above we see a (fairly useless) custom conflict solver function.</p></div>
-        
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="extend.js.html">extend.js</a>,
-				 <a href="extend.js.html#sunlight-1-line-6">line 6</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
+// Returns { a: 42, num: 42, newProp: 3 }</code></pre><p>Above we see a (fairly useless) custom conflict solver function.</p>
     </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="extend"><span class="type-signature"></span>extend(target, source, <span class="optional">onConflict</span>, <span class="optional">defaultOnConflict</span>)</h4>
-    
-    
-</dt>
-<dd>
-
     
 
     
@@ -426,7 +365,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="extend.js.html">extend.js</a>,
-				 <a href="extend.js.html#sunlight-1-line-74">line 74</a>
+				 <a href="extend.js.html#sunlight-1-line-86">line 86</a>
 			</li>
 		</ul>
 	</dd>
@@ -479,7 +418,22 @@
     
 </dd>
 
-        </dl>
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -695,7 +649,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="extend.js.html">extend.js</a>,
-				 <a href="extend.js.html#sunlight-1-line-65">line 65</a>
+				 <a href="extend.js.html#sunlight-1-line-18">line 18</a>
 			</li>
 		</ul>
 	</dd>

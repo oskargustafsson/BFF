@@ -3,6 +3,7 @@
 	'use strict';
 
 	/**
+	 * ## bff/patch-dom
 	 * @module bff/patch-dom
 	 */
 	function moduleFactory() {
@@ -229,14 +230,13 @@
 		 *
 		 * If any encountered target elements has a `patch-ignore` attribute, that node and its children will not be patched.
 		 *
-		 * @func patchDom
-		 * @instance
+		 * @alias module:bff/patch-dom
 		 * @arg {HTMLElement} target - The element (hierarchy) to be patched. Will be identical to the source element (hierarchy) after the function call completes.
 		 * @arg {HTMLElement} source - The element (hierarchy) that the target (hierarchy) will be transformed into.
-		 * @arg {Object} [options] - Options that will be recursively passed down to all patchDom calls. Currently only one options is implemented:
+		 * @arg {Object} [options] - Options that will be recursively passed down to all patchDom calls. Currently only one option is implemented:
 		 * * _ignoreSubtreeOf_: A CSS selector string that identifies any elements, whose subtrees will not be patched.
 		 */
-		return function (target, source, options) {
+		function patchDom(target, source, options) {
 			options = options || {};
 
 			if (RUNTIME_CHECKS) {
@@ -257,7 +257,9 @@
 			var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);
 			patchRecursive(target, source, ignoreSubtreeOf);
 			return target;
-		};
+		}
+
+		return patchDom;
 
 	}
 
