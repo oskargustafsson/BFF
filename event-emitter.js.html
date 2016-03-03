@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>BFF Source: event-emitter.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.lumen.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">BFF</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_extend.html">bff/extend</a></li><li><a href="module-bff_list.html">bff/list</a></li><li><a href="module-bff_patch-dom.html">bff/patch-dom</a></li><li><a href="module-bff_record.html">bff/record</a></li><li><a href="module-bff_view.html">bff/view</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="mixins.list.html" class="dropdown-toggle" data-toggle="dropdown">Mixins<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="bff_event-emitter.html">bff/event-emitter</a></li><li><a href="bff_event-listener.html">bff/event-listener</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: event-emitter.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/* global RUNTIME_CHECKS, define */
+(function () {
+	'use strict';
+
+	function moduleFactory() {
+
+		/**
+		 * A mixin, providing event emitting capabilities to an object. Events are simply strings. When they are
+		 * emitted, zero or more parameters can be passed as arguments to the listening functions.
+		 * @exports bff/event-emitter
+		 * @mixin
+		 */
+		var eventEmitter = {
+			/**
+			 * Emit an event. Callbacks will be called with the same arguments as this function was called with,
+			 * except for the event name argument.
+			 * @instance
+			 * @arg {string} eventName - Identifier string for the event.
+			 * @arg {...any} [eventArguments] - Zero or more arguments that event listeners will be called with.
+			 */
+			emit: function emit(eventName) {
+				if (RUNTIME_CHECKS &amp;&amp; typeof eventName !== 'string') {
+					throw '"eventName" argument must be a string';
+				}
+
+				if (!this.__private || !this.__private.listeners) { return; }
+
+				var listenersForEvent = this.__private.listeners[eventName];
+				if (!listenersForEvent) { return; }
+
+				for (var i = 0, n = listenersForEvent.length; i &lt; n; ++i) {
+					var listener = listenersForEvent[i];
+					// Call the listener without the first item in the "arguments" array
+					listener.call.apply(listener, arguments);
+				}
+			},
+
+			/**
+			 * Emit an event. Callbacks will be called with arguments given as an an array in the second argument
+			 * @instance
+			 * @arg {string} eventName - Identifier string for the event.
+			 * @arg {array} [argsArray] - An array of arguments with which the callbacks will be called. Each item in
+			 *     the array will be provided as an individual argument to the callbacks.
+			 */
+			emitArgsAsArray: function emitArgsArray(eventName, argsArray) {
+				if (RUNTIME_CHECKS) {
+					if (typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
+					if (arguments.length > 1 &amp;&amp; (!argsArray || argsArray.length === undefined)) {
+						throw '"argsArray" must have a length property';
+					}
+				}
+
+				if (!this.__private || !this.__private.listeners) { return; }
+
+				var listenersForEvent = this.__private.listeners[eventName];
+				if (!listenersForEvent) { return; }
+
+				for (var i = 0, n = listenersForEvent.length; i &lt; n; ++i) {
+					listenersForEvent[i].apply(undefined, argsArray);
+				}
+			},
+
+			/**
+			 * Add an event listener function that will be called whenever the given event is emitted. Trying to add the exact
+			 * same function twice till throw an error, as that is rarely ever the intention and a common source of errors.
+			 * @instance
+			 * @arg {string} eventName - Identifier string for the event that is to be listened to.
+			 * @arg {function} callback - The function that will be called when the event is emitted.
+			 */
+			addEventListener: function addEventListener(eventName, callback) {
+				if (RUNTIME_CHECKS) {
+					if (typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
+					if (typeof callback !== 'function') {
+						throw '"callback" argument must be a function';
+					}
+				}
+
+				this.__private || Object.defineProperty(this, '__private', { writable: true, value: {}, });
+				var listeners = this.__private.listeners || (this.__private.listeners = {});
+				var listenersForEvent = listeners[eventName] || (listeners[eventName] = []);
+
+				if (RUNTIME_CHECKS &amp;&amp; listenersForEvent.indexOf(callback) !== -1) {
+					throw 'This listener has already been added (event: ' + eventName + ')';
+				}
+
+				listenersForEvent.push(callback);
+			},
+
+			/**
+			 * Removes an event listener function. If the function was never a listener, do nothing.
+			 * @instance
+			 * @arg {string} eventName - Identifier string for the event in question.
+			 * @arg {function} [callback] - If not given, all event listeners to the provided eventName will be removed. If
+			 *     given, only the given callback will be removed from the given eventName.
+			 */
+			removeEventListener: function removeEventListener(eventName, callback) {
+				if (RUNTIME_CHECKS) {
+					if (typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
+					if (arguments.length === 2 &amp;&amp; typeof callback !== 'function') {
+						throw '"callback" argument must be a function'; // Catch a common cause of errors
+					}
+				}
+
+				// No listeners at all? We are done.
+				if (!this.__private || !this.__private.listeners) { return; }
+
+				var listenersForEvent = this.__private.listeners[eventName];
+				if (!listenersForEvent) { return; } // No listeners for this event? We are done.
+
+				if (callback) {
+					var pos = listenersForEvent.indexOf(callback);
+					if (pos === -1) { return; }
+					listenersForEvent.splice(pos, 1);
+				} else {
+					listenersForEvent.length = 0;
+				}
+				listenersForEvent.length === 0 &amp;&amp; (delete this.__private.listeners[eventName]);
+			},
+
+		};
+
+		return eventEmitter;
+
+	}
+
+	// Expose, based on environment
+	if (typeof define === 'function' &amp;&amp; define.amd) { // AMD
+		define(moduleFactory);
+	} else if (typeof exports === 'object') { // Node, CommonJS-like
+		module.exports = moduleFactory();
+	} else { // Browser globals
+		var bff = window.bff = window.bff || {};
+		bff.eventEmitter = moduleFactory();
+	}
+
+}());
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on Wed Mar 2nd 2016
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>BFF Source: extend.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.lumen.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">BFF</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_extend.html">bff/extend</a></li><li><a href="module-bff_list.html">bff/list</a></li><li><a href="module-bff_patch-dom.html">bff/patch-dom</a></li><li><a href="module-bff_record.html">bff/record</a></li><li><a href="module-bff_view.html">bff/view</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="mixins.list.html" class="dropdown-toggle" data-toggle="dropdown">Mixins<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="bff_event-emitter.html">bff/event-emitter</a></li><li><a href="bff_event-listener.html">bff/event-listener</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: extend.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/* global RUNTIME_CHECKS, define */
+
+(function () {
+	'use strict';
+
+	/**
+	 * A function that extends a target object with the properties of a source object, with options for describing property
+	 * collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking
+	 * this function.
+	 *
+	 * The function comes with a set of named built-in conflict-solving functions:
+	 * * _crash_: Throws an error when a property conflict occurs. This is the default solver function.
+	 * * _useTarget_: Uses the target's property, i.e. leaves the target property unchanged.
+	 * * _useSource_: Uses the source's property, i.e. overwrites the target property with the source property.
+	 * * _merge_: Tries to merge the values in an intuitive way.
+	 *     * Objects are merged recursively.
+	 *     * Arrays are concatenated.
+	 *     * Functions are combined, so that the target's function is first called, then the source's. Both functions are passed the same arguments.
+	 *     * Numbers and strings added using the + operator.
+	 *     * Boolean values are or:ed using the || operator (i.e. Boolean addition).
+	 *     * If the source and target types are not the same, use the source value.
+	 * The caller also has the option to specify custom solver functions.
+	 *
+	 * **Examples**
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b', c: 'c' } },
+	 *   { a: { c: 'c', d: 'd' } },
+	 *   'useSource');
+	 * // Returns { a: { c: 'c', d: 'd' } }
+	 * ```
+	 * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it
+	 * encounters. This is how e.g. jQuery.extend and _.assign behaves.
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b', c: 'c' } },
+	 *   { a: { c: 'c', d: 'd' } },
+	 *   'merge');
+	 * // Returns { a: { b: 'b', c: 'c', d: 'd' } }
+	 * ```
+	 * Here we see that the 'merge' solver works recursively.
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b' }, num: 1 },
+	 *   { a: { c: 'c' }, num: 2 },
+	 *   { object: 'merge' }, 'useSource');
+	 * // Returns { a: { b: 'b', c: 'c' }, num: 2 }
+	 * ```
+	 * The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types.
+	 * This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves
+	 * ```javascript
+	 * extend(
+	 *   { a: { b: 'b' }, num: 1 },
+	 *   { a: { c: 'c' }, num: 2, newProp: 3 },
+	 *   function (target, source, prop) { target[prop] = 42; });
+	 * // Returns { a: 42, num: 42, newProp: 3 }
+	 * ```
+	 * Above we see a (fairly useless) custom conflict solver function.
+	 * @module bff/extend
+	 */
+	function moduleFactory() {
+
+		var TYPES = [ 'object', 'array', 'function', 'string', 'number', 'boolean', 'null', 'undefined' ];
+		var SOLVERS;
+
+		function getType(item) { return item === null ? 'null' : item instanceof Array ? 'array' : typeof item; }
+		function getSolverFunction(val) { return getType(val) === 'function' ? val : SOLVERS[val]; }
+
+		/**
+		 * @callback module:bff/extend~conflictSolver
+		 * @param {Object} target
+		 * @param {Object} source
+		 * @param {string} prop - The name of the conflicting property.
+		 * @param {string|module:bff/extend~conflictSolver|Object} onConflict - The same onConflict argumet passed to the extend() call.
+		 * @param {string|module:bff/extend~conflictSolver} defaultOnConflict - The same defaultOnConfluct argumet passed to the extend() call.
+		 */
+
+		/**
+		 * @func extend
+		 * @instance
+		 * @arg {Object} target - The object that will be extende with new properties.
+		 * @arg {Object} source - The object that provides the new properties.
+		 * @arg {string|module:bff/extend~conflictSolver|Object} [onConflict] - Specifies how to handle cases where a property exists both on
+		 * the target and on the source.
+		 * * a _string_ argument will be used to identify one of the built in solver functions. Valid values are 'useTarget', 'useSouce', 'crash' and 'merge'.
+		 * * a _function_ argument will be used as-is as a solver for all conflicts.
+		 * * an _Object_ argument should have keys that correspond to value types, i.e. 'object', 'array', 'function', 'string', 'number', 'boolean', 'null' or 'undefined'. The object values can be either strings or functions, which will be used as solver functions for the corresponding key value types.
+		 * @arg {string|module:bff/extend~conflictSolver} [defaultOnConflict] - Specifies a default solver, in the same manner as the onConflict argument. Can only be used if onConflict is an object.
+		 * @returns {Object} The extended object
+		 */
+		function extend(target, source, onConflict, defaultOnConflict) {
+			if (RUNTIME_CHECKS) {
+				if (typeof target !== 'object') { throw '"target" argument must be an object'; }
+				if (typeof source !== 'object') { throw '"source" argument must be an object'; }
+				if (arguments.length > 2 &amp;&amp; [ 'object', 'function', 'string' ].indexOf(typeof onConflict) === -1) {
+					throw '"onConflict" argument must be an string (' + Object.keys(SOLVERS).join(', ') + '), object or function';
+				}
+				if (arguments.length > 3) {
+					if (typeof onConflict !== 'object') {
+						throw 'There is no point in specifying a defaultOnConflict of onConflict is not an object';
+					}
+					if ([ 'function', 'string' ].indexOf(typeof defaultOnConflict) === -1) {
+						throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
+					}
+				}
+			}
+
+			var isOnConflictObject = getType(onConflict) === 'object';
+			defaultOnConflict = getSolverFunction(isOnConflictObject ? defaultOnConflict : onConflict) || SOLVERS.crash;
+			isOnConflictObject || (onConflict = {});
+
+			var solverFunctions = {};
+			TYPES.forEach(function (type) {
+				solverFunctions[type] = getSolverFunction(onConflict[type]) || defaultOnConflict;
+			});
+
+			for (var prop in source) {
+				if (target.hasOwnProperty(prop)) {
+					solverFunctions[getType(target[prop])](target, source, prop, onConflict, defaultOnConflict);
+				} else {
+					target[prop] = source[prop];
+				}
+			}
+
+			return target;
+		}
+
+		SOLVERS = {
+			useTarget: function useTarget() {
+				// Don't do nothin
+			},
+			useSource: function useSource(target, source, prop) {
+				target[prop] = source[prop];
+			},
+			crash: function crash(target, source, prop) {
+				throw 'Extend target already has property ' + prop;
+			},
+			merge: function merge(target, source, prop, onConflict, defaultOnConflict) {
+				var sourceProp = source[prop];
+				var sourcePropType = getType(sourceProp);
+				var targetProp = target[prop];
+				var targetPropType = getType(targetProp);
+
+				if (targetPropType !== sourcePropType) {
+					target[prop] = source[prop];
+					return;
+				}
+
+				switch (targetPropType) {
+				case 'object':
+					extend(targetProp, sourceProp, onConflict, defaultOnConflict);
+					break;
+				case 'array':
+					target[prop] = targetProp.concat(sourceProp);
+					break;
+				case 'function':
+					target[prop] = function () {
+						targetProp.apply(this, arguments);
+						sourceProp.apply(this, arguments);
+					};
+					break;
+				case 'string':
+				case 'number':
+					target[prop] = targetProp + sourceProp;
+					break;
+				case 'boolean':
+					// Logical 'or' is kind of like the Boolean version of addition
+					target[prop] = targetProp || sourceProp;
+					break;
+				default:
+					// Don't to nothin for e.g. 'null' and 'undefined'
+					break;
+				}
+			},
+		};
+
+		return extend;
+
+	}
+
+	// Expose, based on environment
+	if (typeof define === 'function' &amp;&amp; define.amd) { // AMD
+		define(moduleFactory);
+	} else if (typeof exports === 'object') { // Node, CommonJS-like
+		module.exports = moduleFactory();
+	} else { // Browser globals
+		var bff = window.bff = window.bff || {};
+		bff.extend = moduleFactory();
+	}
+
+}());
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on Wed Mar 2nd 2016
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

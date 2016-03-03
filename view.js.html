@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>BFF Source: view.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.lumen.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">BFF</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_extend.html">bff/extend</a></li><li><a href="module-bff_list.html">bff/list</a></li><li><a href="module-bff_patch-dom.html">bff/patch-dom</a></li><li><a href="module-bff_record.html">bff/record</a></li><li><a href="module-bff_view.html">bff/view</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="mixins.list.html" class="dropdown-toggle" data-toggle="dropdown">Mixins<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="bff_event-emitter.html">bff/event-emitter</a></li><li><a href="bff_event-listener.html">bff/event-listener</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: view.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/* global RUNTIME_CHECKS, define */
+(function () {
+	'use strict';
+
+	/**
+	 * Encapsulates typical MVC view functionality. Note that BFF lacks a separate controller module and it is not wrong put controller logic in BFF Views.
+	 *
+	 * The intended way to combine BFF Records/Lists and Views into some kind or MVC-like pattern is as follows:
+	 * * Views listen to DOM events, and reacts to those by mutating data layer entities (such as models or lists of models)
+	 * * Views also listen to data layer events and reacts to those, possibly by further mutating the data layer (i.e. controller logic), but most importantly by re-rendering themselves.
+	 *
+	 * Another way of describing the above is that the views should, besides listening to user generated events, always strive to visually represent the data layer as truthfully as possible. A powerful and simple approach to achieving this is to re-render the whole view whenever the data layer changes.
+	 *
+	 * The three major issues to deal with when re-rendering an entire view are:
+	 * * _Loss of view state._ This is a generic problem, that thankfully has an easy solution; store all application state in the data layer. A typical way of doing this is to assign a view state model to views that are not stateless.
+	 * * _Loss of event listeners_. The typical solution to this is event delegation, which is also the soliution that BFF Views provide. All event listeners are registered on the view's root element and as long as the root elements is not replaced, the event listeners will be unaffecte by a re-render.
+	 * * _Visual flickering_. Replacing large chunks of the visual DOM may cause flickering. BFF Views work around this issue by using an approach similar to that of React, namely by differentially updating the DOM. This means doing an offline diff and then only updating the parts of the DOM that have actually changed.
+	 * @exports bff/view
+	 */
+	function moduleFactory(extend, eventListener, patch, List) {
+
+		var HTML_PARSER_EL = document.createElement('div');
+
+		/**
+		 * Creates a new View instance.
+		 * @constructor
+		 * @mixes module:bff/event-listener
+		 * @alias module:bff/view
+		 */
+		function View() {
+			Object.defineProperty(this, '__private', { writable: true, value: {}, });
+
+			this.__private.isRenderRequested = false;
+
+			var delegates = this.__private.eventDelegates = {};
+			this.__private.onDelegatedEvent = function onDelegatedEvent(ev) {
+				var delegatesForEvent = delegates[ev.type];
+				var el = ev.target;
+				for (var selector in delegatesForEvent) {
+					if (!el.matches(selector)) { continue; } // TODO: IE9 support (msMatchesSelector)
+					var delegatesForEventAndSelector = delegatesForEvent[selector];
+					for (var i = 0, n = delegatesForEventAndSelector.length; i &lt; n; ++i) {
+						//console.log(ev.type, selector, ev.target);
+						delegatesForEventAndSelector[i](ev);
+					}
+				}
+			};
+
+			this.__private.childViews = new List();
+			this.listenTo(this.__private.childViews, 'item:removed', function (childView) { childView.destroy(); });
+		}
+
+		extend(View.prototype, eventListener);
+
+		extend(View.prototype, {
+
+			/**
+			 * @instance
+			 * Destroys a view instance by removing its children, stop listening to all events and finally removing itself from the DOM.
+			 */
+			destroy: function destroy() {
+				this.removeChildren();
+				this.stopListening();
+				this.el &amp;&amp; this.el.parentNode &amp;&amp; this.el.parentNode.removeChild(this.el);
+			},
+
+			/**
+			 * Creates a subclass constructor function, that will create view instances with the properties (typically functions) provded to this function.
+			 * TODO: move this to View.makeSubclass
+			 * @instance
+			 * @arg {object} properties - The properties with which the View subclass' prototype will be extended.
+			 * @returns {function}
+			 */
+			makeSubclass: function makeSubclass(properties) {
+				if (RUNTIME_CHECKS &amp;&amp; typeof properties !== 'object') {
+					throw '"properties" argument must be an object';
+				}
+
+				var superclass = this;
+				var customConstructor = properties.constructor;
+
+				var Constructor = function SubClassConstructor() {
+					superclass.constructor.apply(this, arguments);
+					customConstructor &amp;&amp; customConstructor.apply(this, arguments);
+				};
+				delete properties.constructor;
+
+				Constructor.prototype = Object.create(this);
+				properties &amp;&amp; extend(Constructor.prototype, properties);
+				Constructor.prototype.constructor = Constructor;
+
+				return Constructor;
+			},
+
+			/**
+			 * Creates a DOM representation of the view, based on the HTML string returned by the getHtml() function and then assigns it to the view's `el` property. If the view already has an `el`, it will be patched instead of replaced, so that delegated event listeners will be preserved.
+			 * @instance
+			 * @arg {Object} [patchOptions] - Options object forwarded to the `patch()` function, in case it is called.
+			 */
+			render: function render(patchOptions) {
+				if (RUNTIME_CHECKS) {
+					if (!this.getHtml) {
+						throw 'You must implement getHtml() in order to use render()';
+					}
+					if (arguments.length > 1 &amp;&amp; typeof patchOptions !== 'object') {
+						throw '"patchOptions" argument must be an object';
+					}
+				}
+
+				var newEl = this.parseHtml(this.getHtml());
+				this.doPatch || newEl.setAttribute('patch-ignore', '');
+
+				if (this.el) {
+					patch(this.el, newEl, patchOptions);
+				} else {
+					this.el = newEl;
+				}
+			},
+
+			/**
+			 * Requests an animation frame, in which `render()` is called. Can be called several times during a tick witout any performance penalty.
+			 * @instance
+			 */
+			requestRender: function requestRender() {
+				if (this.__private.isRenderRequested) { return; }
+				this.__private.isRenderRequested = true;
+
+				var self = this;
+				requestAnimationFrame(function () {
+					self.__private.isRenderRequested = false;
+					self.render();
+				});
+			},
+
+			/**
+			 * Helper function that parses an HTML string into an HTMLElement hierarchy and returns the first element in the NodeList, unless the returnAll flag is true, in which case the whole node list is returned.
+			 * @instance
+			 * @arg {string} htmlString - The string to be parsed
+			 * @arg {boolean} returnAll - If true will return all top level elements
+			 */
+			parseHtml: function parseHtml(htmlString, returnAll) {
+				if (RUNTIME_CHECKS) {
+					if (typeof htmlString !== 'string') {
+						throw '"htmlString" argument must be a string';
+					}
+					if (arguments.length > 1 &amp;&amp; typeof returnAll !== 'boolean') {
+						throw '"returnAll" argument must be a boolean value';
+					}
+				}
+
+				HTML_PARSER_EL.innerHTML = htmlString;
+				return returnAll ? HTML_PARSER_EL.childNodes : HTML_PARSER_EL.firstChild;
+			},
+
+			/**
+			 * Scoped query selector, that only queries this view's DOM subtree.
+			 * @instance
+			 * @arg {string} queryString - CSS selector string
+			 */
+			$: function $(queryString) {
+				if (RUNTIME_CHECKS &amp;&amp; typeof queryString !== 'string') {
+					throw '"queryString" argument must be a string';
+				}
+
+				return this.el.querySelector(queryString);
+			},
+
+			/**
+			 * Helper function that forces the view's root element to be repainted. Useful when re-triggering CSS animations.
+			 * @instance
+			 * @arg {HTMLElement} [el] Element that will be forced to repaint. If not specified, will default to the view's root element.
+			 * @returns {number} Useless/arbitrary value, but the function needs to return it to prevent browser JS optimizations from interfering with the forced repaint.
+			 */
+			forceRepaint: function forceRepaint(el) {
+				if (RUNTIME_CHECKS &amp;&amp; arguments.length > 0 &amp;&amp; !(el instanceof HTMLElement)) {
+					throw '"el" argument must be an HTMLElement';
+				}
+				return (el || this.el).offsetHeight;
+			},
+
+			/**
+			 * Adds another view as a child to the view. A child view will be automatically added to this view's root element and destroyed whenever its parent view is destroyed.
+			 * @instance
+			 * @arg {module:bff/view} childView - The view that will be added to the list of this view's children.
+			 * @arg {HTMLElement} [optional] - An element to which the child view's root element will be appended. If not specified, it will be appended to this view's root element.
+			 */
+			addChild: function addChild(childView, el) {
+				if (RUNTIME_CHECKS) {
+					if (!(childView instanceof View)) {
+						throw '"childView" argument must be a BFF View';
+					}
+					if (arguments.length > 1 &amp;&amp; !(el instanceof HTMLElement)) {
+						throw '"el" argument must be an HTMLElement';
+					}
+				}
+
+				this.__private.childViews.push(childView);
+				el = el || this.el;
+				el &amp;&amp; el.appendChild(childView.el);
+				return childView;
+			},
+
+			/**
+			 * Removes a specified view from this view's list of child views and destroy the view.
+			 * @instance
+			 * @arg {module:bff/view} childView - The view to remove.
+			 */
+			removeChild: function removeChild(childView) {
+				if (RUNTIME_CHECKS &amp;&amp; !(childView instanceof View)) {
+					throw '"childView" argument must be a BFF View';
+				}
+
+				this.__private.childViews.remove(childView);
+				return childView;
+			},
+
+			/**
+			 * Removes all child views of this view.
+			 * @instance
+			 */
+			removeChildren: function removeChildren() {
+				this.__private.childViews.clear();
+			},
+
+
+			/**
+			 * Augments {@link module:bff/event-listener#listenTo} with functionality for listening to delegated DOM events, by specifying a CSS selector string instead of an event emitter. The actual listener will implicitly be registered on this view's root element.
+			 * @instance
+			 * @arg {string|Object|Array|NodeList} selectorStr - The CSS selector string that will be used to filter all events bubbling up to the listener. If anything other than a string passed, the original listenTo implementation will be used.
+			 * @arg {string|Array} eventName - One or more string identifiers for events that will be listented to.
+			 * @arg {function} callback - The function that will be called when the event is emitted.
+			 * @arg {any} [context] - The context with which the callback will be called (i.e. what "this" will be).
+			 *     Will default to the caller of .listenTo, if not provided.
+			 */
+			listenTo: function listenTo(selectorStr, eventName, callback, context, useCapture) {
+				if (typeof selectorStr !== 'string') {
+					eventListener.listenTo.apply(this, arguments);
+					return;
+				}
+
+				if (eventName instanceof Array &amp;&amp; eventName.length > 0) {
+					this.listenTo(selectorStr, eventName.pop(), callback, context, useCapture);
+					this.listenTo(selectorStr, eventName, callback, context, useCapture);
+					return;
+				}
+
+				if (RUNTIME_CHECKS) {
+					if (typeof eventName !== 'string') {
+						throw '"eventName" argument must be a string';
+					}
+					if (typeof callback !== 'function') {
+						throw '"callback" argument must be a function';
+					}
+					if (arguments.length > 4 &amp;&amp; typeof useCapture !== 'boolean') {
+						throw '"useCapture" argument must be a boolean value';
+					}
+				}
+
+				var delegates = this.__private.eventDelegates;
+				var delegatesForEvent = delegates[eventName];
+				var firstTimeListeningToEvent = false;
+				if (!delegatesForEvent) {
+					delegatesForEvent = (delegates[eventName] = {});
+					firstTimeListeningToEvent = true;
+					useCapture = useCapture || eventName === 'blur' || eventName === 'focus';
+					eventListener.listenTo.call(this, this.el, eventName, this.__private.onDelegatedEvent, undefined, useCapture);
+				}
+				delegatesForEvent[selectorStr] = delegatesForEvent[selectorStr] || [];
+				delegatesForEvent[selectorStr].push(callback.bind(context || this));
+			},
+
+			/**
+			 * Augments {@link module:bff/event-listener#stopListening} with functionality for stop listening to delegated DOM events.
+			 * @instance
+			 * @arg {string|Object} [selectorStr] - If provided, only delegated event callbacks for the given selector string will be removed. If anything other than a string passed, the original stopListening implementation will be used.
+			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.
+			 */
+			stopListening: function stopListening(selectorStr, eventName) {
+				if (typeof selectorStr !== 'string') {
+					eventListener.stopListening.apply(this, arguments);
+					return;
+				}
+
+				if (RUNTIME_CHECKS &amp;&amp; arguments.length > 1 &amp;&amp; typeof eventName !== 'string') {
+					throw '"eventName" argument must be a string';
+				}
+
+				var delegatesForEvent = this.__private.eventDelegates[eventName];
+				if (!delegatesForEvent) { return; }
+
+				delete delegatesForEvent[selectorStr];
+				if (Object.keys(delegatesForEvent).length === 0) {
+					delete this.__private.eventDelegates[eventName];
+					eventListener.stopListening.call(this, this.el, eventName);
+				}
+			},
+
+		}, 'useSource');
+
+		return View;
+
+	}
+
+	// Expose, based on environment
+	if (typeof define === 'function' &amp;&amp; define.amd) { // AMD
+		define([ './extend', './event-listener', './patch-dom', './list' ], moduleFactory);
+	} else if (typeof exports === 'object') { // Node, CommonJS-like
+		module.exports = moduleFactory(
+				require('./extend'), require('./event-listener'), require('./patch-dom'), require('./list'));
+	} else { // Browser globals
+		var bff = window.bff = window.bff || {};
+		bff.View = moduleFactory(bff.extend, bff.eventListener, bff.patchDom, bff.List);
+	}
+
+}());
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on Wed Mar 2nd 2016
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>
