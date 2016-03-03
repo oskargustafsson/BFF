@@ -4,9 +4,7 @@
 	'use strict';
 
 	/**
-	 * A function that extends a target object with the properties of a source object, with options for describing property
-	 * collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking
-	 * this function.
+	 * A function that extends a target object with the properties of a source object, with options for describing property collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking this function.
 	 *
 	 * The function comes with a set of named built-in conflict-solving functions:
 	 * * _crash_: Throws an error when a property conflict occurs. This is the default solver function.
@@ -29,8 +27,7 @@
 	 *   'useSource');
 	 * // Returns { a: { c: 'c', d: 'd' } }
 	 * ```
-	 * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it
-	 * encounters. This is how e.g. jQuery.extend and _.assign behaves.
+	 * As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it encounters. This is how e.g. jQuery.extend and _.assign behaves.
 	 * ```javascript
 	 * extend(
 	 *   { a: { b: 'b', c: 'c' } },
@@ -46,8 +43,7 @@
 	 *   { object: 'merge' }, 'useSource');
 	 * // Returns { a: { b: 'b', c: 'c' }, num: 2 }
 	 * ```
-	 * The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types.
-	 * This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves
+	 * The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types. This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves
 	 * ```javascript
 	 * extend(
 	 *   { a: { b: 'b' }, num: 1 },
@@ -80,8 +76,7 @@
 		 * @instance
 		 * @arg {Object} target - The object that will be extende with new properties.
 		 * @arg {Object} source - The object that provides the new properties.
-		 * @arg {string|module:bff/extend~conflictSolver|Object} [onConflict] - Specifies how to handle cases where a property exists both on
-		 * the target and on the source.
+		 * @arg {string|module:bff/extend~conflictSolver|Object} [onConflict] - Specifies how to handle cases where a property exists both on the target and on the source.
 		 * * a _string_ argument will be used to identify one of the built in solver functions. Valid values are 'useTarget', 'useSouce', 'crash' and 'merge'.
 		 * * a _function_ argument will be used as-is as a solver for all conflicts.
 		 * * an _Object_ argument should have keys that correspond to value types, i.e. 'object', 'array', 'function', 'string', 'number', 'boolean', 'null' or 'undefined'. The object values can be either strings or functions, which will be used as solver functions for the corresponding key value types.

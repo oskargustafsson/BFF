@@ -43,7 +43,6 @@ TO DO before 1.0
     * Single function modules (extend, patch-dom) not correct
     * @link not working
     * Normalize capitalization of types (e.g. Object vs. object)
-    * Remove line breaks
 * IE9 support
 
 #### List
@@ -52,6 +51,7 @@ TO DO before 1.0
 
 #### Record
 * Cache calculated property values
+* Document triggered events
 * How to destroy Records? Will they be garbage collected in their current state?
 * Use constructors (Number, String, ...) instead of string identifiers for type declarations (maybe)
 
@@ -66,6 +66,7 @@ TO DO before 1.0
 * Move makeSubclass function from View.prototype to View. Also makeSubclass(ConstructorFunc, props)
 * View.stopListening probably not working if no arg is passed
 * Parent/child view; trigger event when destroy() is called and remove the child view from any possible parent views
+* @prop doc for el
 * FTs
 
 #### Patch DOM

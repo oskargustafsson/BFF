@@ -3,16 +3,11 @@
 	'use strict';
 
 	/**
-	 * A [Record](https://en.wikipedia.org/wiki/Record_(computer_science) is the basic entity of the data layer. In
-	 * difference to regular JS objects, it has a predefined set of properties. The properties are specified by
-	 * "subclassing" the abstract Record constructor by calling `Record.withProperties(...)` and providing a properties
-	 * schema. For more details, see {@link module:bff/record#withProperties}.
+	 * A [Record](https://en.wikipedia.org/wiki/Record_(computer_science) is the basic entity of the data layer. In difference to regular JS objects, it has a predefined set of properties. The properties are specified by "subclassing" the abstract Record constructor by calling `Record.withProperties(...)` and providing a properties schema. For more details, see {@link module:bff/record#withProperties}.
 	 *
 	 * The major advantages of using a predefined (i.e. known and finite) set of properties are:
-	 * * Each property gets a custom setter, that emits a change event whenever the property value changes. The setter
-	 *   can also do types checks on the assigned value (which it does in dev. mode).
-	 * * The record instances can be locked using Object.preventExtensions, with the nice effect that trying to assign
-	 *   a value to an undeclared property will throw an error.
+	 * * Each property gets a custom setter, that emits a change event whenever the property value changes. The setter can also do types checks on the assigned value (which it does in dev. mode).
+	 * * The record instances can be locked using Object.preventExtensions, with the nice effect that trying to assign a value to an undeclared property will throw an error.
 	 *
 	 * @exports bff/record
 	 */
@@ -135,9 +130,7 @@
 		}
 
 		/**
-		 * Returns a newly created Object containing the Records's deep copied properties. The fact that this function
-		 * returns an Object and not a strin is a bit misleading, but this naming convension is used for conformity
-		 * reasons, see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior}
+		 * Returns a newly created Object containing the Records's deep copied properties. The fact that this function returns an Object and not a strin is a bit misleading, but this naming convension is used for conformity reasons, see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior}
 		 * @returns {Object}
 		 */
 		Record.prototype.toJSON = function () {
@@ -161,9 +154,7 @@
 		extend(Record.prototype, eventListener);
 
 		/**
-		 * Creates a new Record constructor function, that will create Record instances with the property schema
-		 * provided to this function. The various aspects of the property schema are described in detail below, but let's
-		 * start with an example.
+		 * Creates a new Record constructor function, that will create Record instances with the property schema provided to this function. The various aspects of the property schema are described in detail below, but let's start with an example.
 		 * ```javascript
 		 * var Person = Record.withProperties({
 		 *   firstName: 'string',
@@ -180,23 +171,14 @@
 		 *   someData: {},
 		 * })
 		 * ```
-		 * Here we see a schema with five properties. The first two (_firstName_ and _lastName_) use a shorthand syntax
-		 * to declare string properties. The _fullName_ property is a calculated property that depends on _firstName_
-		 * and _lastName_. The _age_ property is either a number or undefined (properties can't be undefined by
-		 * default), with a default value of 0. Finally, the _someData_ property can be of any type.
+		 * Here we see a schema with five properties. The first two (_firstName_ and _lastName_) use a shorthand syntax to declare string properties. The _fullName_ property is a calculated property that depends on _firstName_ and _lastName_. The _age_ property is either a number or undefined (properties can't be undefined by default), with a default value of 0. Finally, the _someData_ property can be of any type.
 		 * @func
 		 * @static
-		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by
-		 * the returned constructor function. Each key/value pair describes a single property. Property descriptor
-		 * objects can have the following properties:
-		 * * _type_: A string or array of strings specifying the type of the property. If omitted, no type checking will
-		 * be performed, otherwise types are checked by applying the typeof operator to the assigned value and then
-		 * checking to see if the returned type string is part of the schema types.
+		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by the returned constructor function. Each key/value pair describes a single property. Property descriptor objects can have the following properties:
+		 * * _type_: A string or array of strings specifying the type of the property. If omitted, no type checking will be performed, otherwise types are checked by applying the typeof operator to the assigned value and then checking to see if the returned type string is part of the schema types.
 		 * * _defaultValue_: An initial value that will be assigned to all new instances of this property upon creation.
-		 * * _setter_: A function that will be called to transform the assigned value before it is stored on the property.
-		 * Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.
-		 * * _getter_: A function that will be run to transform the read value before it is returned. Shouldn't have any
-		 * side effects, as it might be called internally to determine when events should be triggered.
+		 * * _setter_: A function that will be called to transform the assigned value before it is stored on the property. Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.
+		 * * _getter_: A function that will be run to transform the read value before it is returned. Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.
 		 *
 		 * All schema descriptor properties are optional. An empty schema descriptor can be replaced with any falsy value for the same effect, which means that:
 		 * `someData: {}`, `someData: undefined`, `someData: null` and `someData: false` all declares a property named someData, which can hold any type of data.

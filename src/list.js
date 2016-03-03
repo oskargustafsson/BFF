@@ -4,14 +4,9 @@
 	'use strict';
 
 	/**
-	 * Maintains a list of items. The idea is to stay as true as possible to the native Array interface, but augment
-	 * its usefulness by triggering events whenever the list is updated, as well as adding convenience functions for
-	 * mutating the List in place.
+	 * Maintains a list of items. The idea is to stay as true as possible to the native Array interface, but to augment its usefulness by triggering events whenever the list is updated, as well as adding convenience functions for mutating the List in place.
 	 *
-	 * The exported List constructor can be used as-is, in which case a generic List will be created. This is a quite
-	 * common use case. Alternatively, a List "subclass" constructor can be created by calling
-	 * `List.withProperties(...)`. This second approach provides the possibility to add custom _calculated_ properties
-	 * to the list. See {@link module:bff/list#withProperties} for more details.
+	 * The exported List constructor can be used as-is, in which case a generic List will be created. This is a quite common use case. Alternatively, a List "subclass" constructor can be created by calling `List.withProperties(...)`. This second approach provides the possibility to add custom _calculated_ properties to the list. See {@link module:bff/list#withProperties} for more details.
 	 *
 	 * @exports bff/list
 	 */
@@ -80,8 +75,7 @@
 
 		/**
 		 * @callback module:bff/list~reduceCallback
-		 * @param {any} previousItem - The value previously returned in the last invocation of the callback, or
-		 *     initialValue, if supplied. Usually an aggregate of previous items.
+		 * @param {any} previousItem - The value previously returned in the last invocation of the callback, or initialValue, if supplied. Usually an aggregate of previous items.
 		 * @param {any} item - Current List item being processed.
 		 * @param {number} index - Item position in List.
 		 * @param {module:bff/list} list - List being iterated over.
@@ -89,8 +83,7 @@
 		 */
 
 		/**
-		 * Compares _itemA_ and _itemB_ arguments according to some sorting criterion. Should return -1 if _itemA_ comes
-		 * before _itemB_, 0 if _itemA_ is equal to _itemB_, 1 if _itemB_ comes before _itemA_.
+		 * Compares _itemA_ and _itemB_ arguments according to some sorting criterion. Should return -1 if _itemA_ comes before _itemB_, 0 if _itemA_ is equal to _itemB_, 1 if _itemB_ comes before _itemA_.
 		 * @callback module:bff/list~compareFunction
 		 * @param {any} itemA - A list item.
 		 * @param {any} itemB - Another list item.
@@ -269,17 +262,11 @@
 		};
 
 		/**
-		 * Changes the content of the List by removing existing items and/or adding new items. Mirrors Array.splice
-		 * behavior.
+		 * Changes the content of the List by removing existing items and/or adding new items. Mirrors Array.splice behavior.
 		 * @instance
-		 * @arg {number} start - Index at which to start changing the array. If greater than the length of the array, actual
-		 *     starting index will be set to the length of the array. If negative, will begin that many items from the
-		 *     end.
-		 * @arg {number} nItemsToRemove - An integer indicating the number of old array items to remove. If
-		 *     nItemsToRemove is greater than the number of items left in the array starting at start, then all of the
-		 *     items through the end of the array will be deleted.
-		 * @arg {...any} [itemToAdd] - Item that will be added to the array, starting at the index specified in the first
-		 *     argument.
+		 * @arg {number} start - Index at which to start changing the array. If greater than the length of the array, actual starting index will be set to the length of the array. If negative, will begin that many items from the end.
+		 * @arg {number} nItemsToRemove - An integer indicating the number of old array items to remove. If nItemsToRemove is greater than the number of items left in the array starting at start, then all of the items through the end of the array will be deleted.
+		 * @arg {...any} [itemToAdd] - Item that will be added to the array, starting at the index specified in the first argument.
 		 * @emits module:bff/list#change:length
 		 * @emits module:bff/list#item:added
 		 * @emits module:bff/list#item:replaced
@@ -350,9 +337,7 @@
 			 * @func indexOf
 			 * @instance
 			 * @arg {any} searchItem - The item to locate within the List.
-			 * @arg {number} [fromIndex] - The index to start the search at. If the index is greater than or equal to the
-			 *     List's length, -1 is returned, which means the List will not be searched. If the provided index
-			 *     value is a negative number, it is taken as the offset from the end of the List.
+			 * @arg {number} [fromIndex] - The index to start the search at. If the index is greater than or equal to the List's length, -1 is returned, which means the List will not be searched. If the provided index value is a negative number, it is taken as the offset from the end of the List.
 			 * @returns {number} The first index at which a given item can be found in the List, or -1 if it is not present.
 			 */
 			'indexOf',
@@ -360,24 +345,19 @@
 			 * @func lastIndexOf
 			 * @instance
 			 * @arg {any} searchItem - The item to locate within the List.
-			 * @arg {number} [fromIndex] - The index at which to start searching backwards. Defaults to the List's length
-			 *     minus one, i.e. the whole List will be searched. If the index is greater than or equal to the length
-			 *     of the List, the whole List will be searched. If negative, it is taken as the offset from the end
-			 *     of the List. Mirrors Array.lastIndexOf behavior.
+			 * @arg {number} [fromIndex] - The index at which to start searching backwards. Defaults to the List's length minus one, i.e. the whole List will be searched. If the index is greater than or equal to the length of the List, the whole List will be searched. If negative, it is taken as the offset from the end of the List. Mirrors Array.lastIndexOf behavior.
 			 * @returns {number} The last index at which a given item can be found in the List, or -1 if it is not present.
 			 */
 			'lastIndexOf',
 			/**
 			 * @func join
 			 * @instance
-			 * @arg {string} [separator] - Specifies a string to separate each item of the List. If omitted, the List
-			 *     items are separated with a comma. Mirrors Array.join behavior.
+			 * @arg {string} [separator] - Specifies a string to separate each item of the List. If omitted, the List items are separated with a comma. Mirrors Array.join behavior.
 			 * @returns {string} The stringified List items, joined by the 'separator' string argument.
 			 */
 			'join',
 			/**
-			 * Applies a function against an accumulator and each value of the List (from left-to-right) to reduce it to a
-			 * single value. Mirrors Array.reduce behavior.
+			 * Applies a function against an accumulator and each value of the List (from left-to-right) to reduce it to a single value. Mirrors Array.reduce behavior.
 			 * @func reduce
 			 * @instance
 			 * @arg {module:bff/list~reduceCallback} callback - The function that will be called once per List item.
@@ -386,8 +366,7 @@
 			 */
 			'reduce',
 			/**
-			 * Applies a function against an accumulator and each value of the List (from right-to-left) to reduce it to a
-			 * single value. Mirrors Array.reduceRight behavior.
+			 * Applies a function against an accumulator and each value of the List (from right-to-left) to reduce it to a single value. Mirrors Array.reduceRight behavior.
 			 * @func reduceRight
 			 * @instance
 			 * @arg {module:bff/list~reduceCallback} callback - The function that will be called once per List item.
@@ -401,13 +380,10 @@
 
 		[
 			/**
-			 * Sorts the items of the List in place. The sort is not necessarily stable. The default sort order is
-			 * according to string Unicode code points, unless a custom comparator finction is provided. Mirrors the
-			 * behavior of Array.sort. No events are emitted by this operation.
+			 * Sorts the items of the List in place. The sort is not necessarily stable. The default sort order is according to string Unicode code points, unless a custom comparator finction is provided. Mirrors the behavior of Array.sort. No events are emitted by this operation.
 			 * @func sort
 			 * @instance
-			 * @arg {module:bff/list~compareFunction} [comparator] - A function that specifies the ordering of two
-			 *     arbitrary List items. Called multiple times in order to produce a total ordering of the items.
+			 * @arg {module:bff/list~compareFunction} [comparator] - A function that specifies the ordering of two arbitrary List items. Called multiple times in order to produce a total ordering of the items.
 			 * @returns {List} The sorted list.
 			 */
 			'sort',
@@ -423,8 +399,7 @@
 
 		[
 			/**
-			 * Creates a new List with all items that pass the test implemented by the predicate function test. The
-			 * original list is unchanged. Mirrors the behavior of Array.filter.
+			 * Creates a new List with all items that pass the test implemented by the predicate function test. The original list is unchanged. Mirrors the behavior of Array.filter.
 			 * @func filter
 			 * @instance
 			 * @arg {module:bff/list~predicateCallback} predicate - Executed once per List item.
@@ -432,8 +407,7 @@
 			 */
 			'filter',
 			/**
-			 * Creates a new List from the range of current items specified by the begin and end arguments. Mirrors the
-			 * behavior of Array.slice.
+			 * Creates a new List from the range of current items specified by the begin and end arguments. Mirrors the behavior of Array.slice.
 			 * @func slice
 			 * @instance
 			 * @arg {number} [begin] Index that specifies the beginning of the range. Inclusive. A negative index will
@@ -444,8 +418,7 @@
 			 */
 			'slice',
 			/**
-			 * Creates a new List with the results of calling a provided callback function on every element in the List.
-			 * Mirrors the behavior of Array.map.
+			 * Creates a new List with the results of calling a provided callback function on every element in the List. Mirrors the behavior of Array.map.
 			 * @func map
 			 * @instance
 			 * @arg {module:bff/module~mapCallback} callback - Executed once per List item.
@@ -458,11 +431,9 @@
 		});
 
 		/**
-		 * Returns a new List comprised of the List on which it is called joined with the List(s), Array(s) and/or
-		 * value(s) provided as arguments. Mirrors the behavior of Array.concat.
+		 * Returns a new List comprised of the List on which it is called joined with the List(s), Array(s) and/or value(s) provided as arguments. Mirrors the behavior of Array.concat.
 		 * @instance
-		 * @arg {...any} value - A List, Array or value that will be concatenated with the original List. Lists and
-		 *     Arrays will be deconstructed and each item added to the new List.
+		 * @arg {...any} value - A List, Array or value that will be concatenated with the original List. Lists and Arrays will be deconstructed and each item added to the new List.
 		 * @returns {List} The new List.
 		 */
 		listFunctions.concat = function () {
@@ -543,10 +514,8 @@
 		/**
 		 * Mutates the List by removing all elements outside of range specified by the begin and end arguments.
 		 * @instance
-		 * @arg {number} [begin] Index that specifies the beginning of the range. Inclusive. A negative index will
-		 *     be relative to the end of the List instead of the beginning.
-		 * @arg {number} [end] Index that specifies the end of the range. Exclusive. A negative index will
-		 *     be relative to the end of the List instead of the beginning.
+		 * @arg {number} [begin] Index that specifies the beginning of the range. Inclusive. A negative index will be relative to the end of the List instead of the beginning.
+		 * @arg {number} [end] Index that specifies the end of the range. Exclusive. A negative index will be relative to the end of the List instead of the beginning.
 		 * @emits module:bff/list#change:length
 		 * @emits module:bff/list#item:removed
 		 * @returns {List} The List, sans the items outside of the specified range.
@@ -631,9 +600,7 @@
 		 * Returns whether the provided item is part of the List.
 		 * @instance
 		 * @arg {any} item
-		 * @arg {number} [fromIndex] - The index to start the search at. If the index is greater than or equal to the
-		 *     List's length, -1 is returned, which means the List will not be searched. If the provided index
-		 *     value is a negative number, it is taken as the offset from the end of the List.
+		 * @arg {number} [fromIndex] - The index to start the search at. If the index is greater than or equal to the List's length, -1 is returned, which means the List will not be searched. If the provided index value is a negative number, it is taken as the offset from the end of the List.
 		 * @returns {boolean} True if the item is part of the List, false otherwise.
 		 */
 		listFunctions.includes = function (item, fromIndex) {
@@ -647,8 +614,7 @@
 		};
 
 		/**
-		 * Returns an newly created Array, containing all the items of the List. List properties are not copied to the
-		 * Array object. The items are copied shallowly.
+		 * Returns an newly created Array, containing all the items of the List. List properties are not copied to the Array object. The items are copied shallowly.
 		 * @instance
 		 * @returns {Array}
 		 */
@@ -657,8 +623,7 @@
 		};
 
 		/**
-		 * Returns a newly created Array representation of the List, containing deep copies of all the List's items,
-		 * but not its properties.
+		 * Returns a newly created Array representation of the List, containing deep copies of all the List's items, but not its properties.
 		 * @instance
 		 * @returns {Array}
 		 */
@@ -682,10 +647,7 @@
 		};
 
 		/**
-		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides the option to listen to
-		 * events emitted from any item in the List. To add a listener to an item event, prepend the event name with
-		 * 'item:'. For instance, to listen for the 'change' event on all the list items (even ones added after the
-		 * listener was created), add a listener for the 'item:change' event.
+		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides the option to listen to events emitted from any item in the List. To add a listener to an item event, prepend the event name with 'item:'. For instance, to listen for the 'change' event on all the list items (even ones added after the listener was created), add a listener for the 'item:change' event.
 		 * @instance
 		 * @arg {string} - Identifier string for the event.
 		 */
@@ -705,8 +667,7 @@
 		};
 
 		/**
-		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides functionality for
-		 * removing "item" event listeners, e.g. for stop listening to events like "items:change".
+		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides functionality for removing "item" event listeners, e.g. for stop listening to events like "items:change".
 		 * @instance
 		 * @arg {string} - Identifier string for the event.
 		 */
@@ -826,9 +787,7 @@
 		 * provided to this function
 		 * @func
 		 * @static
-		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by
-		 *     the returned constructor function. The property descriptions should be on the same format at the schema
-		 *     specified for {@link module:bff/record#withProperties}, with the only exception that setters are not allowed.
+		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by the returned constructor function. The property descriptions should be on the same format at the schema specified for {@link module:bff/record#withProperties}, with the only exception that setters are not allowed.
 		 * @returns {function} New constructor function based on the provided schema.
 		 */
 		List.withProperties = withProperties;
