@@ -58,7 +58,7 @@
 			 * @instance
 			 * Destroys a view instance by removing its children, stop listening to all events and finally removing itself from the DOM.
 			 */
-			destroy: function destroy() {
+			destroy: function () {
 				this.removeChildren();
 				this.stopListening();
 				this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
@@ -71,7 +71,7 @@
 			 * @arg {object} properties - The properties with which the View subclass' prototype will be extended.
 			 * @returns {function}
 			 */
-			makeSubclass: function makeSubclass(properties) {
+			makeSubclass: function (properties) {
 				if (RUNTIME_CHECKS && typeof properties !== 'object') {
 					throw '"properties" argument must be an object';
 				}
@@ -97,7 +97,7 @@
 			 * @instance
 			 * @arg {Object} [patchOptions] - Options object forwarded to the `patch()` function, in case it is called.
 			 */
-			render: function render(patchOptions) {
+			render: function (patchOptions) {
 				if (RUNTIME_CHECKS) {
 					if (!this.getHtml) {
 						throw 'You must implement getHtml() in order to use render()';
@@ -121,7 +121,7 @@
 			 * Requests an animation frame, in which `render()` is called. Can be called several times during a tick witout any performance penalty.
 			 * @instance
 			 */
-			requestRender: function requestRender() {
+			requestRender: function () {
 				if (this.__private.isRenderRequested) { return; }
 				this.__private.isRenderRequested = true;
 
@@ -138,7 +138,7 @@
 			 * @arg {string} htmlString - The string to be parsed
 			 * @arg {boolean} returnAll - If true will return all top level elements
 			 */
-			parseHtml: function parseHtml(htmlString, returnAll) {
+			parseHtml: function (htmlString, returnAll) {
 				if (RUNTIME_CHECKS) {
 					if (typeof htmlString !== 'string') {
 						throw '"htmlString" argument must be a string';
@@ -157,7 +157,7 @@
 			 * @instance
 			 * @arg {string} queryString - CSS selector string
 			 */
-			$: function $(queryString) {
+			$: function (queryString) {
 				if (RUNTIME_CHECKS && typeof queryString !== 'string') {
 					throw '"queryString" argument must be a string';
 				}
@@ -171,7 +171,7 @@
 			 * @arg {HTMLElement} [el] Element that will be forced to repaint. If not specified, will default to the view's root element.
 			 * @returns {number} Useless/arbitrary value, but the function needs to return it to prevent browser JS optimizations from interfering with the forced repaint.
 			 */
-			forceRepaint: function forceRepaint(el) {
+			forceRepaint: function (el) {
 				if (RUNTIME_CHECKS && arguments.length > 0 && !(el instanceof HTMLElement)) {
 					throw '"el" argument must be an HTMLElement';
 				}
@@ -184,7 +184,7 @@
 			 * @arg {module:bff/view} childView - The view that will be added to the list of this view's children.
 			 * @arg {HTMLElement} [optional] - An element to which the child view's root element will be appended. If not specified, it will be appended to this view's root element.
 			 */
-			addChild: function addChild(childView, el) {
+			addChild: function (childView, el) {
 				if (RUNTIME_CHECKS) {
 					if (!(childView instanceof View)) {
 						throw '"childView" argument must be a BFF View';
@@ -205,7 +205,7 @@
 			 * @instance
 			 * @arg {module:bff/view} childView - The view to remove.
 			 */
-			removeChild: function removeChild(childView) {
+			removeChild: function (childView) {
 				if (RUNTIME_CHECKS && !(childView instanceof View)) {
 					throw '"childView" argument must be a BFF View';
 				}
@@ -218,7 +218,7 @@
 			 * Removes all child views of this view.
 			 * @instance
 			 */
-			removeChildren: function removeChildren() {
+			removeChildren: function () {
 				this.__private.childViews.clear();
 			},
 
@@ -232,7 +232,7 @@
 			 * @arg {any} [context] - The context with which the callback will be called (i.e. what "this" will be).
 			 *     Will default to the caller of .listenTo, if not provided.
 			 */
-			listenTo: function listenTo(selectorStr, eventName, callback, context, useCapture) {
+			listenTo: function (selectorStr, eventName, callback, context, useCapture) {
 				if (typeof selectorStr !== 'string') {
 					eventListener.listenTo.apply(this, arguments);
 					return;
@@ -275,7 +275,7 @@
 			 * @arg {string|Object} [selectorStr] - If provided, only delegated event callbacks for the given selector string will be removed. If anything other than a string passed, the original stopListening implementation will be used.
 			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.
 			 */
-			stopListening: function stopListening(selectorStr, eventName) {
+			stopListening: function (selectorStr, eventName) {
 				if (typeof selectorStr !== 'string') {
 					eventListener.stopListening.apply(this, arguments);
 					return;

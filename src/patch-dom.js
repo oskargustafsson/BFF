@@ -236,7 +236,7 @@
 		 * @arg {Object} [options] - Options that will be recursively passed down to all patchDom calls. Currently only one options is implemented:
 		 * * _ignoreSubtreeOf_: A CSS selector string that identifies any elements, whose subtrees will not be patched.
 		 */
-		return function patchDom(target, source, options) {
+		return function (target, source, options) {
 			options = options || {};
 
 			if (RUNTIME_CHECKS) {

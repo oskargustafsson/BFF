@@ -44,7 +44,6 @@ TO DO before 1.0
     * @link not working
     * Normalize capitalization of types (e.g. Object vs. object)
     * Remove line breaks
-* Remove all names from function expressions, Uglify apprenly removes them anyway
 * IE9 support
 
 #### List

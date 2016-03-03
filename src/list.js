@@ -184,7 +184,7 @@
 		 * @emits module:bff/list#item:added
 		 * @returns {number} Updated List length
 		 */
-		listFunctions.push = function push() {
+		listFunctions.push = function () {
 			var nItems = arguments.length;
 			if (nItems === 0) { return this.length; }
 
@@ -209,7 +209,7 @@
 		 * @emits module:bff/list#item:added
 		 * @returns {Number} Updated List length
 		 */
-		listFunctions.unshift = function unshift() {
+		listFunctions.unshift = function () {
 			var nItems = arguments.length;
 			if (nItems === 0) { return this.length; }
 
@@ -233,7 +233,7 @@
 		 * @emits module:bff/list#item:removed
 		 * @returns {any} Removed item
 		 */
-		listFunctions.pop = function pop() {
+		listFunctions.pop = function () {
 			if (this.length === 0) { return; }
 
 			var prevLength = this.length;
@@ -254,7 +254,7 @@
 		 * @emits module:bff/list#item:removed
 		 * @returns {any} Removed item
 		 */
-		listFunctions.shift = function shift() {
+		listFunctions.shift = function () {
 			if (this.length === 0) { return; }
 
 			var prevLength = this.length;
@@ -286,7 +286,7 @@
 		 * @emits module:bff/list#item:removed
 		 * @returns {any[]} Array of removed items
 		 */
-		listFunctions.splice = function splice(start, nItemsToRemove) {
+		listFunctions.splice = function (start, nItemsToRemove) {
 			if (RUNTIME_CHECKS) {
 				if (arguments.length < 2) { throw '"start" and "nItemsToRemove" arguments are mandatory'; }
 				if (typeof start !== 'number') { throw '"start" argument must be a number'; }
@@ -465,7 +465,7 @@
 		 *     Arrays will be deconstructed and each item added to the new List.
 		 * @returns {List} The new List.
 		 */
-		listFunctions.concat = function concat() {
+		listFunctions.concat = function () {
 			for (var i = 0, n = arguments.length; i < n; ++i) {
 				var argument = arguments[i];
 				if (!(argument instanceof Array) && argument.length !== undefined) {
@@ -484,7 +484,7 @@
 		 * @emits module:bff/list#item:removed
 		 * @returns {List} The filtered List.
 		 */
-		listFunctions.filterMut = function filterMut(predicate, thisArg) {
+		listFunctions.filterMut = function (predicate, thisArg) {
 			if (RUNTIME_CHECKS) {
 				if (typeof predicate !== 'function') { throw '"predicate" argument must be a function'; }
 			}
@@ -509,7 +509,7 @@
 		 * @emits module:bff/list#item:removed
 		 * @returns {List} The List, without any occurances of 'item'.
 		 */
-		listFunctions.remove = function remove(item) {
+		listFunctions.remove = function (item) {
 			return this.filterMut(function (listItem) { return item !== listItem; });
 		};
 
@@ -520,7 +520,7 @@
 		 * @emits module:bff/list#item:removed
 		 * @returns {List} The List, now empty.
 		 */
-		listFunctions.clear = function clear() {
+		listFunctions.clear = function () {
 			return this.splice(0, this.length);
 		};
 
@@ -532,7 +532,7 @@
 		 * @emits module:bff/list#item:added
 		 * @returns {List} The List, with new items appended.
 		 */
-		listFunctions.pushAll = function pushAll(items) {
+		listFunctions.pushAll = function (items) {
 			if (RUNTIME_CHECKS && (!items || items.length === undefined)) {
 				throw '"items" argument must have a length property';
 			}
@@ -551,7 +551,7 @@
 		 * @emits module:bff/list#item:removed
 		 * @returns {List} The List, sans the items outside of the specified range.
 		 */
-		listFunctions.sliceMut = function sliceMut(begin, end) {
+		listFunctions.sliceMut = function (begin, end) {
 			if (RUNTIME_CHECKS) {
 				if (arguments.length < 2) { throw '"begin" and "end" arguments are mandatory'; }
 				if (typeof begin !== 'number') { throw '"begin" argument must be a number'; }
@@ -589,7 +589,7 @@
 		 * @emits module:bff/list#item:replaced
 		 * @returns {List} The List, with all items updated.
 		 */
-		listFunctions.mapMut = function mapMut(callback, thisArg) {
+		listFunctions.mapMut = function (callback, thisArg) {
 			if (RUNTIME_CHECKS && typeof callback !== 'function') { throw '"callback" argument must be a function'; }
 
 			for (var i = 0, length = this.length; i < length; ++i) {
@@ -604,7 +604,7 @@
 		 * @arg {module:bff/list~predicateCallback} predicate - Called once per List item to in order to find a matching item.
 		 * @returns {any|undefined} The matching item, if any.
 		 */
-		listFunctions.find = function find(predicate, thisArg) {
+		listFunctions.find = function (predicate, thisArg) {
 			if (RUNTIME_CHECKS && typeof predicate !== 'function') { throw '"predicate" argument must be a function'; }
 
 			for (var i = 0, length = this.length; i < length; ++i) {
@@ -618,7 +618,7 @@
 		 * @arg {module:bff/list~predicateCallback} predicate - Called once per List item to in order to find a matching item.
 		 * @returns {number} The position of the matching item, or -1 if none matches.
 		 */
-		listFunctions.findIndex = function findIndex(predicate, thisArg) {
+		listFunctions.findIndex = function (predicate, thisArg) {
 			if (RUNTIME_CHECKS && typeof predicate !== 'function') { throw '"predicate" argument must be a function'; }
 
 			for (var i = 0, length = this.length; i < length; ++i) {
@@ -636,7 +636,7 @@
 		 *     value is a negative number, it is taken as the offset from the end of the List.
 		 * @returns {boolean} True if the item is part of the List, false otherwise.
 		 */
-		listFunctions.includes = function includes(item, fromIndex) {
+		listFunctions.includes = function (item, fromIndex) {
 			if (RUNTIME_CHECKS && arguments.length > 1 && typeof fromIndex !== 'number') {
 				throw '"fromIndex" number must be a number';
 			}
@@ -652,7 +652,7 @@
 		 * @instance
 		 * @returns {Array}
 		 */
-		listFunctions.toArray = function toArray() {
+		listFunctions.toArray = function () {
 			return this.__private.array.slice();
 		};
 
@@ -662,7 +662,7 @@
 		 * @instance
 		 * @returns {Array}
 		 */
-		listFunctions.toJSON = function toJSON() {
+		listFunctions.toJSON = function () {
 			var jsonObj = new Array(this.length);
 			for (var i = 0, n = jsonObj.length; i < n; ++i) {
 				var item = this[i];
@@ -677,7 +677,7 @@
 		 * @instance
 		 * @returns {Object}
 		 */
-		listFunctions.propertiesToJSON = function propertiesToJSON() {
+		listFunctions.propertiesToJSON = function () {
 			return Record.prototype.toJSON.call(this);
 		};
 
@@ -689,7 +689,7 @@
 		 * @instance
 		 * @arg {string} - Identifier string for the event.
 		 */
-		listFunctions.addEventListener = function addEventListener(eventName) {
+		listFunctions.addEventListener = function (eventName) {
 			if (RUNTIME_CHECKS && typeof eventName !== 'string') {
 				throw '"eventName" argument must be a string';
 			}
@@ -710,7 +710,7 @@
 		 * @instance
 		 * @arg {string} - Identifier string for the event.
 		 */
-		listFunctions.removeEventListener = function removeEventListener(eventName) {
+		listFunctions.removeEventListener = function (eventName) {
 			if (RUNTIME_CHECKS && typeof eventName !== 'string') {
 				throw '"eventName" argument must be a string';
 			}
@@ -731,7 +731,7 @@
 		/**
 		 * @returns {string} A human readable string representation of the List.
 		 */
-		listFunctions.toString = function toString() {
+		listFunctions.toString = function () {
 			return JSON.stringify(this, undefined, 2);
 		};
 

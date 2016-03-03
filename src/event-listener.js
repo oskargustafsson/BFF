@@ -57,7 +57,7 @@
 			 * @arg {any} [context] - The context with which the callback will be called (i.e. what "this" will be).
 			 *     Will default to the caller of .listenTo, if not provided.
 			 */
-			listenTo: function listenTo(eventEmitters, eventNames, callback, context, useCapture) {
+			listenTo: function (eventEmitters, eventNames, callback, context, useCapture) {
 				if (RUNTIME_CHECKS) {
 					if (!eventEmitters || !(eventEmitters.addEventListener || eventEmitters instanceof Array)) {
 						throw '"eventEmitters" argument must be an event emitter or an array of event emitters';
@@ -94,7 +94,7 @@
 			 * @arg {Object} [eventEmitter] - If provided, only callbacks attached to the given event emitter will be removed.
 			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.
 			 */
-			stopListening: function stopListening(eventEmitter, eventName) {
+			stopListening: function (eventEmitter, eventName) {
 				if (RUNTIME_CHECKS) {
 					if (!!eventEmitter && !eventEmitter.addEventListener) {
 						throw '"eventEmitter" argument must be an event emitter';
