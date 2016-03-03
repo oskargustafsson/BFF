@@ -89,7 +89,7 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>A function that extends a target object with the properties of a source object, with options for describing property<br>collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking<br>this function.</p>
+            <div class="description"><p>A function that extends a target object with the properties of a source object, with options for describing property collision behavior. Note that the target object is mutated and returned, i.e. no new object gets created by invoking this function.</p>
 <p>The function comes with a set of named built-in conflict-solving functions:</p>
 <ul>
 <li><em>crash</em>: Throws an error when a property conflict occurs. This is the default solver function.</li>
@@ -110,7 +110,7 @@
   { a: { b: 'b', c: 'c' } },
   { a: { c: 'c', d: 'd' } },
   'useSource');
-// Returns { a: { c: 'c', d: 'd' } }</code></pre><p>As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it<br>encounters. This is how e.g. jQuery.extend and _.assign behaves.</p>
+// Returns { a: { c: 'c', d: 'd' } }</code></pre><p>As can be seen in above, the 'useSource' conflict solver is not recursive, it simply overwrites any property it encounters. This is how e.g. jQuery.extend and _.assign behaves.</p>
 <pre class="prettyprint source lang-javascript"><code>extend(
   { a: { b: 'b', c: 'c' } },
   { a: { c: 'c', d: 'd' } },
@@ -120,7 +120,7 @@
   { a: { b: 'b' }, num: 1 },
   { a: { c: 'c' }, num: 2 },
   { object: 'merge' }, 'useSource');
-// Returns { a: { b: 'b', c: 'c' }, num: 2 }</code></pre><p>The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types.<br>This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves</p>
+// Returns { a: { b: 'b', c: 'c' }, num: 2 }</code></pre><p>The above example uses the 'merge' solver on objects and the 'useSource' solver on all other property types. This produces a recursive behavior over objects, which is quite often desired. This is how e.g. _.merge behaves</p>
 <pre class="prettyprint source lang-javascript"><code>extend(
   { a: { b: 'b' }, num: 1 },
   { a: { c: 'c' }, num: 2, newProp: 3 },
@@ -339,7 +339,7 @@
 
             
 
-            <td class="description last"><p>Specifies how to handle cases where a property exists both on<br>the target and on the source.</p>
+            <td class="description last"><p>Specifies how to handle cases where a property exists both on the target and on the source.</p>
 <ul>
 <li>a <em>string</em> argument will be used to identify one of the built in solver functions. Valid values are 'useTarget', 'useSouce', 'crash' and 'merge'.</li>
 <li>a <em>function</em> argument will be used as-is as a solver for all conflicts.</li>
@@ -426,7 +426,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="extend.js.html">extend.js</a>,
-				 <a href="extend.js.html#sunlight-1-line-78">line 78</a>
+				 <a href="extend.js.html#sunlight-1-line-74">line 74</a>
 			</li>
 		</ul>
 	</dd>
@@ -695,7 +695,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="extend.js.html">extend.js</a>,
-				 <a href="extend.js.html#sunlight-1-line-69">line 69</a>
+				 <a href="extend.js.html#sunlight-1-line-65">line 65</a>
 			</li>
 		</ul>
 	</dd>

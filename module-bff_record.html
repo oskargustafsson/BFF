@@ -93,11 +93,11 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>A <a href="https://en.wikipedia.org/wiki/Record_(computer_science">Record</a> is the basic entity of the data layer. In<br>difference to regular JS objects, it has a predefined set of properties. The properties are specified by<br>&quot;subclassing&quot; the abstract Record constructor by calling <code>Record.withProperties(...)</code> and providing a properties<br>schema. For more details, see module:bff/record#withProperties.</p>
+            <div class="description"><p>A <a href="https://en.wikipedia.org/wiki/Record_(computer_science">Record</a> is the basic entity of the data layer. In difference to regular JS objects, it has a predefined set of properties. The properties are specified by &quot;subclassing&quot; the abstract Record constructor by calling <code>Record.withProperties(...)</code> and providing a properties schema. For more details, see module:bff/record#withProperties.</p>
 <p>The major advantages of using a predefined (i.e. known and finite) set of properties are:</p>
 <ul>
-<li>Each property gets a custom setter, that emits a change event whenever the property value changes. The setter<br>can also do types checks on the assigned value (which it does in dev. mode).</li>
-<li>The record instances can be locked using Object.preventExtensions, with the nice effect that trying to assign<br>a value to an undeclared property will throw an error.</li>
+<li>Each property gets a custom setter, that emits a change event whenever the property value changes. The setter can also do types checks on the assigned value (which it does in dev. mode).</li>
+<li>The record instances can be locked using Object.preventExtensions, with the nice effect that trying to assign a value to an undeclared property will throw an error.</li>
 </ul></div>
         
 
@@ -235,7 +235,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-74">line 74</a>
+				 <a href="record.js.html#sunlight-1-line-69">line 69</a>
 			</li>
 		</ul>
 	</dd>
@@ -295,7 +295,7 @@
 
     
     <div class="description">
-        <p>Creates a new Record constructor function, that will create Record instances with the property schema<br>provided to this function. The various aspects of the property schema are described in detail below, but let's<br>start with an example.</p>
+        <p>Creates a new Record constructor function, that will create Record instances with the property schema provided to this function. The various aspects of the property schema are described in detail below, but let's start with an example.</p>
 <pre class="prettyprint source lang-javascript"><code>var Person = Record.withProperties({
   firstName: 'string',
   lastName: 'string',
@@ -309,7 +309,7 @@
     defaultValue: 0,
   },
   someData: {},
-})</code></pre><p>Here we see a schema with five properties. The first two (<em>firstName</em> and <em>lastName</em>) use a shorthand syntax<br>to declare string properties. The <em>fullName</em> property is a calculated property that depends on <em>firstName</em><br>and <em>lastName</em>. The <em>age</em> property is either a number or undefined (properties can't be undefined by<br>default), with a default value of 0. Finally, the <em>someData</em> property can be of any type.</p>
+})</code></pre><p>Here we see a schema with five properties. The first two (<em>firstName</em> and <em>lastName</em>) use a shorthand syntax to declare string properties. The <em>fullName</em> property is a calculated property that depends on <em>firstName</em> and <em>lastName</em>. The <em>age</em> property is either a number or undefined (properties can't be undefined by default), with a default value of 0. Finally, the <em>someData</em> property can be of any type.</p>
     </div>
     
 
@@ -361,12 +361,12 @@
 
             
 
-            <td class="description last"><p>An object describing the properties that will be part of all new instances created by<br>the returned constructor function. Each key/value pair describes a single property. Property descriptor<br>objects can have the following properties:</p>
+            <td class="description last"><p>An object describing the properties that will be part of all new instances created by the returned constructor function. Each key/value pair describes a single property. Property descriptor objects can have the following properties:</p>
 <ul>
-<li><em>type</em>: A string or array of strings specifying the type of the property. If omitted, no type checking will<br>be performed, otherwise types are checked by applying the typeof operator to the assigned value and then<br>checking to see if the returned type string is part of the schema types.</li>
+<li><em>type</em>: A string or array of strings specifying the type of the property. If omitted, no type checking will be performed, otherwise types are checked by applying the typeof operator to the assigned value and then checking to see if the returned type string is part of the schema types.</li>
 <li><em>defaultValue</em>: An initial value that will be assigned to all new instances of this property upon creation.</li>
-<li><em>setter</em>: A function that will be called to transform the assigned value before it is stored on the property.<br>Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.</li>
-<li><em>getter</em>: A function that will be run to transform the read value before it is returned. Shouldn't have any<br>side effects, as it might be called internally to determine when events should be triggered.</li>
+<li><em>setter</em>: A function that will be called to transform the assigned value before it is stored on the property. Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.</li>
+<li><em>getter</em>: A function that will be run to transform the read value before it is returned. Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.</li>
 </ul>
 <p>All schema descriptor properties are optional. An empty schema descriptor can be replaced with any falsy value for the same effect, which means that:<br><code>someData: {}</code>, <code>someData: undefined</code>, <code>someData: null</code> and <code>someData: false</code> all declares a property named someData, which can hold any type of data.</p>
 <p>There is also a shorthand syntax for specifying typed properties, because it is such a common use case, e.g.:<br><code>aProp: 'string'</code> is equal to <code>aProp: { type: 'string' }</code> and e.g.<br><code>aProp: [ 'string', 'undefined' ]</code> is equal to <code>aProp: { type: [ 'string', 'undefined' ] }</code></p></td>
@@ -414,7 +414,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-210">line 210</a>
+				 <a href="record.js.html#sunlight-1-line-192">line 192</a>
 			</li>
 		</ul>
 	</dd>
@@ -479,7 +479,7 @@
 
     
     <div class="description">
-        <p>Returns a newly created Object containing the Records's deep copied properties. The fact that this function<br>returns an Object and not a strin is a bit misleading, but this naming convension is used for conformity<br>reasons, see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior</a></p>
+        <p>Returns a newly created Object containing the Records's deep copied properties. The fact that this function returns an Object and not a strin is a bit misleading, but this naming convension is used for conformity reasons, see <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior</a></p>
     </div>
     
 
@@ -526,7 +526,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-143">line 143</a>
+				 <a href="record.js.html#sunlight-1-line-136">line 136</a>
 			</li>
 		</ul>
 	</dd>
@@ -630,7 +630,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-156">line 156</a>
+				 <a href="record.js.html#sunlight-1-line-149">line 149</a>
 			</li>
 		</ul>
 	</dd>

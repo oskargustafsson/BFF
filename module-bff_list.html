@@ -93,8 +93,8 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>Maintains a list of items. The idea is to stay as true as possible to the native Array interface, but augment<br>its usefulness by triggering events whenever the list is updated, as well as adding convenience functions for<br>mutating the List in place.</p>
-<p>The exported List constructor can be used as-is, in which case a generic List will be created. This is a quite<br>common use case. Alternatively, a List &quot;subclass&quot; constructor can be created by calling<br><code>List.withProperties(...)</code>. This second approach provides the possibility to add custom <em>calculated</em> properties<br>to the list. See module:bff/list#withProperties for more details.</p></div>
+            <div class="description"><p>Maintains a list of items. The idea is to stay as true as possible to the native Array interface, but to augment its usefulness by triggering events whenever the list is updated, as well as adding convenience functions for mutating the List in place.</p>
+<p>The exported List constructor can be used as-is, in which case a generic List will be created. This is a quite common use case. Alternatively, a List &quot;subclass&quot; constructor can be created by calling <code>List.withProperties(...)</code>. This second approach provides the possibility to add custom <em>calculated</em> properties to the list. See module:bff/list#withProperties for more details.</p></div>
         
 
         
@@ -231,7 +231,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-822">line 822</a>
+				 <a href="list.js.html#sunlight-1-line-783">line 783</a>
 			</li>
 		</ul>
 	</dd>
@@ -334,7 +334,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-734">line 734</a>
+				 <a href="list.js.html#sunlight-1-line-695">line 695</a>
 			</li>
 		</ul>
 	</dd>
@@ -451,7 +451,7 @@
 
             
 
-            <td class="description last"><p>An object describing the properties that will be part of all new instances created by<br>    the returned constructor function. The property descriptions should be on the same format at the schema<br>    specified for module:bff/record#withProperties, with the only exception that setters are not allowed.</p></td>
+            <td class="description last"><p>An object describing the properties that will be part of all new instances created by the returned constructor function. The property descriptions should be on the same format at the schema specified for module:bff/record#withProperties, with the only exception that setters are not allowed.</p></td>
         </tr>
 
     
@@ -496,7 +496,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-834">line 834</a>
+				 <a href="list.js.html#sunlight-1-line-793">line 793</a>
 			</li>
 		</ul>
 	</dd>
@@ -561,7 +561,7 @@
 
     
     <div class="description">
-        <p>Augmented version of module:bff/event-emitter#addEventListener that provides the option to listen to<br>events emitted from any item in the List. To add a listener to an item event, prepend the event name with<br>'item:'. For instance, to listen for the 'change' event on all the list items (even ones added after the<br>listener was created), add a listener for the 'item:change' event.</p>
+        <p>Augmented version of module:bff/event-emitter#addEventListener that provides the option to listen to events emitted from any item in the List. To add a listener to an item event, prepend the event name with 'item:'. For instance, to listen for the 'change' event on all the list items (even ones added after the listener was created), add a listener for the 'item:change' event.</p>
     </div>
     
 
@@ -658,7 +658,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-692">line 692</a>
+				 <a href="list.js.html#sunlight-1-line-654">line 654</a>
 			</li>
 		</ul>
 	</dd>
@@ -746,7 +746,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-523">line 523</a>
+				 <a href="list.js.html#sunlight-1-line-494">line 494</a>
 			</li>
 		</ul>
 	</dd>
@@ -818,7 +818,7 @@
 
     
     <div class="description">
-        <p>Returns a new List comprised of the List on which it is called joined with the List(s), Array(s) and/or<br>value(s) provided as arguments. Mirrors the behavior of Array.concat.</p>
+        <p>Returns a new List comprised of the List on which it is called joined with the List(s), Array(s) and/or value(s) provided as arguments. Mirrors the behavior of Array.concat.</p>
     </div>
     
 
@@ -882,7 +882,7 @@
 
             
 
-            <td class="description last"><p>A List, Array or value that will be concatenated with the original List. Lists and<br>    Arrays will be deconstructed and each item added to the new List.</p></td>
+            <td class="description last"><p>A List, Array or value that will be concatenated with the original List. Lists and Arrays will be deconstructed and each item added to the new List.</p></td>
         </tr>
 
     
@@ -927,7 +927,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-468">line 468</a>
+				 <a href="list.js.html#sunlight-1-line-439">line 439</a>
 			</li>
 		</ul>
 	</dd>
@@ -1133,7 +1133,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-330">line 330</a>
+				 <a href="list.js.html#sunlight-1-line-317">line 317</a>
 			</li>
 		</ul>
 	</dd>
@@ -1198,7 +1198,7 @@
 
     
     <div class="description">
-        <p>Creates a new List with all items that pass the test implemented by the predicate function test. The<br>original list is unchanged. Mirrors the behavior of Array.filter.</p>
+        <p>Creates a new List with all items that pass the test implemented by the predicate function test. The original list is unchanged. Mirrors the behavior of Array.filter.</p>
     </div>
     
 
@@ -1295,7 +1295,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-425">line 425</a>
+				 <a href="list.js.html#sunlight-1-line-401">line 401</a>
 			</li>
 		</ul>
 	</dd>
@@ -1501,7 +1501,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-487">line 487</a>
+				 <a href="list.js.html#sunlight-1-line-458">line 458</a>
 			</li>
 		</ul>
 	</dd>
@@ -1670,7 +1670,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-607">line 607</a>
+				 <a href="list.js.html#sunlight-1-line-576">line 576</a>
 			</li>
 		</ul>
 	</dd>
@@ -1835,7 +1835,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-621">line 621</a>
+				 <a href="list.js.html#sunlight-1-line-590">line 590</a>
 			</li>
 		</ul>
 	</dd>
@@ -2041,7 +2041,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-322">line 322</a>
+				 <a href="list.js.html#sunlight-1-line-309">line 309</a>
 			</li>
 		</ul>
 	</dd>
@@ -2178,7 +2178,7 @@
 
             
 
-            <td class="description last"><p>The index to start the search at. If the index is greater than or equal to the<br>    List's length, -1 is returned, which means the List will not be searched. If the provided index<br>    value is a negative number, it is taken as the offset from the end of the List.</p></td>
+            <td class="description last"><p>The index to start the search at. If the index is greater than or equal to the List's length, -1 is returned, which means the List will not be searched. If the provided index value is a negative number, it is taken as the offset from the end of the List.</p></td>
         </tr>
 
     
@@ -2223,7 +2223,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-639">line 639</a>
+				 <a href="list.js.html#sunlight-1-line-606">line 606</a>
 			</li>
 		</ul>
 	</dd>
@@ -2384,7 +2384,7 @@
 
             
 
-            <td class="description last"><p>The index to start the search at. If the index is greater than or equal to the<br>    List's length, -1 is returned, which means the List will not be searched. If the provided index<br>    value is a negative number, it is taken as the offset from the end of the List.</p></td>
+            <td class="description last"><p>The index to start the search at. If the index is greater than or equal to the List's length, -1 is returned, which means the List will not be searched. If the provided index value is a negative number, it is taken as the offset from the end of the List.</p></td>
         </tr>
 
     
@@ -2429,7 +2429,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-348">line 348</a>
+				 <a href="list.js.html#sunlight-1-line-335">line 335</a>
 			</li>
 		</ul>
 	</dd>
@@ -2554,7 +2554,7 @@
 
             
 
-            <td class="description last"><p>Specifies a string to separate each item of the List. If omitted, the List<br>    items are separated with a comma. Mirrors Array.join behavior.</p></td>
+            <td class="description last"><p>Specifies a string to separate each item of the List. If omitted, the List items are separated with a comma. Mirrors Array.join behavior.</p></td>
         </tr>
 
     
@@ -2599,7 +2599,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-370">line 370</a>
+				 <a href="list.js.html#sunlight-1-line-352">line 352</a>
 			</li>
 		</ul>
 	</dd>
@@ -2756,7 +2756,7 @@
 
             
 
-            <td class="description last"><p>The index at which to start searching backwards. Defaults to the List's length<br>    minus one, i.e. the whole List will be searched. If the index is greater than or equal to the length<br>    of the List, the whole List will be searched. If negative, it is taken as the offset from the end<br>    of the List. Mirrors Array.lastIndexOf behavior.</p></td>
+            <td class="description last"><p>The index at which to start searching backwards. Defaults to the List's length minus one, i.e. the whole List will be searched. If the index is greater than or equal to the length of the List, the whole List will be searched. If negative, it is taken as the offset from the end of the List. Mirrors Array.lastIndexOf behavior.</p></td>
         </tr>
 
     
@@ -2801,7 +2801,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-359">line 359</a>
+				 <a href="list.js.html#sunlight-1-line-344">line 344</a>
 			</li>
 		</ul>
 	</dd>
@@ -2866,7 +2866,7 @@
 
     
     <div class="description">
-        <p>Creates a new List with the results of calling a provided callback function on every element in the List.<br>Mirrors the behavior of Array.map.</p>
+        <p>Creates a new List with the results of calling a provided callback function on every element in the List. Mirrors the behavior of Array.map.</p>
     </div>
     
 
@@ -3007,7 +3007,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-446">line 446</a>
+				 <a href="list.js.html#sunlight-1-line-420">line 420</a>
 			</li>
 		</ul>
 	</dd>
@@ -3213,7 +3213,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-592">line 592</a>
+				 <a href="list.js.html#sunlight-1-line-561">line 561</a>
 			</li>
 		</ul>
 	</dd>
@@ -3330,7 +3330,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-236">line 236</a>
+				 <a href="list.js.html#sunlight-1-line-229">line 229</a>
 			</li>
 		</ul>
 	</dd>
@@ -3449,7 +3449,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-680">line 680</a>
+				 <a href="list.js.html#sunlight-1-line-645">line 645</a>
 			</li>
 		</ul>
 	</dd>
@@ -3619,7 +3619,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-187">line 187</a>
+				 <a href="list.js.html#sunlight-1-line-180">line 180</a>
 			</li>
 		</ul>
 	</dd>
@@ -3791,7 +3791,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-535">line 535</a>
+				 <a href="list.js.html#sunlight-1-line-506">line 506</a>
 			</li>
 		</ul>
 	</dd>
@@ -3863,7 +3863,7 @@
 
     
     <div class="description">
-        <p>Applies a function against an accumulator and each value of the List (from left-to-right) to reduce it to a<br>single value. Mirrors Array.reduce behavior.</p>
+        <p>Applies a function against an accumulator and each value of the List (from left-to-right) to reduce it to a single value. Mirrors Array.reduce behavior.</p>
     </div>
     
 
@@ -3984,7 +3984,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-378">line 378</a>
+				 <a href="list.js.html#sunlight-1-line-359">line 359</a>
 			</li>
 		</ul>
 	</dd>
@@ -4049,7 +4049,7 @@
 
     
     <div class="description">
-        <p>Applies a function against an accumulator and each value of the List (from right-to-left) to reduce it to a<br>single value. Mirrors Array.reduceRight behavior.</p>
+        <p>Applies a function against an accumulator and each value of the List (from right-to-left) to reduce it to a single value. Mirrors Array.reduceRight behavior.</p>
     </div>
     
 
@@ -4170,7 +4170,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-388">line 388</a>
+				 <a href="list.js.html#sunlight-1-line-368">line 368</a>
 			</li>
 		</ul>
 	</dd>
@@ -4332,7 +4332,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-512">line 512</a>
+				 <a href="list.js.html#sunlight-1-line-483">line 483</a>
 			</li>
 		</ul>
 	</dd>
@@ -4404,7 +4404,7 @@
 
     
     <div class="description">
-        <p>Augmented version of module:bff/event-emitter#addEventListener that provides functionality for<br>removing &quot;item&quot; event listeners, e.g. for stop listening to events like &quot;items:change&quot;.</p>
+        <p>Augmented version of module:bff/event-emitter#addEventListener that provides functionality for removing &quot;item&quot; event listeners, e.g. for stop listening to events like &quot;items:change&quot;.</p>
     </div>
     
 
@@ -4501,7 +4501,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-713">line 713</a>
+				 <a href="list.js.html#sunlight-1-line-674">line 674</a>
 			</li>
 		</ul>
 	</dd>
@@ -4589,7 +4589,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-414">line 414</a>
+				 <a href="list.js.html#sunlight-1-line-390">line 390</a>
 			</li>
 		</ul>
 	</dd>
@@ -4677,7 +4677,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-257">line 257</a>
+				 <a href="list.js.html#sunlight-1-line-250">line 250</a>
 			</li>
 		</ul>
 	</dd>
@@ -4749,7 +4749,7 @@
 
     
     <div class="description">
-        <p>Creates a new List from the range of current items specified by the begin and end arguments. Mirrors the<br>behavior of Array.slice.</p>
+        <p>Creates a new List from the range of current items specified by the begin and end arguments. Mirrors the behavior of Array.slice.</p>
     </div>
     
 
@@ -4892,7 +4892,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-434">line 434</a>
+				 <a href="list.js.html#sunlight-1-line-409">line 409</a>
 			</li>
 		</ul>
 	</dd>
@@ -5021,7 +5021,7 @@
 
             
 
-            <td class="description last"><p>Index that specifies the beginning of the range. Inclusive. A negative index will<br>    be relative to the end of the List instead of the beginning.</p></td>
+            <td class="description last"><p>Index that specifies the beginning of the range. Inclusive. A negative index will be relative to the end of the List instead of the beginning.</p></td>
         </tr>
 
     
@@ -5055,7 +5055,7 @@
 
             
 
-            <td class="description last"><p>Index that specifies the end of the range. Exclusive. A negative index will<br>    be relative to the end of the List instead of the beginning.</p></td>
+            <td class="description last"><p>Index that specifies the end of the range. Exclusive. A negative index will be relative to the end of the List instead of the beginning.</p></td>
         </tr>
 
     
@@ -5100,7 +5100,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-554">line 554</a>
+				 <a href="list.js.html#sunlight-1-line-523">line 523</a>
 			</li>
 		</ul>
 	</dd>
@@ -5313,7 +5313,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-339">line 339</a>
+				 <a href="list.js.html#sunlight-1-line-326">line 326</a>
 			</li>
 		</ul>
 	</dd>
@@ -5378,7 +5378,7 @@
 
     
     <div class="description">
-        <p>Sorts the items of the List in place. The sort is not necessarily stable. The default sort order is<br>according to string Unicode code points, unless a custom comparator finction is provided. Mirrors the<br>behavior of Array.sort. No events are emitted by this operation.</p>
+        <p>Sorts the items of the List in place. The sort is not necessarily stable. The default sort order is according to string Unicode code points, unless a custom comparator finction is provided. Mirrors the behavior of Array.sort. No events are emitted by this operation.</p>
     </div>
     
 
@@ -5442,7 +5442,7 @@
 
             
 
-            <td class="description last"><p>A function that specifies the ordering of two<br>    arbitrary List items. Called multiple times in order to produce a total ordering of the items.</p></td>
+            <td class="description last"><p>A function that specifies the ordering of two arbitrary List items. Called multiple times in order to produce a total ordering of the items.</p></td>
         </tr>
 
     
@@ -5487,7 +5487,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-403">line 403</a>
+				 <a href="list.js.html#sunlight-1-line-382">line 382</a>
 			</li>
 		</ul>
 	</dd>
@@ -5552,7 +5552,7 @@
 
     
     <div class="description">
-        <p>Changes the content of the List by removing existing items and/or adding new items. Mirrors Array.splice<br>behavior.</p>
+        <p>Changes the content of the List by removing existing items and/or adding new items. Mirrors Array.splice behavior.</p>
     </div>
     
 
@@ -5614,7 +5614,7 @@
 
             
 
-            <td class="description last"><p>Index at which to start changing the array. If greater than the length of the array, actual<br>    starting index will be set to the length of the array. If negative, will begin that many items from the<br>    end.</p></td>
+            <td class="description last"><p>Index at which to start changing the array. If greater than the length of the array, actual starting index will be set to the length of the array. If negative, will begin that many items from the end.</p></td>
         </tr>
 
     
@@ -5646,7 +5646,7 @@
 
             
 
-            <td class="description last"><p>An integer indicating the number of old array items to remove. If<br>    nItemsToRemove is greater than the number of items left in the array starting at start, then all of the<br>    items through the end of the array will be deleted.</p></td>
+            <td class="description last"><p>An integer indicating the number of old array items to remove. If nItemsToRemove is greater than the number of items left in the array starting at start, then all of the items through the end of the array will be deleted.</p></td>
         </tr>
 
     
@@ -5682,7 +5682,7 @@
 
             
 
-            <td class="description last"><p>Item that will be added to the array, starting at the index specified in the first<br>    argument.</p></td>
+            <td class="description last"><p>Item that will be added to the array, starting at the index specified in the first argument.</p></td>
         </tr>
 
     
@@ -5727,7 +5727,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-289">line 289</a>
+				 <a href="list.js.html#sunlight-1-line-276">line 276</a>
 			</li>
 		</ul>
 	</dd>
@@ -5803,7 +5803,7 @@
 
     
     <div class="description">
-        <p>Returns an newly created Array, containing all the items of the List. List properties are not copied to the<br>Array object. The items are copied shallowly.</p>
+        <p>Returns an newly created Array, containing all the items of the List. List properties are not copied to the Array object. The items are copied shallowly.</p>
     </div>
     
 
@@ -5850,7 +5850,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-655">line 655</a>
+				 <a href="list.js.html#sunlight-1-line-621">line 621</a>
 			</li>
 		</ul>
 	</dd>
@@ -5911,7 +5911,7 @@
 
     
     <div class="description">
-        <p>Returns a newly created Array representation of the List, containing deep copies of all the List's items,<br>but not its properties.</p>
+        <p>Returns a newly created Array representation of the List, containing deep copies of all the List's items, but not its properties.</p>
     </div>
     
 
@@ -5958,7 +5958,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-665">line 665</a>
+				 <a href="list.js.html#sunlight-1-line-630">line 630</a>
 			</li>
 		</ul>
 	</dd>
@@ -6128,7 +6128,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-212">line 212</a>
+				 <a href="list.js.html#sunlight-1-line-205">line 205</a>
 			</li>
 		</ul>
 	</dd>
@@ -6206,7 +6206,7 @@
 
     
     <div class="description">
-        <p>Compares <em>itemA</em> and <em>itemB</em> arguments according to some sorting criterion. Should return -1 if <em>itemA</em> comes<br>before <em>itemB</em>, 0 if <em>itemA</em> is equal to <em>itemB</em>, 1 if <em>itemB</em> comes before <em>itemA</em>.</p>
+        <p>Compares <em>itemA</em> and <em>itemB</em> arguments according to some sorting criterion. Should return -1 if <em>itemA</em> comes before <em>itemB</em>, 0 if <em>itemA</em> is equal to <em>itemB</em>, 1 if <em>itemB</em> comes before <em>itemA</em>.</p>
     </div>
     
 
@@ -6327,7 +6327,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-91">line 91</a>
+				 <a href="list.js.html#sunlight-1-line-85">line 85</a>
 			</li>
 		</ul>
 	</dd>
@@ -6533,7 +6533,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-58">line 58</a>
+				 <a href="list.js.html#sunlight-1-line-53">line 53</a>
 			</li>
 		</ul>
 	</dd>
@@ -6715,7 +6715,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-65">line 65</a>
+				 <a href="list.js.html#sunlight-1-line-60">line 60</a>
 			</li>
 		</ul>
 	</dd>
@@ -6921,7 +6921,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-73">line 73</a>
+				 <a href="list.js.html#sunlight-1-line-68">line 68</a>
 			</li>
 		</ul>
 	</dd>
@@ -7034,7 +7034,7 @@
 
             
 
-            <td class="description last"><p>The value previously returned in the last invocation of the callback, or<br>    initialValue, if supplied. Usually an aggregate of previous items.</p></td>
+            <td class="description last"><p>The value previously returned in the last invocation of the callback, or initialValue, if supplied. Usually an aggregate of previous items.</p></td>
         </tr>
 
     
@@ -7151,7 +7151,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-81">line 81</a>
+				 <a href="list.js.html#sunlight-1-line-76">line 76</a>
 			</li>
 		</ul>
 	</dd>
@@ -7363,7 +7363,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-44">line 44</a>
+				 <a href="list.js.html#sunlight-1-line-39">line 39</a>
 			</li>
 		</ul>
 	</dd>
@@ -7545,7 +7545,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-22">line 22</a>
+				 <a href="list.js.html#sunlight-1-line-17">line 17</a>
 			</li>
 		</ul>
 	</dd>
@@ -7727,7 +7727,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-37">line 37</a>
+				 <a href="list.js.html#sunlight-1-line-32">line 32</a>
 			</li>
 		</ul>
 	</dd>
@@ -7933,7 +7933,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="list.js.html">list.js</a>,
-				 <a href="list.js.html#sunlight-1-line-29">line 29</a>
+				 <a href="list.js.html#sunlight-1-line-24">line 24</a>
 			</li>
 		</ul>
 	</dd>
