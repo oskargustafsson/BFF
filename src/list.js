@@ -648,7 +648,7 @@
 		};
 
 		/**
-		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides the option to listen to events emitted from any item in the List. To add a listener to an item event, prepend the event name with 'item:'. For instance, to listen for the 'change' event on all the list items (even ones added after the listener was created), add a listener for the 'item:change' event.
+		 * Augmented version of {@link bff/event-emitter#addEventListener} that provides the option to listen to events emitted from any item in the List. To add a listener to an item event, prepend the event name with 'item:'. For instance, to listen for the 'change' event on all the list items (even ones added after the listener was created), add a listener for the 'item:change' event.
 		 * @instance
 		 * @arg {string} - Identifier string for the event.
 		 */
@@ -668,7 +668,7 @@
 		};
 
 		/**
-		 * Augmented version of {@link module:bff/event-emitter#addEventListener} that provides functionality for removing "item" event listeners, e.g. for stop listening to events like "items:change".
+		 * Augmented version of {@link bff/event-emitter#removeEventListener} that provides functionality for removing "item" event listeners, e.g. for stop listening to events like "items:change".
 		 * @instance
 		 * @arg {string} - Identifier string for the event.
 		 */
@@ -789,7 +789,7 @@
 		 * provided to this function
 		 * @func
 		 * @static
-		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by the returned constructor function. The property descriptions should be on the same format at the schema specified for {@link module:bff/record#withProperties}, with the only exception that setters are not allowed.
+		 * @arg {Object} schema - An object describing the properties that will be part of all new instances created by the returned constructor function. The property descriptions should be on the same format at the schema specified for {@link module:bff/record.withProperties}, with the only exception that setters are not allowed.
 		 * @returns {function} New constructor function based on the provided schema.
 		 */
 		List.withProperties = withProperties;

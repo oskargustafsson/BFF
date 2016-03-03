@@ -4,7 +4,7 @@
 
 	/**
 	 * ## bff/record
-	 * A [Record](https://en.wikipedia.org/wiki/Record_(computer_science) is the basic entity of the data layer. In difference to regular JS objects, it has a predefined set of properties. The properties are specified by "subclassing" the abstract Record constructor by calling `Record.withProperties(...)` and providing a properties schema. For more details, see {@link module:bff/record#withProperties}.
+	 * A [Record](https://en.wikipedia.org/wiki/Record_(computer_science) is the basic entity of the data layer. In difference to regular JS objects, it has a predefined set of properties. The properties are specified by "subclassing" the abstract Record constructor by calling `Record.withProperties(...)` and providing a properties schema. For more details, see {@link module:bff/record.withProperties}.
 	 *
 	 * The major advantages of using a predefined (i.e. known and finite) set of properties are:
 	 * * Each property gets a custom setter, that emits a change event whenever the property value changes. The setter can also do types checks on the assigned value (which it does in dev. mode).
@@ -131,7 +131,7 @@
 		}
 
 		/**
-		 * Returns a newly created Object containing the Records's deep copied properties. The fact that this function returns an Object and not a strin is a bit misleading, but this naming convension is used for conformity reasons, see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON_behavior}
+		 * Returns a newly created Object containing the Records's deep copied properties. The fact that this function returns an Object and not a strin is a bit misleading, but this naming convension is used for conformity reasons, see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior}
 		 * @returns {Object}
 		 */
 		Record.prototype.toJSON = function () {

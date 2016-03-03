@@ -225,7 +225,7 @@
 
 
 			/**
-			 * Augments {@link module:bff/event-listener#listenTo} with functionality for listening to delegated DOM events, by specifying a CSS selector string instead of an event emitter. The actual listener will implicitly be registered on this view's root element.
+			 * Augments {@link bff/event-listener#listenTo} with functionality for listening to delegated DOM events, by specifying a CSS selector string instead of an event emitter. The actual listener will implicitly be registered on this view's root element.
 			 * @instance
 			 * @arg {string|Object|Array|NodeList} selectorStr - The CSS selector string that will be used to filter all events bubbling up to the listener. If anything other than a string passed, the original listenTo implementation will be used.
 			 * @arg {string|Array} eventName - One or more string identifiers for events that will be listented to.
@@ -271,7 +271,7 @@
 			},
 
 			/**
-			 * Augments {@link module:bff/event-listener#stopListening} with functionality for stop listening to delegated DOM events.
+			 * Augments {@link bff/event-listener#stopListening} with functionality for stop listening to delegated DOM events.
 			 * @instance
 			 * @arg {string|Object} [selectorStr] - If provided, only delegated event callbacks for the given selector string will be removed. If anything other than a string passed, the original stopListening implementation will be used.
 			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.

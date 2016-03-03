@@ -40,7 +40,6 @@ TO DO before 1.0
 ----------------
 #### General
 * Complete documentation
-    * @link not working
     * Normalize capitalization of types (e.g. Object vs. object)
 * IE9 support
 
