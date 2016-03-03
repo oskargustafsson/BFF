@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>BFF Source: patch-dom.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.lumen.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">BFF</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_extend.html">bff/extend</a></li><li><a href="module-bff_list.html">bff/list</a></li><li><a href="module-bff_patch-dom.html">bff/patch-dom</a></li><li><a href="module-bff_record.html">bff/record</a></li><li><a href="module-bff_view.html">bff/view</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="mixins.list.html" class="dropdown-toggle" data-toggle="dropdown">Mixins<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="bff_event-emitter.html">bff/event-emitter</a></li><li><a href="bff_event-listener.html">bff/event-listener</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: patch-dom.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/* global define */
+(function () {
+	'use strict';
+
+	/**
+	 * @module bff/patch-dom
+	 */
+	function moduleFactory() {
+
+		function makeLevMat(xSize, ySize) {
+			var i, levMat = new Array(xSize + 1);
+
+			for (i = 0; i &lt;= xSize; ++i) {
+				levMat[i] = new Array(ySize + 1);
+				levMat[i][0] = i;
+			}
+
+			for (i = 0; i &lt;= ySize; ++i) {
+				levMat[0][i] = i;
+			}
+
+			return levMat;
+		}
+
+		var preallocLevMatSizeX = 63;
+		var preallocLevMatSizeY = 63;
+		var preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
+
+		function areOfSameType(target, source) {
+			if (!source) { return false; }
+			if (target.nodeName === source.nodeName) { return true; }
+			return false;
+		}
+
+		function namedNodeMapToObject(namedNodeMap) {
+			var obj = {};
+			for (var i = 0, n = namedNodeMap.length; i &lt; n; ++i) {
+				var node = namedNodeMap[i];
+				obj[node.name] = node.value;
+			}
+			return obj;
+		}
+
+		function patchElementNode(target, source) {
+			// Ref: http://quirksmode.org/dom/core/#attributes
+
+			var targetAttrObj = namedNodeMapToObject(target.attributes);
+			var sourceAttrArr = source.attributes;
+			var i, n, sourceAttr, targetAttr, attrName;
+
+			// Special cases
+			if (target.nodeName === 'INPUT') { target.value = source.value || ''; }
+			if (source.checked !== undefined) { target.checked = source.checked; }
+			if (source.selected !== undefined) { target.selected = source.selected; }
+
+			for (i = 0, n = sourceAttrArr.length; i &lt; n; ++i) {
+				sourceAttr = sourceAttrArr[i];
+				attrName = sourceAttr.name;
+				targetAttr = targetAttrObj[attrName];
+				delete targetAttrObj[sourceAttr.name];
+				if (targetAttr &amp;&amp; targetAttr.value === sourceAttr.value) { continue; }
+				target.setAttribute(attrName, sourceAttr.value);
+			}
+
+			for (attrName in targetAttrObj) {
+				target.removeAttribute(attrName);
+			}
+		}
+
+		function patchTextNode(target, source) {
+			var sourceValue = source.nodeValue;
+			if (target.nodeValue === sourceValue) { return; }
+			target.nodeValue = sourceValue;
+		}
+
+		function patchNode(target, source) {
+			switch (target.nodeType) {
+			case Node.ELEMENT_NODE: patchElementNode(target, source); break;
+			case Node.TEXT_NODE: patchTextNode(target, source); break;
+			}
+		}
+
+		function shouldIgnoreNode(node) {
+			return !!node.hasAttribute &amp;&amp; node.hasAttribute('patch-ignore');
+		}
+
+		function patchRecursive(target, source, ignoreSubtreeOf) {
+			var targetParent = target.parentNode;
+
+			var childrenToPatch = [];
+
+			// Patch the current node
+			if (areOfSameType(target, source)) {
+				patchNode(target, source);
+			} else {
+				if (source) {
+					targetParent.replaceChild(source, target);
+				} else {
+					targetParent.removeChild(target);
+				}
+				return;
+			}
+
+			if (ignoreSubtreeOf &amp;&amp; Array.prototype.indexOf.call(ignoreSubtreeOf, target) !== -1) { return; }
+
+			// Diff subtree using Levenshtein distance algorithm
+
+			var targetChildren = target.childNodes;
+			var sourceChildren = source.childNodes;
+
+			var i, n, targetPos, sourcePos, targetChild, sourceChild;
+			var nTargetChildren = targetChildren.length;
+			var nSourceChildren = sourceChildren.length;
+
+			var nLeadingSameTypeChildren = 0;
+
+			var nIgnoredTargetChildren = 0;
+			var nTargetChildrenToIgnore = 0;
+			var allChildrenMatchSoFar = true;
+
+			for (i = 0; i &lt; nTargetChildren; ++i) {
+				if (shouldIgnoreNode(targetChildren[i])) {
+					nTargetChildrenToIgnore++;
+				} else if (allChildrenMatchSoFar) {
+					if (areOfSameType(targetChildren[i + nTargetChildrenToIgnore], sourceChildren[i])) {
+						childrenToPatch.push(targetChildren[i + nTargetChildrenToIgnore]);
+						childrenToPatch.push(sourceChildren[i]);
+						nLeadingSameTypeChildren++;
+					} else {
+						allChildrenMatchSoFar = false;
+					}
+				}
+			}
+
+			if (nTargetChildren - nTargetChildrenToIgnore === 0 &amp;&amp; nSourceChildren === 0) { return; }
+
+			var levMatSizeX = nTargetChildren - nLeadingSameTypeChildren;
+			var levMatSizeY = nSourceChildren - nLeadingSameTypeChildren;
+
+			var levMat;
+			if (preallocLevMatSizeX &lt; levMatSizeX || preallocLevMatSizeY &lt; levMatSizeY) {
+				// The preallocated matrix is too small.
+				if (preallocLevMatSizeX &lt;= levMatSizeX &amp;&amp; preallocLevMatSizeY &lt;= levMatSizeY) {
+					// The needed matrix is bigger or equal to the preallocated one i all dimensions, so let's grow the
+					// preallocated one.
+					preallocLevMatSizeX = levMatSizeX;
+					preallocLevMatSizeY = levMatSizeY;
+					preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
+					levMat = preallocLevMat;
+				} else {
+					// The needed matrix is larger than the preallocated one in some, but not all dimensions. This
+					// should be quite an edge case, so just use a temporary matrix for this operation.
+					levMat = makeLevMat(levMatSizeX, levMatSizeY);
+				}
+			} else {
+				// The needed matrix fits inside the preallocated one, so just use that one. This should be the most
+				// common case.
+				levMat = preallocLevMat;
+			}
+
+			for (targetPos = 1; targetPos + nIgnoredTargetChildren &lt;= nTargetChildren - nLeadingSameTypeChildren; targetPos++) {
+				targetChild = targetChildren[targetPos + nIgnoredTargetChildren + nLeadingSameTypeChildren - 1];
+
+				if (shouldIgnoreNode(targetChild)) {
+					nIgnoredTargetChildren++;
+					targetPos--;
+					continue;
+				}
+
+				for (sourcePos = 1; sourcePos &lt;= nSourceChildren - nLeadingSameTypeChildren; ++sourcePos) {
+					if (areOfSameType(targetChild, sourceChildren[sourcePos + nLeadingSameTypeChildren - 1])) {
+						levMat[targetPos][sourcePos] = levMat[targetPos - 1][sourcePos - 1];
+					} else {
+						levMat[targetPos][sourcePos] = 1 + Math.min(
+								levMat[targetPos - 1][sourcePos - 1],
+								levMat[targetPos][sourcePos - 1],
+								levMat[targetPos - 1][sourcePos]);
+					}
+				}
+			}
+
+			targetPos = nTargetChildren - nLeadingSameTypeChildren - nTargetChildrenToIgnore;
+			sourcePos = nSourceChildren - nLeadingSameTypeChildren;
+			while (targetPos > 0 || sourcePos > 0) {
+				targetChild = targetChildren[targetPos + nLeadingSameTypeChildren + nTargetChildrenToIgnore - 1];
+
+				if (shouldIgnoreNode(targetChild)) {
+					nTargetChildrenToIgnore--;
+					continue;
+				}
+
+				var substitution = targetPos > 0 &amp;&amp; sourcePos > 0 ? levMat[targetPos - 1][sourcePos - 1] : Infinity;
+				var insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : Infinity;
+				var deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : Infinity;
+
+				sourceChild = sourceChildren[sourcePos + nLeadingSameTypeChildren - 1];
+
+				if (substitution &lt;= insertion &amp;&amp; substitution &lt;= deletion) {
+					if (substitution &lt; levMat[targetPos][sourcePos]) {
+						// Substitute
+						target.replaceChild(sourceChild, targetChild);
+					} else {
+						// Add to patch list
+						childrenToPatch.push(targetChild);
+						childrenToPatch.push(sourceChild);
+					}
+					targetPos--;
+					sourcePos--;
+				} else if (insertion &lt;= deletion) {
+					// Insert
+					target.insertBefore(sourceChild, targetChild.nextSibling);
+					sourcePos--;
+				} else {
+					// Delete
+					target.removeChild(targetChild);
+					targetPos--;
+				}
+			}
+
+			for (i = 0, n = childrenToPatch.length; i &lt; n; i += 2) {
+				patchRecursive(childrenToPatch[i], childrenToPatch[i + 1], ignoreSubtreeOf);
+			}
+		}
+
+		/**
+		 * Patches the target element and its child elements such that it will be identical to the source element and its child structure. It achieves this by recursively _patching_, _removing_ or _adding_ elements in the target element hierarchy. The overall logic of the algorithm goes as follows:
+		 * * If the target and source elements have differing node type types (e.g. a `&lt;div>` and a `&lt;span>` tag) the target element is replaced by the source element.
+		 * * Otherwise, if the target and source elements are of the same type (e.g. two `&lt;div>` tags), the attributes of the target element will be replaced by those of the target element. Then the target and source elements' children lists are compared using a version of the Levenshtein algorithm. This results in the children of the target element being either patched (by calling `patchDom` recursively) or removed. Child elements only present in the source child list will also be added to the target child list at their respective positions.
+		 *
+		 * If any encountered target elements has a `patch-ignore` attribute, that node and its children will not be patched.
+		 *
+		 * @func patchDom
+		 * @instance
+		 * @arg {HTMLElement} target - The element (hierarchy) to be patched. Will be identical to the source element (hierarchy) after the function call completes.
+		 * @arg {HTMLElement} source - The element (hierarchy) that the target (hierarchy) will be transformed into.
+		 * @arg {Object} [options] - Options that will be recursively passed down to all patchDom calls. Currently only one options is implemented:
+		 * * _ignoreSubtreeOf_: A CSS selector string that identifies any elements, whose subtrees will not be patched.
+		 */
+		return function patchDom(target, source, options) {
+			options = options || {};
+
+			if (RUNTIME_CHECKS) {
+				if (!(target instanceof HTMLElement)) {
+					throw '"target" argument must be an HTMLElement';
+				}
+				if (!(source instanceof HTMLElement)) {
+					throw '"source" argument must be an HTMLElement';
+				}
+				if (arguments.length > 2 &amp;&amp; typeof options !== 'object') {
+					throw '"options" argument must be an object';
+				}
+				if ('ignoreSubtreeOf' in options &amp;&amp; typeof options.ignoreSubtreeOf !== 'string') {
+					throw 'ignoreSubtreeOf option must be a valid CSS selector string';
+				}
+			}
+
+			var ignoreSubtreeOf = options.ignoreSubtreeOf &amp;&amp; target.querySelectorAll(options.ignoreSubtreeOf);
+			patchRecursive(target, source, ignoreSubtreeOf);
+			return target;
+		};
+
+	}
+
+	// Expose, based on environment
+	if (typeof define === 'function' &amp;&amp; define.amd) { // AMD
+		define(moduleFactory);
+	} else if (typeof exports === 'object') { // Node, CommonJS-like
+		module.exports = moduleFactory();
+	} else { // Browser globals
+		var bff = window.bff = window.bff || {};
+		bff.patchDom = moduleFactory();
+	}
+
+}());
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on Wed Mar 2nd 2016
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>
