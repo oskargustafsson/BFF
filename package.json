@@ -28,7 +28,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-jscs": "^2.1.0",
     "grunt-jsdoc": "^1.1.0",
-    "ink-docstrap": "^1.1.2",
+    "ink-docstrap": "^1.1.4",
     "intern": "^3.0.0",
     "requirejs": "^2.1.17",
     "sinon": "^1.14.1",
