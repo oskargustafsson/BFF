@@ -18,6 +18,10 @@ Demos
 -----
 [Todo application](http://oskargustafsson.github.io/BFF-todos-example/) ([source](https://github.com/oskargustafsson/BFF-todos-example/))
 
+Documentation
+-------------
+[API reference](http://oskargustafsson.github.io/BFF)
+
 Build
 -----
 `npm install` will install all project dev. dependencies.
@@ -36,8 +40,6 @@ TO DO before 1.0
 ----------------
 #### General
 * Complete documentation
-    * Docblocks for all public functions
-    * Make available online
     * Single function modules (extend, patch-dom) not correct
     * @link not working
     * Normalize capitalization of types (e.g. Object vs. object)
