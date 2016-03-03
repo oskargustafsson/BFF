@@ -37,7 +37,7 @@
 			 * Emit an event. Callbacks will be called with arguments given as an an array in the second argument
 			 * @instance
 			 * @arg {string} eventName - Identifier string for the event.
-			 * @arg {array} [argsArray] - An array of arguments with which the callbacks will be called. Each item in
+			 * @arg {Array} [argsArray] - An array of arguments with which the callbacks will be called. Each item in
 			 *     the array will be provided as an individual argument to the callbacks.
 			 */
 			emitArgsAsArray: function (eventName, argsArray) {

@@ -69,7 +69,7 @@
 			 * Creates a subclass constructor function, that will create view instances with the properties (typically functions) provded to this function.
 			 * TODO: move this to View.makeSubclass
 			 * @instance
-			 * @arg {object} properties - The properties with which the View subclass' prototype will be extended.
+			 * @arg {Object} properties - The properties with which the View subclass' prototype will be extended.
 			 * @returns {function}
 			 */
 			makeSubclass: function (properties) {

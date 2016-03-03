@@ -40,7 +40,7 @@ TO DO before 1.0
 ----------------
 #### General
 * Complete documentation
-    * Normalize capitalization of types (e.g. Object vs. object)
+    * Layout + style
 * IE9 support
 
 #### List
