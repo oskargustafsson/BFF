@@ -17,7 +17,7 @@ define(function (require) {
 			name: 'View',
 
 			'"toString" method returns a string containing valuable debugging information': function () {
-				var View = BaseView.prototype.makeSubclass({
+				var View = BaseView.makeSubclass({
 					constructor: function () { this.render(); },
 					getHtml: function () { return '<h1>test <span>more test</span></h1>'; },
 				});

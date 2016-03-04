@@ -332,20 +332,34 @@
 			stopListening: function (selectorStr, eventName) {
 				if (typeof selectorStr !== 'string') {
 					eventListener.stopListening.apply(this, arguments);
-					return;
+					if (selectorStr !== undefined) { return; }
 				}
 
 				if (RUNTIME_CHECKS &amp;&amp; arguments.length > 1 &amp;&amp; typeof eventName !== 'string') {
 					throw '"eventName" argument must be a string';
 				}
 
-				var delegatesForEvent = this.__private.eventDelegates[eventName];
-				if (!delegatesForEvent) { return; }
+				var eventDelegates = this.__private.eventDelegates;
+				// No event name means all event names
+				var eventNames = eventName !== undefined ? [ eventName ] : Object.keys(eventDelegates);
 
-				delete delegatesForEvent[selectorStr];
-				if (Object.keys(delegatesForEvent).length === 0) {
-					delete this.__private.eventDelegates[eventName];
-					eventListener.stopListening.call(this, this.el, eventName);
+				for (var i = 0, n = eventNames.length; i &lt; n; ++i) {
+					eventName = eventNames[i];
+
+					var delegatesForEvent = eventDelegates[eventName];
+					if (!delegatesForEvent) { continue; }
+
+					if (selectorStr) {
+						delete delegatesForEvent[selectorStr];
+					} else {
+						// If no selector string has been specified, remove all event delegates for the event name
+						eventDelegates[eventName] = {};
+					}
+
+					if (Object.keys(eventDelegates[eventName]).length === 0) {
+						delete this.__private.eventDelegates[eventName];
+						eventListener.stopListening.call(this, this.el, eventName);
+					}
 				}
 			},
 

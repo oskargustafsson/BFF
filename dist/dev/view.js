@@ -144,19 +144,30 @@
       stopListening: function(selectorStr, eventName) {
         if ('string' != typeof selectorStr) {
           eventListener.stopListening.apply(this, arguments);
-          return;
+          if (void 0 !== selectorStr) {
+            return;
+          }
         }
         if (true && arguments.length > 1 && 'string' != typeof eventName) {
           throw '"eventName" argument must be a string';
         }
-        var delegatesForEvent = this.__private.eventDelegates[eventName];
-        if (!delegatesForEvent) {
-          return;
-        }
-        delete delegatesForEvent[selectorStr];
-        if (0 === Object.keys(delegatesForEvent).length) {
-          delete this.__private.eventDelegates[eventName];
-          eventListener.stopListening.call(this, this.el, eventName);
+        var eventDelegates = this.__private.eventDelegates;
+        var eventNames = void 0 !== eventName ? [ eventName ] : Object.keys(eventDelegates);
+        for (var i = 0, n = eventNames.length; n > i; ++i) {
+          eventName = eventNames[i];
+          var delegatesForEvent = eventDelegates[eventName];
+          if (!delegatesForEvent) {
+            continue;
+          }
+          if (selectorStr) {
+            delete delegatesForEvent[selectorStr];
+          } else {
+            eventDelegates[eventName] = {};
+          }
+          if (0 === Object.keys(eventDelegates[eventName]).length) {
+            delete this.__private.eventDelegates[eventName];
+            eventListener.stopListening.call(this, this.el, eventName);
+          }
         }
       },
       toString: function() {
