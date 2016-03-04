@@ -17,13 +17,14 @@
 	 * * _Visual flickering_. Replacing large chunks of the visual DOM may cause flickering. BFF Views work around this issue by using an approach similar to that of React, namely by differentially updating the DOM. This means doing an offline diff and then only updating the parts of the DOM that have actually changed.
 	 * @exports bff/view
 	 */
-	function moduleFactory(extend, eventListener, patch, List) {
+	function moduleFactory(extend, eventEmitter, eventListener, patch, List) {
 
 		var HTML_PARSER_EL = document.createElement('div');
 
 		/**
 		 * Creates a new View instance.
 		 * @constructor
+		 * @mixes module:bff/event-emitter
 		 * @mixes module:bff/event-listener
 		 * @alias module:bff/view
 		 */
@@ -47,21 +48,25 @@
 			};
 
 			this.__private.childViews = new List();
-			this.listenTo(this.__private.childViews, 'item:removed', function (childView) { childView.destroy(); });
+			this.listenTo(this.__private.childViews, 'item:destroyed', function (childView) {
+				this.__private.childViews.remove(childView);
+			});
 		}
 
+		extend(View.prototype, eventEmitter);
 		extend(View.prototype, eventListener);
 
 		extend(View.prototype, {
 
 			/**
-			 * @instance
 			 * Destroys a view instance by removing its children, stop listening to all events and finally removing itself from the DOM.
+			 * @instance
 			 */
 			destroy: function () {
 				this.removeChildren();
 				this.stopListening();
 				this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
+				this.emit('destroyed', this);
 			},
 
 			/**
@@ -173,25 +178,14 @@
 			},
 
 			/**
-			 * Removes a specified view from this view's list of child views and destroy the view.
-			 * @instance
-			 * @arg {module:bff/view} childView - The view to remove.
-			 */
-			removeChild: function (childView) {
-				if (RUNTIME_CHECKS && !(childView instanceof View)) {
-					throw '"childView" argument must be a BFF View';
-				}
-
-				this.__private.childViews.remove(childView);
-				return childView;
-			},
-
-			/**
 			 * Removes all child views of this view.
 			 * @instance
 			 */
 			removeChildren: function () {
-				this.__private.childViews.clear();
+				// Iterate backwards because the list might shrink while being iterated
+				for (var i = this.__private.childViews.length - 1; i >= 0; --i) {
+					this.__private.childViews[i].destroy();
+				}
 			},
 
 
@@ -329,13 +323,13 @@
 
 	// Expose, based on environment
 	if (typeof define === 'function' && define.amd) { // AMD
-		define([ './extend', './event-listener', './patch-dom', './list' ], moduleFactory);
+		define([ './extend', './event-emitter', './event-listener', './patch-dom', './list' ], moduleFactory);
 	} else if (typeof exports === 'object') { // Node, CommonJS-like
-		module.exports = moduleFactory(
-				require('./extend'), require('./event-listener'), require('./patch-dom'), require('./list'));
+		module.exports = moduleFactory(require('./extend'), require('./event-emitter'), require('./event-listener'),
+				require('./patch-dom'), require('./list'));
 	} else { // Browser globals
 		var bff = window.bff = window.bff || {};
-		bff.View = moduleFactory(bff.extend, bff.eventListener, bff.patchDom, bff.List);
+		bff.View = moduleFactory(bff.extend, bff.eventEmitter, bff.eventListener, bff.patchDom, bff.List);
 	}
 
 }());

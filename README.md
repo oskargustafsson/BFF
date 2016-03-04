@@ -59,7 +59,6 @@ TO DO before 1.0
 * Option: useCapture
 
 #### View
-* Parent/child view; trigger event when destroy() is called and remove the child view from any possible parent views
 * @prop doc for el
 * FTs
 

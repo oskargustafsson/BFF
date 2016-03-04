@@ -1,6 +1,6 @@
 !function() {
   'use strict';
-  function moduleFactory(extend, eventListener, patch, List) {
+  function moduleFactory(extend, eventEmitter, eventListener, patch, List) {
     function View() {
       Object.defineProperty(this, '__private', {
         writable: true,
@@ -22,17 +22,19 @@
         }
       };
       this.__private.childViews = new List();
-      this.listenTo(this.__private.childViews, 'item:removed', function(childView) {
-        childView.destroy();
+      this.listenTo(this.__private.childViews, 'item:destroyed', function(childView) {
+        this.__private.childViews.remove(childView);
       });
     }
     var HTML_PARSER_EL = document.createElement('div');
+    extend(View.prototype, eventEmitter);
     extend(View.prototype, eventListener);
     extend(View.prototype, {
       destroy: function() {
         this.removeChildren();
         this.stopListening();
         this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
+        this.emit('destroyed', this);
       },
       render: function(patchOptions) {
         if (true) {
@@ -100,15 +102,10 @@
         el && el.appendChild(childView.el);
         return childView;
       },
-      removeChild: function(childView) {
-        if (true && !(childView instanceof View)) {
-          throw '"childView" argument must be a BFF View';
-        }
-        this.__private.childViews.remove(childView);
-        return childView;
-      },
       removeChildren: function() {
-        this.__private.childViews.clear();
+        for (var i = this.__private.childViews.length - 1; i >= 0; --i) {
+          this.__private.childViews[i].destroy();
+        }
       },
       listenTo: function(selectorStr, eventName, callback, context, useCapture) {
         if ('string' != typeof selectorStr) {
@@ -200,13 +197,13 @@
     return View;
   }
   if ('function' == typeof define && define.amd) {
-    define([ './extend', './event-listener', './patch-dom', './list' ], moduleFactory);
+    define([ './extend', './event-emitter', './event-listener', './patch-dom', './list' ], moduleFactory);
   } else {
     if ('object' == typeof exports) {
-      module.exports = moduleFactory(require('./extend'), require('./event-listener'), require('./patch-dom'), require('./list'));
+      module.exports = moduleFactory(require('./extend'), require('./event-emitter'), require('./event-listener'), require('./patch-dom'), require('./list'));
     } else {
       var bff = window.bff = window.bff || {};
-      bff.View = moduleFactory(bff.extend, bff.eventListener, bff.patchDom, bff.List);
+      bff.View = moduleFactory(bff.extend, bff.eventEmitter, bff.eventListener, bff.patchDom, bff.List);
     }
   }
 }();
