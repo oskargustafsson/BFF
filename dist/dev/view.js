@@ -34,22 +34,6 @@
         this.stopListening();
         this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
       },
-      makeSubclass: function(properties) {
-        if (true && 'object' != typeof properties) {
-          throw '"properties" argument must be an object';
-        }
-        var superclass = this;
-        var customConstructor = properties.constructor;
-        var Constructor = function() {
-          superclass.constructor.apply(this, arguments);
-          customConstructor && customConstructor.apply(this, arguments);
-        };
-        delete properties.constructor;
-        Constructor.prototype = Object.create(this);
-        properties && extend(Constructor.prototype, properties);
-        Constructor.prototype.constructor = Constructor;
-        return Constructor;
-      },
       render: function(patchOptions) {
         if (true) {
           if (!this.getHtml) {
@@ -189,6 +173,21 @@
         }, void 0, 2);
       }
     }, 'useSource');
+    View.makeSubclass = function(properties) {
+      if (true && 'object' != typeof properties) {
+        throw '"properties" argument must be an object';
+      }
+      var customConstructor = properties.constructor;
+      var Constructor = function() {
+        View.apply(this, arguments);
+        customConstructor && customConstructor.apply(this, arguments);
+      };
+      delete properties.constructor;
+      Constructor.prototype = Object.create(View.prototype);
+      properties && extend(Constructor.prototype, properties);
+      Constructor.prototype.constructor = Constructor;
+      return Constructor;
+    };
     return View;
   }
   if ('function' == typeof define && define.amd) {

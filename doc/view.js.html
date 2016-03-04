@@ -149,34 +149,6 @@
 			},
 
 			/**
-			 * Creates a subclass constructor function, that will create view instances with the properties (typically functions) provded to this function.
-			 * TODO: move this to View.makeSubclass
-			 * @instance
-			 * @arg {Object} properties - The properties with which the View subclass' prototype will be extended.
-			 * @returns {function}
-			 */
-			makeSubclass: function (properties) {
-				if (RUNTIME_CHECKS &amp;&amp; typeof properties !== 'object') {
-					throw '"properties" argument must be an object';
-				}
-
-				var superclass = this;
-				var customConstructor = properties.constructor;
-
-				var Constructor = function SubClassConstructor() {
-					superclass.constructor.apply(this, arguments);
-					customConstructor &amp;&amp; customConstructor.apply(this, arguments);
-				};
-				delete properties.constructor;
-
-				Constructor.prototype = Object.create(this);
-				properties &amp;&amp; extend(Constructor.prototype, properties);
-				Constructor.prototype.constructor = Constructor;
-
-				return Constructor;
-			},
-
-			/**
 			 * Creates a DOM representation of the view, based on the HTML string returned by the getHtml() function and then assigns it to the view's `el` property. If the view already has an `el`, it will be patched instead of replaced, so that delegated event listeners will be preserved.
 			 * @instance
 			 * @arg {Object} [patchOptions] - Options object forwarded to the `patch()` function, in case it is called.
@@ -396,6 +368,32 @@
 			},
 
 		}, 'useSource');
+
+		/**
+		 * Creates a subclass constructor function, that will create view instances with the properties (typically functions) provded to this function.
+		 * @static
+		 * @arg {Object} properties - The properties with which the View subclass' prototype will be extended.
+		 * @returns {function}
+		 */
+		View.makeSubclass = function (properties) {
+			if (RUNTIME_CHECKS &amp;&amp; typeof properties !== 'object') {
+				throw '"properties" argument must be an object';
+			}
+
+			var customConstructor = properties.constructor;
+
+			var Constructor = function () {
+				View.apply(this, arguments);
+				customConstructor &amp;&amp; customConstructor.apply(this, arguments);
+			};
+			delete properties.constructor;
+
+			Constructor.prototype = Object.create(View.prototype);
+			properties &amp;&amp; extend(Constructor.prototype, properties);
+			Constructor.prototype.constructor = Constructor;
+
+			return Constructor;
+		};
 
 		return View;
 

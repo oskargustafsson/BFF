@@ -59,7 +59,6 @@ TO DO before 1.0
 * Option: useCapture
 
 #### View
-* Move makeSubclass function from View.prototype to View. Also makeSubclass(ConstructorFunc, props)
 * View.stopListening probably not working if no arg is passed
 * Parent/child view; trigger event when destroy() is called and remove the child view from any possible parent views
 * @prop doc for el
