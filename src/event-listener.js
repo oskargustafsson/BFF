@@ -38,8 +38,8 @@
 
 		/**
 		 * A mixin, providing event listening capabilities to an object. This is an inversion-of-control with regards to regular event listening; the listener maintains a list of the events it is listening to. This allows the listener to remove some or all its event listeners, for instance when it is disabled or destroyed. This is an easy way to avoid leaking listeners. Caveat: don't mix eventEmitter.removeEventListener and eventListener.stopListening throughout a project, as that could result in memory leaks.
-		 * @exports bff/event-listener
 		 * @mixin
+		 * @alias bff/event-listener
 		 */
 		var eventListener = {
 

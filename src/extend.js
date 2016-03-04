@@ -4,7 +4,6 @@
 	'use strict';
 
 	/**
-	 * ## bff/extend
 	 * @module bff/extend
 	 */
 	function moduleFactory() {

@@ -4,7 +4,6 @@
 	'use strict';
 
 	/**
-	 * ## bff/list
 	 * Maintains a list of items. The idea is to stay as true as possible to the native Array interface, but to augment its usefulness by triggering events whenever the list is updated, as well as adding convenience functions for mutating the List in place.
 	 *
 	 * The exported List constructor can be used as-is, in which case a generic List will be created. This is a quite common use case. Alternatively, a List "subclass" constructor can be created by calling `List.withProperties(...)`. This second approach provides the possibility to add custom _calculated_ properties to the list. See {@link module:bff/list#withProperties} for more details.

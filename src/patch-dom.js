@@ -3,7 +3,6 @@
 	'use strict';
 
 	/**
-	 * ## bff/patch-dom
 	 * @module bff/patch-dom
 	 */
 	function moduleFactory() {

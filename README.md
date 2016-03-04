@@ -39,8 +39,6 @@ Run tests in browser
 TO DO before 1.0
 ----------------
 #### General
-* Complete documentation
-    * Layout + style
 * IE9 support
 
 #### List

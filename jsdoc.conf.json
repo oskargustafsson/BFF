@@ -13,7 +13,7 @@
 		"footer": "",
 		"copyright": "DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.",
 		"navType": "vertical",
-		"theme": "lumen",
+		"theme": "bff",
 		"linenums": true,
 		"collapseSymbols": false,
 		"inverseNav": true,
