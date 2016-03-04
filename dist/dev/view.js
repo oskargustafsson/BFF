@@ -133,10 +133,8 @@
         }
         var delegates = this.__private.eventDelegates;
         var delegatesForEvent = delegates[eventName];
-        var firstTimeListeningToEvent = false;
         if (!delegatesForEvent) {
           delegatesForEvent = delegates[eventName] = {};
-          firstTimeListeningToEvent = true;
           useCapture = useCapture || 'blur' === eventName || 'focus' === eventName;
           eventListener.listenTo.call(this, this.el, eventName, this.__private.onDelegatedEvent, void 0, useCapture);
         }
