@@ -12,7 +12,7 @@ define([
 		'can listenTo delegated DOM events': function () {
 			return this.remote
 				.setFindTimeout(10000)
-				.get(require.toUrl('./view-listen-to.html'))
+				.get(require.toUrl('../runner.html?test=view/listen-to'))
 				.findByTagName('button')
 				.getVisibleText()
 				.then(function (text) {
