@@ -30,11 +30,17 @@ Build
 
 `grunt watch` will watch for source file changes and recompile the source and documentation
 
-`grunt test` will run the test suite
-
-Run tests in browser
+Tests
 --------------------
-[server root]/node_modules/intern/client.html?config=tests/intern
+#### Unit tests in browser
+Go to `[server root]/node_modules/intern/client.html?config=tests/intern`
+
+#### Unit tests in terminal (Node)
+Run `node_modules/.bin/intern-client config=tests/intern`
+
+#### Unit tests and functional tests in browser
+* Start a standalone [Selenium](http://www.seleniumhq.org/download/) server `java -jar [path to selenium jar]`
+* Run `grunt test`
 
 TO DO before 1.0
 ----------------
@@ -60,6 +66,7 @@ TO DO before 1.0
 
 #### View
 * @prop doc for el
+* Doc for getHtml
 * FTs
 
 #### Patch DOM

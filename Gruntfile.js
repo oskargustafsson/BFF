@@ -86,11 +86,11 @@ module.exports = function (grunt) {
 		},
 
 		intern: {
-			someReleaseTarget: {
+			tests: {
 				options: {
-					runType: 'client',
+					runType: 'runner',
 					config: 'tests/intern',
-					reporters: [ 'Console' ],
+					reporters: [ 'Runner' ],
 				},
 			},
 		},

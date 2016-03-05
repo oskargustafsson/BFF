@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript" src="../../../node_modules/requirejs/require.js"></script>
+	<script type="text/javascript">
+		require.config({
+			packages: [ {
+				name: 'bff',
+				location: '../../../dist/dev',
+			} ],
+		});
+		require([ 'view-listen-to' ]);
+	</script>
+</body>
+</html>

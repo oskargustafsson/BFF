@@ -30,7 +30,7 @@
     "grunt-jsdoc": "^1.1.0",
     "ink-docstrap": "^1.1.4",
     "intern": "^3.0.6",
-    "requirejs": "^2.1.17",
+    "requirejs": "^2.1.22",
     "sinon": "^1.14.1",
     "sinon-chai": "^2.7.0"
   }
