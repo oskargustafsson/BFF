@@ -1,6 +1,5 @@
 language: node_js
 node_js:
   - 'node'
-script: node_modules/.bin/intern-client config=tests/intern
 before_script:
   - npm install grunt-cli -g
