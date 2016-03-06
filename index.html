@@ -117,7 +117,7 @@
 <h2>Want to contribute?</h2><h4>Building</h4><p><code>npm install</code> will install all project dev. dependencies.</p>
 <p><code>grunt</code> will lint the project, build dev and prod versions of BFF, compile JSDoc documentation, and run the Intern test suite</p>
 <p><code>grunt watch</code> will watch for source file changes and recompile the source and documentation</p>
-<h4>Running tests</h4><h5>Unit tests in browser</h5><p>Go to <code>[server root]/node_modules/intern/client.html?config=tests/intern</code></p>
+<h4>Running tests</h4><h5>Unit tests in browser</h5><p>Go to <code>[server root]/node_modules/intern/client.html?config=tests/intern</code> in some browser</p>
 <h5>Unit tests in terminal (Node)</h5><p>Run <code>node_modules/.bin/intern-client config=tests/intern</code></p>
 <h5>Unit tests and functional tests in browser</h5><ul>
 <li>Start a standalone <a href="http://www.seleniumhq.org/download/">Selenium</a> server <code>java -jar [path to selenium jar]</code></li>
@@ -140,9 +140,9 @@
 </ul>
 <h5>Event listener</h5><ul>
 <li>UTs for listenTo(anArray, ...)</li>
-<li>Option: useCapture</li>
 </ul>
 <h5>View</h5><ul>
+<li>Delegated events 'mouseenter' and 'mouseleave' does not work</li>
 <li>FTs</li>
 </ul>
 <h5>Patch DOM</h5><ul>
