@@ -1,9 +1,12 @@
-define([
-	'intern!object',
-	'intern/chai!assert',
-	'require'
-], function (registerSuite, assert, require) {
+define(function (require) {
 	'use strict';
+
+	var registerSuite = require('intern!object');
+	var expect = require('intern/chai!expect');
+	var chai = require('intern/chai!');
+	var sinonChai = require('node_modules/sinon-chai/lib/sinon-chai');
+
+	chai.use(sinonChai);
 
 	registerSuite({
 
@@ -11,18 +14,124 @@ define([
 
 		'can listenTo delegated DOM events': function () {
 			return this.remote
-				.setFindTimeout(10000)
+				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/listen-to'))
-				.findByTagName('button')
-				.getVisibleText()
-				.then(function (text) {
-					assert.ok(text !== 'Clicked', 'Expected button callback not to be triggered');
-				})
-				.click()
-				.getVisibleText()
-				.then(function (text) {
-					assert.ok(text === 'Clicked', 'Expected button callback to be triggered');
-				});
-		}
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Focused'); })
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Focused'); })
+					.end()
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Blurred'); })
+					.click()
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Blurred'); });
+		},
+
+		'can stopListening to all delegated elements and event names': function () {
+			return this.remote
+				.setFindTimeout(5000)
+				.get(require.toUrl('../runner.html?test=view/listen-to'))
+				.findById('stop-all')
+					.click()
+					.end()
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.end()
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); });
+		},
+
+		'can stopListening to specific delegated event names': function () {
+			return this.remote
+				.setFindTimeout(5000)
+				.get(require.toUrl('../runner.html?test=view/listen-to'))
+				.findById('stop-focus')
+					.click()
+					.end()
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.end()
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Blurred'); })
+					.click()
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Blurred'); });
+		},
+
+		'can stopListening to specific delegated selector strings': function () {
+			return this.remote
+				.setFindTimeout(5000)
+				.get(require.toUrl('../runner.html?test=view/listen-to'))
+				.findById('stop-text-input')
+					.click()
+					.end()
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Focused'); })
+					.end()
+				.findById('text-input')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal(''); })
+					.click()
+					.end()
+				.findById('textarea')
+					.getProperty('value')
+					.then(function (text) { expect(text).to.equal('Blurred'); });
+		},
+
 	});
 });

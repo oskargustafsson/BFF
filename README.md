@@ -68,6 +68,7 @@ Run `node_modules/.bin/intern-client config=tests/intern`
 * UTs for listenTo(anArray, ...)
 
 ##### View
+* Delegated events 'mouseenter' and 'mouseleave' does not work
 * FTs
 
 ##### Patch DOM
