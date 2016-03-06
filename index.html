@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li>
+					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li><li><a href="module-bff_record.html#event:change:%255Bpropertyname%255D">bff/record#change:[property name]</a></li><li><a href="module-bff_record.html#event:change">bff/record#event:change</a></li><li><a href="module-bff_record.html#event:prechange">bff/record#event:prechange</a></li><li><a href="module-bff_record.html#event:prechange:%255Bpropertyname%255D">bff/record#prechange:[property name]</a></li>
 				</ul>
 			</li>
 			
@@ -96,6 +96,64 @@
 
 
 
+
+    <section class="readme-section">
+        <article><h1>BFF - Basic Front end Foundation <a href="https://travis-ci.org/oskargustafsson/BFF"><img src="https://travis-ci.org/oskargustafsson/BFF.svg?branch=master" alt="Build Status"></a></h1><h3>Disclaimer: BFF is in alpha - don't use it for production projects just yet!</h3><p>BFF is a collection of standalone modules, designed with the intent of making it easier to design interactive web applications. It comprises base classes for the MVC pattern (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/record.js">Record</a>, <a href="https://github.com/oskargustafsson/BFF/blob/master/src/view.js">View</a>) but more importantly, generic building blocks for event systems (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/event-emitter.js">Event Emitter</a>, <a href="https://github.com/oskargustafsson/BFF/blob/master/src/event-listener.js">Event Listener</a>), inheritance (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/extend.js">Extend</a>), collections (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/list.js">List</a>) and DOM manipulation (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/patch-dom.js">Patch DOM</a>).</p>
+<p>Its ambition is to be a helper library rather than a framework, to be mixed and matched with home grown or third-party components. As such, each BFF module provides a specific service, with a minimal interface. All modules are AMD and CommonJS compatible.</p>
+<h4>Distinguishing features</h4><ul>
+<li>Modular, light weight, and no external dependencies.</li>
+<li>Two versions; <em>development</em> and <em>production</em>. The former with lots of runtime error checking, the latter minified and without error checks, for optimal performance.</li>
+<li>Fast and fool-proof event system - uses inversion-of-control to make cleaning up event listeners more or less automatic.</li>
+<li>Data modules (Record and List) combine event system with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get">getters</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set">setters</a>, to create a type safe data layer (in development mode) that can be manipulated using terse syntax.</li>
+<li>Data modules support calculated properties, similar to <a href="http://elm-lang.org/guide/reactivity#signals">signals</a> in <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">FRP</a>, whose values are derived from one or more other properties - and still emits events when their calculated values change.</li>
+<li>View module that combines the best parts of Backbone.js views with React-like DOM patching to provide a structured approach to building SPAs, with very little boilerplate code, while maintaining separation of concerns.</li>
+</ul>
+<h2>Get started</h2><ul>
+<li>In your project's root folder run <code>npm install bff-lib --save</code> or <code>bower install bff-lib --save</code></li>
+<li>Or, download a release directly from <a href="https://github.com/oskargustafsson/BFF/releases">here</a>.</li>
+</ul>
+<h2>Demos</h2><p><a href="http://oskargustafsson.github.io/BFF-todos-example/">Todo application</a> (<a href="https://github.com/oskargustafsson/BFF-todos-example/">source</a>)</p>
+<h2>Documentation</h2><p><a href="http://oskargustafsson.github.io/BFF">API reference</a></p>
+<h2>Want to contribute?</h2><h4>Building</h4><p><code>npm install</code> will install all project dev. dependencies.</p>
+<p><code>grunt</code> will lint the project, build dev and prod versions of BFF, compile JSDoc documentation, and run the Intern test suite</p>
+<p><code>grunt watch</code> will watch for source file changes and recompile the source and documentation</p>
+<h4>Running tests</h4><h5>Unit tests in browser</h5><p>Go to <code>[server root]/node_modules/intern/client.html?config=tests/intern</code></p>
+<h5>Unit tests in terminal (Node)</h5><p>Run <code>node_modules/.bin/intern-client config=tests/intern</code></p>
+<h5>Unit tests and functional tests in browser</h5><ul>
+<li>Start a standalone <a href="http://www.seleniumhq.org/download/">Selenium</a> server <code>java -jar [path to selenium jar]</code></li>
+<li>Run <code>grunt test</code></li>
+</ul>
+<h4>TODO before 1.0</h4><h5>General</h5><ul>
+<li>IE9 support</li>
+</ul>
+<h5>List</h5><ul>
+<li>UTs for all functions</li>
+<li>UT: Props that depend on 'length' should trigger own change events when length changes</li>
+</ul>
+<h5>Record</h5><ul>
+<li>Cache calculated property values</li>
+<li>How to destroy Records? Will they be garbage collected in their current state?</li>
+<li>Use constructors (Number, String, ...) instead of string identifiers for type declarations (maybe)</li>
+</ul>
+<h5>Event emitter</h5><ul>
+<li>UTs for emitArgsAsArray()</li>
+</ul>
+<h5>Event listener</h5><ul>
+<li>UTs for listenTo(anArray, ...)</li>
+<li>Option: useCapture</li>
+</ul>
+<h5>View</h5><ul>
+<li>FTs</li>
+</ul>
+<h5>Patch DOM</h5><ul>
+<li>Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes</li>
+<li>SVG support</li>
+<li>FTs</li>
+</ul>
+<h5>Extend</h5><ul>
+<li>Add UTs that mirrors the JSDoc examples</li>
+</ul></article>
+    </section>
 
 
 

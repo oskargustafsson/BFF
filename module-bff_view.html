@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li>
+					<li><a href="module-bff_list.html#event:change:length">bff/list#change:length</a></li><li><a href="module-bff_list.html#event:item:added">bff/list#item:added</a></li><li><a href="module-bff_list.html#event:item:removed">bff/list#item:removed</a></li><li><a href="module-bff_list.html#event:item:replaced">bff/list#item:replaced</a></li><li><a href="module-bff_record.html#event:change:%255Bpropertyname%255D">bff/record#change:[property name]</a></li><li><a href="module-bff_record.html#event:change">bff/record#event:change</a></li><li><a href="module-bff_record.html#event:prechange">bff/record#event:prechange</a></li><li><a href="module-bff_record.html#event:prechange:%255Bpropertyname%255D">bff/record#prechange:[property name]</a></li>
 				</ul>
 			</li>
 			
@@ -221,6 +221,94 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<hr>
+<dt class="name" id="el">
+    <h4><span class="type-signature"></span>el<span class="type-signature"> :HTMLElement|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The root DOM element of the view. The default implementation of <a href="module-bff_view.html#render">module:bff/view#render</a> assigns to and updates this element. Delegated event listeners, created by calling <a href="module-bff_view.html#listenTo">module:bff/view#listenTo</a> are attached to this element.<br>Replacing the current element with another will clear all currently delegated event listeners - it is usually a better approach update the element (using e.g. <a href="module-bff_patch-dom.html">module:bff/patch-dom</a>) instead of replacing it.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">HTMLElement</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="view.js.html">view.js</a>,
+				 <a href="view.js.html#sunlight-1-line-49">line 49</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        </dl>
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -334,7 +422,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-299">line 299</a>
+				 <a href="view.js.html#sunlight-1-line-313">line 313</a>
 			</li>
 		</ul>
 	</dd>
@@ -492,7 +580,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-137">line 137</a>
+				 <a href="view.js.html#sunlight-1-line-151">line 151</a>
 			</li>
 		</ul>
 	</dd>
@@ -674,7 +762,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-164">line 164</a>
+				 <a href="view.js.html#sunlight-1-line-178">line 178</a>
 			</li>
 		</ul>
 	</dd>
@@ -762,7 +850,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-65">line 65</a>
+				 <a href="view.js.html#sunlight-1-line-79">line 79</a>
 			</li>
 		</ul>
 	</dd>
@@ -912,7 +1000,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-151">line 151</a>
+				 <a href="view.js.html#sunlight-1-line-165">line 165</a>
 			</li>
 		</ul>
 	</dd>
@@ -1194,7 +1282,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-200">line 200</a>
+				 <a href="view.js.html#sunlight-1-line-214">line 214</a>
 			</li>
 		</ul>
 	</dd>
@@ -1356,7 +1444,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-118">line 118</a>
+				 <a href="view.js.html#sunlight-1-line-132">line 132</a>
 			</li>
 		</ul>
 	</dd>
@@ -1444,7 +1532,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-184">line 184</a>
+				 <a href="view.js.html#sunlight-1-line-198">line 198</a>
 			</li>
 		</ul>
 	</dd>
@@ -1594,7 +1682,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-77">line 77</a>
+				 <a href="view.js.html#sunlight-1-line-91">line 91</a>
 			</li>
 		</ul>
 	</dd>
@@ -1682,7 +1770,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-101">line 101</a>
+				 <a href="view.js.html#sunlight-1-line-115">line 115</a>
 			</li>
 		</ul>
 	</dd>
@@ -1790,7 +1878,7 @@
 
             
 
-            <td class="description last"><p>If provided, only delegated event callbacks for the given selector string will be removed. If anything other than a string passed, the original stopListening implementation will be used.</p></td>
+            <td class="description last"><p>If provided, only delegated event callbacks for the given selector string will be removed. The special wildcard value <code>*</code> means <em>any</em> selector. If anything other than a string passed, the original stopListening implementation will be used.</p></td>
         </tr>
 
     
@@ -1869,7 +1957,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-241">line 241</a>
+				 <a href="view.js.html#sunlight-1-line-255">line 255</a>
 			</li>
 		</ul>
 	</dd>
@@ -1953,7 +2041,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="view.js.html">view.js</a>,
-				 <a href="view.js.html#sunlight-1-line-279">line 279</a>
+				 <a href="view.js.html#sunlight-1-line-293">line 293</a>
 			</li>
 		</ul>
 	</dd>
