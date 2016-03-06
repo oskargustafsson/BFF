@@ -35,13 +35,19 @@
       this.listenTo(this.__private.childViews, 'item:destroyed', function(childView) {
         this.__private.childViews.remove(childView);
       });
+      Object.defineProperty(this, 'children', {
+        enumerable: true,
+        get: function() {
+          return this.__private.childViews;
+        }
+      });
     }
     var HTML_PARSER_EL = document.createElement('div');
     extend(View.prototype, eventEmitter);
     extend(View.prototype, eventListener);
     extend(View.prototype, {
       destroy: function() {
-        this.removeChildren();
+        this.destroyChildren();
         this.stopListening();
         this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
         this.emit('destroyed', this);
@@ -103,16 +109,15 @@
           if (!(childView instanceof View)) {
             throw '"childView" argument must be a BFF View';
           }
-          if (arguments.length > 1 && !(el instanceof HTMLElement)) {
-            throw '"el" argument must be an HTMLElement';
+          if (arguments.length > 1 && !(false === el || el instanceof HTMLElement)) {
+            throw '"el" argument must be an HTMLElement or the boolean value false';
           }
         }
         this.__private.childViews.push(childView);
-        el = el || this.el;
-        el && el.appendChild(childView.el);
+        false !== el && (el || this.el).appendChild(childView.el);
         return childView;
       },
-      removeChildren: function() {
+      destroyChildren: function() {
         for (var i = this.__private.childViews.length - 1; i >= 0; --i) {
           this.__private.childViews[i].destroy();
         }

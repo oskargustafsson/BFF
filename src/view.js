@@ -65,6 +65,16 @@
 			this.listenTo(this.__private.childViews, 'item:destroyed', function (childView) {
 				this.__private.childViews.remove(childView);
 			});
+
+			/**
+			 * A list of this view's child views. Initially empty.
+			 * @instance
+			 * @member {module:bff/list} children
+			 */
+			Object.defineProperty(this, 'children', {
+				enumerable: true,
+				get: function () { return this.__private.childViews; },
+			});
 		}
 
 		extend(View.prototype, eventEmitter);
@@ -77,7 +87,7 @@
 			 * @instance
 			 */
 			destroy: function () {
-				this.removeChildren();
+				this.destroyChildren();
 				this.stopListening();
 				this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
 				this.emit('destroyed', this);
@@ -173,29 +183,28 @@
 			 * Adds another view as a child to the view. A child view will be automatically added to this view's root element and destroyed whenever its parent view is destroyed.
 			 * @instance
 			 * @arg {module:bff/view} childView - The view that will be added to the list of this view's children.
-			 * @arg {HTMLElement} [optional] - An element to which the child view's root element will be appended. If not specified, it will be appended to this view's root element.
+			 * @arg {HTMLElement|boolean} [optional] - An element to which the child view's root element will be appended. If not specified, it will be appended to this view's root element. Can also be `false`, in which case the child view will not be appended to anything.
 			 */
 			addChild: function (childView, el) {
 				if (RUNTIME_CHECKS) {
 					if (!(childView instanceof View)) {
 						throw '"childView" argument must be a BFF View';
 					}
-					if (arguments.length > 1 && !(el instanceof HTMLElement)) {
-						throw '"el" argument must be an HTMLElement';
+					if (arguments.length > 1 && !(el === false || el instanceof HTMLElement)) {
+						throw '"el" argument must be an HTMLElement or the boolean value false';
 					}
 				}
 
 				this.__private.childViews.push(childView);
-				el = el || this.el;
-				el && el.appendChild(childView.el);
+				el !== false && (el || this.el).appendChild(childView.el);
 				return childView;
 			},
 
 			/**
-			 * Removes all child views of this view.
+			 * Destroy all child views of this view.
 			 * @instance
 			 */
-			removeChildren: function () {
+			destroyChildren: function () {
 				// Iterate backwards because the list might shrink while being iterated
 				for (var i = this.__private.childViews.length - 1; i >= 0; --i) {
 					this.__private.childViews[i].destroy();

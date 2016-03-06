@@ -12,7 +12,7 @@ define(function (require) {
 
 		name: 'View',
 
-		'can listenTo delegated DOM events': function () {
+		'can "listenTo" delegated DOM events': function () {
 			return this.remote
 				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/listen-to'))
@@ -40,7 +40,7 @@ define(function (require) {
 					.then(function (text) { expect(text).to.equal('Blurred'); });
 		},
 
-		'can stopListening to all delegated elements and event names': function () {
+		'can "stopListening" to all delegated elements and event names': function () {
 			return this.remote
 				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/listen-to'))
@@ -71,7 +71,7 @@ define(function (require) {
 					.then(function (text) { expect(text).to.equal(''); });
 		},
 
-		'can stopListening to specific delegated event names': function () {
+		'can "stopListening" to specific delegated event names': function () {
 			return this.remote
 				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/listen-to'))
@@ -102,7 +102,7 @@ define(function (require) {
 					.then(function (text) { expect(text).to.equal('Blurred'); });
 		},
 
-		'can stopListening to specific delegated selector strings': function () {
+		'can "stopListening" to specific delegated selector strings': function () {
 			return this.remote
 				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/listen-to'))
@@ -131,6 +131,51 @@ define(function (require) {
 				.findById('textarea')
 					.getProperty('value')
 					.then(function (text) { expect(text).to.equal('Blurred'); });
+		},
+
+		'can add and remove all child views': function () {
+			return this.remote
+				.setFindTimeout(5000)
+				.get(require.toUrl('../runner.html?test=view/child-views'))
+				.findByClassName('parent')
+					.findAllByClassName('child')
+						.then(function (children) { expect(children.length).to.equal(3); })
+						.end()
+					.findByClassName('child-count')
+						.getVisibleText()
+						.then(function (text) { return expect(text).to.equal('3'); })
+						.end()
+					.findById('destroy-children')
+						.click()
+						.end()
+					.findByClassName('child-count')
+						.getVisibleText()
+						.then(function (text) { return expect(text).to.equal('0'); })
+						.end()
+					.waitForDeletedByClassName('child');
+		},
+
+		'(child) views can destroy themseleves': function () {
+			return this.remote
+				.setFindTimeout(5000)
+				.get(require.toUrl('../runner.html?test=view/child-views'))
+				.findByClassName('parent')
+					.findAllByClassName('child')
+						.then(function (children) { expect(children.length).to.equal(3); })
+						.end()
+					.findByClassName('child-count')
+						.getVisibleText()
+						.then(function (text) { return expect(text).to.equal('3'); })
+						.end()
+					.findByCssSelector('.child[data-i="1"] .destroy')
+						.click()
+						.end()
+					.findAllByClassName('child')
+						.then(function (children) { expect(children.length).to.equal(2); })
+						.end()
+					.findByClassName('child-count')
+						.getVisibleText()
+						.then(function (text) { return expect(text).to.equal('2'); });
 		},
 
 	});
