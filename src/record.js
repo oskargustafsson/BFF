@@ -13,7 +13,38 @@
 	 */
 	function moduleFactory(extend, eventEmitter, eventListener) {
 
+		/**
+		 * Emitted when the property with name _[property name]_ is about to be assigned a new value. This event is always emitted upon assignment, even is the value to be assigned is the same as the current value.
+		 * @event module:bff/record#prechange:[property name]
+		 * @arg {any} currentValue - The current property value
+		 * @arg {module:bff/record} self - The record that triggered the event
+		 */
+
+		/**
+		 * Emitted when some property value is about to be assigned a new value. This event is always emitted upon assignment, even is the value to be assigned is the same as the current value.
+		 * @event module:bff/record#prechange
+		 * @arg {string} propertyName - The name of the record property that is about to be assigned to
+		 * @arg {any} currentValue - The current property value
+		 * @arg {module:bff/record} self - The record that triggered the event
+		 */
 		var PRECHANGE_EVENT = 'prechange';
+
+		/**
+		 * Emitted when the value of the property with name _[property name]_ has changed. This event is only emitted if the assigned value actually differs from the previous one, compared using strict equality.
+		 * @event module:bff/record#change:[property name]
+		 * @arg {any} newValue - The new property value
+		 * @arg {any} oldValue - The previous property value
+		 * @arg {module:bff/record} self - The record that triggered the event
+		 */
+
+		/**
+		 * Emitted when some property value has changed. This event is only emitted if the assigned value actually differs from the previous one, compared using strict equality.
+		 * @event module:bff/record#change
+		 * @arg {string} propertyName - The name of the record property that has changed
+		 * @arg {any} newValue - The new property value
+		 * @arg {any} oldValue - The previous property value
+		 * @arg {module:bff/record} self - The record that triggered the event
+		 */
 		var CHANGE_EVENT = 'change';
 
 		function validateInput(val, propName, propSchema) {
@@ -186,6 +217,8 @@
 		 * There is also a shorthand syntax for specifying typed properties, because it is such a common use case, e.g.:
 		 * `aProp: 'string'` is equal to `aProp: { type: 'string' }` and e.g.
 		 * `aProp: [ 'string', 'undefined' ]` is equal to `aProp: { type: [ 'string', 'undefined' ] }`
+		 *
+		 * @arg {boolean} dontPreventExtensions - All extensions of records are prevented by default (using `Object.preventExtensions`), but that behavior can be toggled using this flag.
 		 *
 		 * @returns {function} New constructor function based on the provided schema.
 		 */

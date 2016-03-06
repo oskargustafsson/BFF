@@ -21,6 +21,16 @@
           }
         }
       };
+      Object.defineProperty(this, 'el', {
+        enumerable: true,
+        get: function() {
+          return this.__private.el;
+        },
+        set: function(el) {
+          this.stopListening('*');
+          this.__private.el = el;
+        }
+      });
       this.__private.childViews = new List();
       this.listenTo(this.__private.childViews, 'item:destroyed', function(childView) {
         this.__private.childViews.remove(childView);
@@ -156,7 +166,7 @@
           if (!delegatesForEvent) {
             continue;
           }
-          if (selectorStr) {
+          if (selectorStr && '*' !== selectorStr) {
             delete delegatesForEvent[selectorStr];
           } else {
             eventDelegates[eventName] = {};

@@ -7401,3 +7401,9 @@ h4.name {
 h3.subsection-title {
   display: none;
 }
+
+#toc .toc-h1,
+#toc .toc-h2,
+#toc .toc-h3 {
+  font-weight: bold;
+}

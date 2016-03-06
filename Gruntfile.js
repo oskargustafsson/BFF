@@ -19,7 +19,7 @@ module.exports = function (grunt) {
 		},
 
 		jsdoc: {
-			src: 'src/*.js',
+			src: [ 'src/*.js', 'README.md' ],
 			options: {
 				destination: 'doc',
 				template: 'node_modules/ink-docstrap/template',

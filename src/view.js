@@ -41,11 +41,25 @@
 					if (!el.matches(selector)) { continue; } // TODO: IE9 support (msMatchesSelector)
 					var delegatesForEventAndSelector = delegatesForEvent[selector];
 					for (var i = 0, n = delegatesForEventAndSelector.length; i < n; ++i) {
-						//console.log(ev.type, selector, ev.target);
 						delegatesForEventAndSelector[i](ev);
 					}
 				}
 			};
+
+			/**
+			 * The root DOM element of the view. The default implementation of {@link module:bff/view#render} assigns to and updates this element. Delegated event listeners, created by calling {@link module:bff/view#listenTo} are attached to this element.
+			 * Replacing the current element with another will clear all currently delegated event listeners - it is usually a better approach update the element (using e.g. {@link module:bff/patch-dom}) instead of replacing it.
+			 * @instance
+			 * @member {HTMLElement|undefined} el
+			 */
+			Object.defineProperty(this, 'el', {
+				enumerable: true,
+				get: function () { return this.__private.el; },
+				set: function (el) {
+					this.stopListening('*');
+					this.__private.el = el;
+				}
+			});
 
 			this.__private.childViews = new List();
 			this.listenTo(this.__private.childViews, 'item:destroyed', function (childView) {
@@ -235,7 +249,7 @@
 			/**
 			 * Augments {@link bff/event-listener#stopListening} with functionality for stop listening to delegated DOM events.
 			 * @instance
-			 * @arg {string|Object} [selectorStr] - If provided, only delegated event callbacks for the given selector string will be removed. If anything other than a string passed, the original stopListening implementation will be used.
+			 * @arg {string|Object} [selectorStr] - If provided, only delegated event callbacks for the given selector string will be removed. The special wildcard value `*` means _any_ selector. If anything other than a string passed, the original stopListening implementation will be used.
 			 * @arg {string} [eventName] - If provided, only callbacks attached to the given event name will be removed.
 			 */
 			stopListening: function (selectorStr, eventName) {
@@ -258,7 +272,7 @@
 					var delegatesForEvent = eventDelegates[eventName];
 					if (!delegatesForEvent) { continue; }
 
-					if (selectorStr) {
+					if (selectorStr && selectorStr !== '*') {
 						delete delegatesForEvent[selectorStr];
 					} else {
 						// If no selector string has been specified, remove all event delegates for the event name

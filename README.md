@@ -27,57 +27,53 @@ Documentation
 -------------
 [API reference](http://oskargustafsson.github.io/BFF)
 
-Build
------
+Want to contribute?
+-------------------
+#### Building
 `npm install` will install all project dev. dependencies.
 
 `grunt` will lint the project, build dev and prod versions of BFF, compile JSDoc documentation, and run the Intern test suite
 
 `grunt watch` will watch for source file changes and recompile the source and documentation
 
-Tests
---------------------
-#### Unit tests in browser
-Go to `[server root]/node_modules/intern/client.html?config=tests/intern`
+#### Running tests
+##### Unit tests in browser
+Go to `[server root]/node_modules/intern/client.html?config=tests/intern` in some browser
 
-#### Unit tests in terminal (Node)
+##### Unit tests in terminal (Node)
 Run `node_modules/.bin/intern-client config=tests/intern`
 
-#### Unit tests and functional tests in browser
+##### Unit tests and functional tests in browser
 * Start a standalone [Selenium](http://www.seleniumhq.org/download/) server `java -jar [path to selenium jar]`
 * Run `grunt test`
 
-TO DO before 1.0
-----------------
-#### General
+#### TODO before 1.0
+
+##### General
 * IE9 support
 
-#### List
+##### List
 * UTs for all functions
 * UT: Props that depend on 'length' should trigger own change events when length changes
 
-#### Record
+##### Record
 * Cache calculated property values
-* Document triggered events
 * How to destroy Records? Will they be garbage collected in their current state?
 * Use constructors (Number, String, ...) instead of string identifiers for type declarations (maybe)
 
-#### Event emitter
+##### Event emitter
 * UTs for emitArgsAsArray()
 
-#### Event listener
+##### Event listener
 * UTs for listenTo(anArray, ...)
-* Option: useCapture
 
-#### View
-* @prop doc for el
-* Doc for getHtml
+##### View
 * FTs
 
-#### Patch DOM
+##### Patch DOM
 * Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
 * SVG support
 * FTs
 
-#### Extend
+##### Extend
 * Add UTs that mirrors the JSDoc examples
