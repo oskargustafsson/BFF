@@ -16,6 +16,9 @@
   "files": [
     "dist"
   ],
+  "scripts": {
+    "test": "grunt ci-test"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/oskargustafsson/BFF.git"

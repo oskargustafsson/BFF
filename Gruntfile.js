@@ -86,11 +86,18 @@ module.exports = function (grunt) {
 		},
 
 		intern: {
-			tests: {
+			all: {
 				options: {
 					runType: 'runner',
 					config: 'tests/intern',
 					reporters: [ 'Runner' ],
+				},
+			},
+			unit: {
+				options: {
+					runType: 'client',
+					config: 'tests/intern',
+					reporters: [ 'Console' ],
 				},
 			},
 		},
@@ -112,7 +119,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('intern');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
-	grunt.registerTask('test', [ 'intern' ]);
+	grunt.registerTask('ci-test', [ 'jshint', 'jscs', 'uglify', 'intern:unit' ]);
+	grunt.registerTask('test', [ 'jshint', 'jscs', 'uglify', 'intern:all' ]);
 	grunt.registerTask('default', [ 'jshint', 'jscs', 'jsdoc', 'uglify', 'test' ]);
 
 };

@@ -209,7 +209,7 @@ define(function (require) {
 
 				'second-level dependencies': {
 
-					'emits "prechange" and "change" event when a property in its dependency chain is changed': function  () {
+					'emits "prechange" and "change" event when a property in its dependency chain is changed': function () {
 						var Record = AbstractRecord.withProperties({
 							first: { type: 'string', defaultValue: 'a' },
 							second: {
