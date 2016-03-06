@@ -1,0 +1,35 @@
+{
+  "name": "bff-lib",
+  "description": "Basic Front end Foundation - modules for JS front end development",
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/oskargustafsson/BFF.git"
+  },
+  "authors": [
+    "Oskar Gustafsson"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "mvc",
+    "model",
+    "view",
+    "controller",
+    "extend",
+    "events",
+    "patch",
+    "DOM"
+  ],
+  "homepage": "https://github.com/oskargustafsson/BFF",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "tests"
+  ]
+}

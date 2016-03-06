@@ -14,6 +14,11 @@ Its ambition is to be a helper library rather than a framework, to be mixed and 
 * Data modules support calculated properties, similar to [signals](http://elm-lang.org/guide/reactivity#signals) in [FRP](https://en.wikipedia.org/wiki/Functional_reactive_programming), whose values are derived from one or more other properties - and still emits events when their calculated values change.
 * View module that combines the best parts of Backbone.js views with React-like DOM patching to provide a structured approach to building SPAs, with very little boilerplate code, while maintaining separation of concerns.
 
+Get started
+-----------
+* In your project's root folder run `npm install bff-lib --save` or `bower install bff-lib --save`
+* Or, download a release directly from [here](https://github.com/oskargustafsson/BFF/releases).
+
 Demos
 -----
 [Todo application](http://oskargustafsson.github.io/BFF-todos-example/) ([source](https://github.com/oskargustafsson/BFF-todos-example/))
