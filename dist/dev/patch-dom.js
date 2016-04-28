@@ -153,7 +153,7 @@
       sourcePos = nSourceChildren - nLeadingSameTypeChildren;
       while (targetPos > 0 || sourcePos > 0) {
         targetChild = targetChildren[targetPos + nLeadingSameTypeChildren + nTargetChildrenToIgnore - 1];
-        if (shouldIgnoreNode(targetChild)) {
+        if (targetChild && shouldIgnoreNode(targetChild)) {
           nTargetChildrenToIgnore--;
           continue;
         }
@@ -172,7 +172,7 @@
           sourcePos--;
         } else {
           if (deletion >= insertion) {
-            target.insertBefore(sourceChild, targetChild.nextSibling);
+            target.insertBefore(sourceChild, targetChild ? targetChild.nextSibling : null);
             sourcePos--;
           } else {
             target.removeChild(targetChild);
@@ -189,15 +189,22 @@
       if (true) {
         if (!(target instanceof HTMLElement)) {
           throw '"target" argument must be an HTMLElement';
-        }
-        if (!(source instanceof HTMLElement)) {
-          throw '"source" argument must be an HTMLElement';
-        }
-        if (arguments.length > 2 && 'object' != typeof options) {
-          throw '"options" argument must be an object';
-        }
-        if ('ignoreSubtreeOf' in options && 'string' != typeof options.ignoreSubtreeOf) {
-          throw 'ignoreSubtreeOf option must be a valid CSS selector string';
+        } else {
+          if (!(source instanceof HTMLElement)) {
+            throw '"source" argument must be an HTMLElement';
+          } else {
+            if (arguments.length > 2 && 'object' != typeof options) {
+              throw '"options" argument must be an object';
+            } else {
+              if ('ignoreSubtreeOf' in options && 'string' != typeof options.ignoreSubtreeOf) {
+                throw 'ignoreSubtreeOf option must be a valid CSS selector string';
+              } else {
+                if (target === source) {
+                  throw 'Target and source are the same, which makes no sense!';
+                }
+              }
+            }
+          }
         }
       }
       var ignoreSubtreeOf = options.ignoreSubtreeOf && target.querySelectorAll(options.ignoreSubtreeOf);

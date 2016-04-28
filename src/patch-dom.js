@@ -184,7 +184,7 @@
 			while (targetPos > 0 || sourcePos > 0) {
 				targetChild = targetChildren[targetPos + nLeadingSameTypeChildren + nTargetChildrenToIgnore - 1];
 
-				if (shouldIgnoreNode(targetChild)) {
+				if (targetChild && shouldIgnoreNode(targetChild)) {
 					nTargetChildrenToIgnore--;
 					continue;
 				}
@@ -208,7 +208,7 @@
 					sourcePos--;
 				} else if (insertion <= deletion) {
 					// Insert
-					target.insertBefore(sourceChild, targetChild.nextSibling);
+					target.insertBefore(sourceChild, targetChild ? targetChild.nextSibling : null);
 					sourcePos--;
 				} else {
 					// Delete
@@ -241,15 +241,14 @@
 			if (RUNTIME_CHECKS) {
 				if (!(target instanceof HTMLElement)) {
 					throw '"target" argument must be an HTMLElement';
-				}
-				if (!(source instanceof HTMLElement)) {
+				} else if (!(source instanceof HTMLElement)) {
 					throw '"source" argument must be an HTMLElement';
-				}
-				if (arguments.length > 2 && typeof options !== 'object') {
+				} else if (arguments.length > 2 && typeof options !== 'object') {
 					throw '"options" argument must be an object';
-				}
-				if ('ignoreSubtreeOf' in options && typeof options.ignoreSubtreeOf !== 'string') {
+				} else if ('ignoreSubtreeOf' in options && typeof options.ignoreSubtreeOf !== 'string') {
 					throw 'ignoreSubtreeOf option must be a valid CSS selector string';
+				} else if (target === source) {
+					throw 'Target and source are the same, which makes no sense!';
 				}
 			}
 

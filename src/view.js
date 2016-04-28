@@ -150,6 +150,12 @@
 				}
 
 				HTML_PARSER_EL.innerHTML = htmlString;
+
+				if (RUNTIME_CHECKS && !returnAll && HTML_PARSER_EL.childNodes.length > 1) {
+					throw 'The parsed HTML contains more than one root element.' +
+						'Specify returnAll = true to return all of them';
+				}
+
 				return returnAll ? HTML_PARSER_EL.childNodes : HTML_PARSER_EL.firstChild;
 			},
 
