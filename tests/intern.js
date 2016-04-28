@@ -23,8 +23,8 @@ define({
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
 	environments: [
-		//{ browserName: 'firefox' },
-		{ browserName: 'chrome' },
+		{ browserName: 'firefox' },
+		//{ browserName: 'chrome' },
 		/*{ browserName: 'internet explorer', version: '11', platform: 'WIN8' },
 		{ browserName: 'internet explorer', version: '10', platform: 'WIN8' },
 		{ browserName: 'internet explorer', version: '9', platform: 'WINDOWS' },

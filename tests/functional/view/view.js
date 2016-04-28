@@ -15,7 +15,7 @@ define(function (require) {
 		'can "listenTo" delegated DOM events': function () {
 			return this.remote
 				.setFindTimeout(5000)
-				.get(require.toUrl('../runner.html?test=view/listen-to'))
+				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('text-input')
 					.getProperty('value')
 					.then(function (text) { expect(text).to.equal(''); })
@@ -43,7 +43,7 @@ define(function (require) {
 		'can "stopListening" to all delegated elements and event names': function () {
 			return this.remote
 				.setFindTimeout(5000)
-				.get(require.toUrl('../runner.html?test=view/listen-to'))
+				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('stop-all')
 					.click()
 					.end()
@@ -74,7 +74,7 @@ define(function (require) {
 		'can "stopListening" to specific delegated event names': function () {
 			return this.remote
 				.setFindTimeout(5000)
-				.get(require.toUrl('../runner.html?test=view/listen-to'))
+				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('stop-focus')
 					.click()
 					.end()
@@ -105,7 +105,7 @@ define(function (require) {
 		'can "stopListening" to specific delegated selector strings': function () {
 			return this.remote
 				.setFindTimeout(5000)
-				.get(require.toUrl('../runner.html?test=view/listen-to'))
+				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('stop-text-input')
 					.click()
 					.end()
@@ -136,7 +136,7 @@ define(function (require) {
 		'can add and remove all child views': function () {
 			return this.remote
 				.setFindTimeout(5000)
-				.get(require.toUrl('../runner.html?test=view/child-views'))
+				.get(require.toUrl('../runner.html?test=view/targets/child-views'))
 				.findByClassName('parent')
 					.findAllByClassName('child')
 						.then(function (children) { expect(children.length).to.equal(3); })
@@ -158,7 +158,7 @@ define(function (require) {
 		'(child) views can destroy themseleves': function () {
 			return this.remote
 				.setFindTimeout(5000)
-				.get(require.toUrl('../runner.html?test=view/child-views'))
+				.get(require.toUrl('../runner.html?test=view/targets/child-views'))
 				.findByClassName('parent')
 					.findAllByClassName('child')
 						.then(function (children) { expect(children.length).to.equal(3); })
