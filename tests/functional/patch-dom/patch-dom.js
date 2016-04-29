@@ -283,5 +283,46 @@ define(function (require) {
 						});
 		},
 
+		'can patch text nodes, while leaving other nodes untouched': function () {
+			return this.remote
+				.get(require.toUrl('../runner.html?test=patch-dom/targets/generic'))
+				.findById('patch-target-text')
+					.type('a<input type="text" value="Hello">b')
+					.end()
+				.findById('update-target')
+					.click()
+					.end()
+				.findById('patch-target')
+					.getVisibleText()
+					.then(function (text) {
+						expect(text).to.equal('ab');
+					})
+					.findByTagName('input')
+						.getProperty('value')
+						.then(function (propValue) {
+							expect(propValue).to.equal('Hello');
+						})
+						.end()
+					.end()
+				.findById('patch-source-text')
+					.type('c<input type="text" value="Goodbye">d')
+					.end()
+				.findById('do-patch')
+					.click()
+					.end()
+				.findById('patch-target')
+					.getVisibleText()
+					.then(function (text) {
+						expect(text).to.equal('cd');
+					})
+					.findByTagName('input')
+						.getProperty('value')
+						.then(function (propValue) {
+							expect(propValue).to.equal('Goodbye');
+						})
+						.end()
+					.end();
+		},
+
 	});
 });
