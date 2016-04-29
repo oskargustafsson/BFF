@@ -12,9 +12,12 @@ define(function (require) {
 
 		name: 'View',
 
+		'beforeEach': function () {
+			this.remote.setFindTimeout(5000);
+		},
+
 		'can "listenTo" delegated DOM events': function () {
 			return this.remote
-				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('text-input')
 					.getProperty('value')
@@ -42,7 +45,6 @@ define(function (require) {
 
 		'can "stopListening" to all delegated elements and event names': function () {
 			return this.remote
-				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('stop-all')
 					.click()
@@ -73,7 +75,6 @@ define(function (require) {
 
 		'can "stopListening" to specific delegated event names': function () {
 			return this.remote
-				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('stop-focus')
 					.click()
@@ -104,7 +105,6 @@ define(function (require) {
 
 		'can "stopListening" to specific delegated selector strings': function () {
 			return this.remote
-				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/targets/listen-to'))
 				.findById('stop-text-input')
 					.click()
@@ -135,7 +135,6 @@ define(function (require) {
 
 		'can add and remove all child views': function () {
 			return this.remote
-				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/targets/child-views'))
 				.findByClassName('parent')
 					.findAllByClassName('child')
@@ -157,7 +156,6 @@ define(function (require) {
 
 		'(child) views can destroy themseleves': function () {
 			return this.remote
-				.setFindTimeout(5000)
 				.get(require.toUrl('../runner.html?test=view/targets/child-views'))
 				.findByClassName('parent')
 					.findAllByClassName('child')
