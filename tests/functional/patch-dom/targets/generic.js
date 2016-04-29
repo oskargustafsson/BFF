@@ -24,9 +24,11 @@ define(function (require) {
 		},
 		updateTarget: function () {
 			this.$('#patch-target').innerHTML = this.$('#patch-target-text').value;
+			this.$('#patch-target-text').value = '';
 		},
 		doPatch: function () {
 			patchSourceEl.innerHTML = this.$('#patch-source-text').value;
+			this.$('#patch-source-text').value = '';
 			patch(this.$('#patch-target'), patchSourceEl);
 		},
 	});
