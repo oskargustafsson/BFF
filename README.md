@@ -1,4 +1,4 @@
-![BFF logo](logo.png)
+![BFF logo](logo.svg)
 Basic Front end Foundation [![Build Status](https://travis-ci.org/oskargustafsson/BFF.svg?branch=master)](https://travis-ci.org/oskargustafsson/BFF)
 ================================
 ### Disclaimer: BFF is in alpha - don't use it for production projects just yet!
