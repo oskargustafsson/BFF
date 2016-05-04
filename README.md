@@ -1,4 +1,4 @@
-![BFF logo](https://cdn.rawgit.com/oskargustafsson/BFF/master/logo.svg)
+<img src="https://cdn.rawgit.com/oskargustafsson/BFF/master/logo.svg" style="width: 128px;" alt="BFF logo">
 Basic Front end Foundation [![Build Status](https://travis-ci.org/oskargustafsson/BFF.svg?branch=master)](https://travis-ci.org/oskargustafsson/BFF)
 ================================
 ### Disclaimer: BFF is in alpha - don't use it for production projects just yet!
@@ -10,7 +10,7 @@ Its ambition is to be a helper library rather than a framework, to be mixed and 
 #### Distinguishing features
 * Modular, light weight, and no external dependencies.
 * Two versions; _development_ and _production_. The former with lots of runtime error checking, the latter minified and without error checks, for optimal performance.
-* Fast and fool-proof event system - uses inversion-of-control to make cleaning up event listeners more or less automatic.
+* Fast and fool-proof event system - uses inversion-of-control to make cleaning up event listeners less error prone.
 * Data modules (Record and List) combine event system with [getters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get) and [setters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set), to create a type safe data layer (in development mode) that can be manipulated using terse syntax.
 * Data modules support calculated properties, similar to [signals](http://elm-lang.org/guide/reactivity#signals) in [FRP](https://en.wikipedia.org/wiki/Functional_reactive_programming), whose values are derived from one or more other properties - and still emits events when their calculated values change.
 * View module that combines the best parts of Backbone.js views with React-like DOM patching to provide a structured approach to building SPAs, with very little boilerplate code, while maintaining separation of concerns.
@@ -47,35 +47,3 @@ Run `node_modules/.bin/intern-client config=tests/intern`
 ##### Unit tests and functional tests in browser
 * Start a standalone [Selenium](http://www.seleniumhq.org/download/) server `java -jar [path to selenium jar]`
 * Run `grunt test`
-
-#### TODO before 1.0
-
-##### General
-* IE9 support
-
-##### List
-* UTs for all functions
-* UT: Props that depend on 'length' should trigger own change events when length changes
-
-##### Record
-* Cache calculated property values
-* How to destroy Records? Will they be garbage collected in their current state?
-* Use constructors (Number, String, ...) instead of string identifiers for type declarations (maybe)
-
-##### Event emitter
-* UTs for emitArgsAsArray()
-
-##### Event listener
-* UTs for listenTo(anArray, ...)
-
-##### View
-* Delegated events 'mouseenter' and 'mouseleave' does not work
-* FTs
-
-##### Patch DOM
-* Option: idAttributes: [], a list of node attributes used to differentiate a list of otherwise indistinguishable nodes
-* SVG support
-* FTs
-
-##### Extend
-* Add UTs that mirrors the JSDoc examples
