@@ -218,7 +218,7 @@
 			},
 
 			/**
-			 * Augments {@link bff/event-listener#listenTo} with functionality for listening to delegated DOM events, by specifying a CSS selector string instead of an event emitter. The actual listener will implicitly be registered on this view's root element.
+			 * Augments {@link bff/event-listener#listenTo} with functionality for listening to delegated DOM events, by specifying a CSS selector string instead of an event emitter. The actual listener will implicitly be registered on this view's root element. Not the the "mouseenter" and "mouseleave" events does not bubble, so they might not behave as expected - "mouseover" and "mouseout" events on the other hand do bubble.
 			 * @instance
 			 * @arg {string|Object|Array|NodeList} selectorStr - The CSS selector string that will be used to filter all events bubbling up to the listener. If anything other than a string passed, the original listenTo implementation will be used.
 			 * @arg {string|Array} eventName - One or more string identifiers for events that will be listented to.
