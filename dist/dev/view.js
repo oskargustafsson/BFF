@@ -11,11 +11,11 @@
       this.__private.onDelegatedEvent = function(ev) {
         var delegatesForEvent = delegates[ev.type];
         var el = ev.target;
-        for (var selector in delegatesForEvent) {
-          if (!el.matches(selector)) {
+        for (var selectorStr in delegatesForEvent) {
+          if (!elMatchesSelector(el, selectorStr)) {
             continue;
           }
-          var delegatesForEventAndSelector = delegatesForEvent[selector];
+          var delegatesForEventAndSelector = delegatesForEvent[selectorStr];
           for (var i = 0, n = delegatesForEventAndSelector.length; n > i; ++i) {
             delegatesForEventAndSelector[i](ev);
           }
@@ -43,6 +43,14 @@
       });
     }
     var HTML_PARSER_EL = document.createElement('div');
+    var elMatchesSelector = document.body.matches ? function(el, selectorStr) {
+      return el.matches(selectorStr);
+    } : function(el, selectorStr) {
+      return el.msMatchesSelector(selectorStr);
+    };
+    var myRequestAnimationFrame = window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : function(callback) {
+      setTimeout(callback, 1e3 / 60);
+    };
     extend(View.prototype, eventEmitter);
     extend(View.prototype, eventListener);
     extend(View.prototype, {
@@ -75,7 +83,7 @@
         }
         this.__private.isRenderRequested = true;
         var self = this;
-        requestAnimationFrame(function() {
+        myRequestAnimationFrame(function() {
           self.__private.isRenderRequested = false;
           self.render();
         });
