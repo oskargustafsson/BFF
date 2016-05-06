@@ -1,7 +1,7 @@
 {
   "name": "bff-lib",
   "author": "Oskar Gustafsson",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "description": "Basic Front end Foundation - modules for JS front end development",
   "keywords": [
