@@ -164,7 +164,11 @@
 						'Specify returnAll = true to return all of them';
 				}
 
-				return returnAll ? HTML_PARSER_EL.children : HTML_PARSER_EL.firstChild;
+				var ret = returnAll ? HTML_PARSER_EL.children : HTML_PARSER_EL.firstChild;
+				while (HTML_PARSER_EL.firstChild) {
+					HTML_PARSER_EL.removeChild(HTML_PARSER_EL.firstChild);
+				}
+				return ret;
 			},
 
 			/**
