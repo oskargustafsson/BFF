@@ -12,14 +12,11 @@
       }
       return levMat;
     }
-    function areOfSameType(target, source) {
+    function areProbablyTheSame(target, source) {
       if (!source) {
         return false;
       }
-      if (target.nodeName === source.nodeName) {
-        return true;
-      }
-      return false;
+      return target.getAttribute('data-id') === source.getAttribute('data-id') && target.nodeName === source.nodeName;
     }
     function namedNodeMapToObject(namedNodeMap) {
       var obj = {};
@@ -79,7 +76,7 @@
     function patchRecursive(target, source, ignoreSubtreeOf) {
       var targetParent = target.parentNode;
       var childrenToPatch = [];
-      if (areOfSameType(target, source)) {
+      if (areProbablyTheSame(target, source)) {
         patchNode(target, source);
       } else {
         if (source) {
@@ -106,7 +103,7 @@
           nTargetChildrenToIgnore++;
         } else {
           if (allChildrenMatchSoFar) {
-            if (areOfSameType(targetChildren[i + nTargetChildrenToIgnore], sourceChildren[i])) {
+            if (areProbablyTheSame(targetChildren[i + nTargetChildrenToIgnore], sourceChildren[i])) {
               childrenToPatch.push(targetChildren[i + nTargetChildrenToIgnore]);
               childrenToPatch.push(sourceChildren[i]);
               nLeadingSameTypeChildren++;
@@ -142,7 +139,7 @@
           continue;
         }
         for (sourcePos = 1; nSourceChildren - nLeadingSameTypeChildren >= sourcePos; ++sourcePos) {
-          if (areOfSameType(targetChild, sourceChildren[sourcePos + nLeadingSameTypeChildren - 1])) {
+          if (areProbablyTheSame(targetChild, sourceChildren[sourcePos + nLeadingSameTypeChildren - 1])) {
             levMat[targetPos][sourcePos] = levMat[targetPos - 1][sourcePos - 1];
           } else {
             levMat[targetPos][sourcePos] = 1 + Math.min(levMat[targetPos - 1][sourcePos - 1], levMat[targetPos][sourcePos - 1], levMat[targetPos - 1][sourcePos]);
