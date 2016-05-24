@@ -112,8 +112,10 @@
 
 		function areProbablyTheSame(target, source) {
 			if (!source) { return false; }
-			return target.getAttribute('data-id') === source.getAttribute('data-id') &amp;&amp;
-					target.nodeName === source.nodeName;
+			//return target.nodeName === source.nodeName;
+			return target.nodeName === source.nodeName &amp;&amp;
+					((target.attributes &amp;&amp; target.getAttribute('data-id')) ===
+					(source.attributes &amp;&amp; source.getAttribute('data-id')));
 		}
 
 		function namedNodeMapToObject(namedNodeMap) {

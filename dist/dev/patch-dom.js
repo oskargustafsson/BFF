@@ -16,7 +16,7 @@
       if (!source) {
         return false;
       }
-      return target.getAttribute('data-id') === source.getAttribute('data-id') && target.nodeName === source.nodeName;
+      return target.nodeName === source.nodeName && (target.attributes && target.getAttribute('data-id')) === (source.attributes && source.getAttribute('data-id'));
     }
     function namedNodeMapToObject(namedNodeMap) {
       var obj = {};
