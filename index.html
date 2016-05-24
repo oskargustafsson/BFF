@@ -98,18 +98,23 @@
 
 
     <section class="readme-section">
-        <article><h1><img src="https://cdn.rawgit.com/oskargustafsson/BFF/master/logo.svg" width="128" alt="BFF logo">, Basic Front-end Foundation <a href="https://travis-ci.org/oskargustafsson/BFF"><img src="https://travis-ci.org/oskargustafsson/BFF.svg?branch=master" alt="Build Status"></a></h1><h3>Disclaimer: BFF is in alpha - don't use it for production projects just yet!</h3><p>BFF is a collection of standalone modules, designed with the intent of making it easier to design interactive web applications. It comprises base classes for the MVC pattern (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/record.js">Record</a>, <a href="https://github.com/oskargustafsson/BFF/blob/master/src/view.js">View</a>) but more importantly, generic building blocks for event systems (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/event-emitter.js">Event Emitter</a>, <a href="https://github.com/oskargustafsson/BFF/blob/master/src/event-listener.js">Event Listener</a>), inheritance (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/extend.js">Extend</a>), collections (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/list.js">List</a>) and DOM manipulation (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/patch-dom.js">Patch DOM</a>).</p>
-<p>Its ambition is to be a helper library rather than a framework, to be mixed and matched with home grown or third-party components. As such, each BFF module provides a specific service, with a minimal interface. All modules are AMD and CommonJS compatible.</p>
+        <article><h1><img src="https://cdn.rawgit.com/oskargustafsson/BFF/master/logo.svg" width="128" alt="BFF logo">, Basic Front-end Foundation <a href="https://travis-ci.org/oskargustafsson/BFF"><img src="https://travis-ci.org/oskargustafsson/BFF.svg?branch=master" alt="Build Status"></a></h1><p>BFF is a collection of standalone modules, designed with the intent of making it easier to design interactive web applications. It comprises base classes for the MVC pattern (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/record.js">Record</a>, <a href="https://github.com/oskargustafsson/BFF/blob/master/src/view.js">View</a>) but more importantly, generic building blocks for event systems (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/event-emitter.js">Event Emitter</a>, <a href="https://github.com/oskargustafsson/BFF/blob/master/src/event-listener.js">Event Listener</a>), inheritance (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/extend.js">Extend</a>), collections (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/list.js">List</a>) and DOM manipulation (<a href="https://github.com/oskargustafsson/BFF/blob/master/src/patch-dom.js">Patch DOM</a>).</p>
+<p>Its ambition is to be a helper library rather than a framework, to be mixed and matched with home grown or third-party components. As such, each BFF module provides a specific service, with a minimal interface. All modules are <a href="https://github.com/umdjs/umd">UMD</a> compatible, which means that they support AMD and CommonJS loaders, as well as no loader at all.</p>
 <h4>Distinguishing features</h4><ul>
-<li>Modular, light weight, and no external dependencies.</li>
+<li>Modular and without external dependencies.</li>
 <li>Two versions; <em>development</em> and <em>production</em>. The former with lots of runtime error checking, the latter minified and without error checks, for optimal performance.</li>
-<li>Fast and fool-proof event system - uses inversion-of-control to make cleaning up event listeners less error prone.</li>
-<li>Data modules (Record and List) combine event system with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get">getters</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set">setters</a>, to create a type safe data layer (in development mode) that can be manipulated using terse syntax.</li>
+<li>Fast and fool-proof event system - uses inversion-of-control to automatically keep track of event listeners.</li>
+<li>Data modules (Record and List) combine event system with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get">getters</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set">setters</a>, to create an event emitting, type safe, data layer that can be manipulated as if they were plain objects.</li>
 <li>Data modules support calculated properties, similar to <a href="http://elm-lang.org/guide/reactivity#signals">signals</a> in <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">FRP</a>, whose values are derived from one or more other properties - and still emits events when their calculated values change.</li>
-<li>View module that combines the best parts of Backbone.js views with React-like DOM patching to provide a structured approach to building SPAs, with very little boilerplate code, while maintaining separation of concerns.</li>
+<li>View module based on Backbone.js views, with the addition of React-like DOM patching and hierarchical structuring.</li>
+</ul>
+<h2>Compatibility</h2><ul>
+<li>Latest versions (and presumably earlier) of Chrome, Firefox, Safari and Opera</li>
+<li>Internet Explorer 9 and later</li>
+<li>Node.js (except View and PatchDOM modules, which requeres a browser environment)</li>
 </ul>
 <h2>Get started</h2><ul>
-<li>In your project's root folder run <code>npm install bff-lib --save</code> or <code>bower install bff-lib --save</code></li>
+<li>Run <code>npm install bff-lib --save</code> or <code>bower install bff-lib --save</code> in your project's root folder</li>
 <li>Or, download a release directly from <a href="https://github.com/oskargustafsson/BFF/releases">here</a>.</li>
 </ul>
 <h2>Demos</h2><p><a href="http://oskargustafsson.github.io/BFF-todos-example/">Todo application</a> (<a href="https://github.com/oskargustafsson/BFF-todos-example/">source</a>)</p>
@@ -118,7 +123,7 @@
 <p><code>grunt</code> will lint the project, build dev and prod versions of BFF, compile JSDoc documentation, and run the Intern test suite</p>
 <p><code>grunt watch</code> will watch for source file changes and recompile the source and documentation</p>
 <h4>Running tests</h4><h5>Unit tests in browser</h5><p>Go to <code>[server root]/node_modules/intern/client.html?config=tests/intern</code> in some browser</p>
-<h5>Unit tests in terminal (Node)</h5><p>Run <code>node_modules/.bin/intern-client config=tests/intern</code></p>
+<h5>Unit tests in terminal (Node.js)</h5><p>Run <code>node_modules/.bin/intern-client config=tests/intern</code></p>
 <h5>Unit tests and functional tests in browser</h5><ul>
 <li>Start a standalone <a href="http://www.seleniumhq.org/download/">Selenium</a> server <code>java -jar [path to selenium jar]</code></li>
 <li>Run <code>grunt test</code></li>
