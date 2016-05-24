@@ -77,7 +77,7 @@ define(function (require) {
 			'sets the context for the callback, if a context is provided': function () {
 				var emitter = extend({}, eventEmitter);
 				var listener = extend({}, eventListener);
-				var context = 3;
+				var context = { aContext: true };
 				var callback = function () {
 					expect(this).to.equal(context);
 				};

@@ -12,6 +12,8 @@ define(function (require) {
 	var extend = require('dist/dev/extend');
 	var eventEmitter = require('dist/dev/event-emitter');
 
+	var IS_IE9 = typeof navigator !== 'undefined' && navigator.appVersion.indexOf('MSIE 9') !== -1;
+
 	chai.use(sinonChai);
 
 	registerSuite(function () {
@@ -981,9 +983,13 @@ define(function (require) {
 
 				'can not be set': function () {
 					var list = new List([ 4, 5, 6 ]);
-					expect (function () {
+
+					if (IS_IE9) {
 						list.first = 7;
-					}).to.throw();
+						expect(list.first).to.equal(4);
+					} else {
+						expect(function () { list.first = 7; }).to.throw();
+					}
 				},
 
 			},
@@ -997,9 +1003,13 @@ define(function (require) {
 
 				'can be not set': function () {
 					var list = new List([ 4, 5, 6 ]);
-					expect (function () {
+
+					if (IS_IE9) {
 						list.last = 7;
-					}).to.throw();
+						expect(list.last).to.equal(6);
+					} else {
+						expect(function () { list.last = 7; }).to.throw();
+					}
 				},
 
 			},

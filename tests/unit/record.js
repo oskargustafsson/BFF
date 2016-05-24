@@ -9,6 +9,8 @@ define(function (require) {
 
 	var AbstractRecord = require('dist/dev/record');
 
+	var IS_IE9 = typeof navigator !== 'undefined' && navigator.appVersion.indexOf('MSIE 9') !== -1;
+
 	chai.use(sinonChai);
 
 	registerSuite(function () {
@@ -43,10 +45,15 @@ define(function (require) {
 				'can not be set unless declared': function () {
 					var Record = AbstractRecord.withProperties({});
 					expect(function () { new Record({ race: 'human' }); }).to.throw();
-					expect(function () {
-						var record = new Record();
+
+					var record = new Record();
+
+					if (IS_IE9) {
 						record.race = 'human';
-					}).to.throw();
+						expect(record.human).to.equal(undefined);
+					} else {
+						expect(function () { record.race = 'human'; }).to.throw();
+					}
 				},
 
 				'triggers "prechange" and "change" events when a property is changed': function () {
@@ -359,9 +366,16 @@ define(function (require) {
 								setter: false,
 							},
 						});
+
 						var record = new Record();
 						expect(record.MAX_LEVEL).to.equal(99);
-						expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+
+						if (IS_IE9) {
+							record.MAX_LEVEL = 98;
+							expect(record.MAX_LEVEL).to.equal(99);
+						} else {
+							expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+						}
 					},
 
 					'even if disabled, allows you to specify an initial value': function () {
@@ -371,9 +385,16 @@ define(function (require) {
 								setter: false,
 							},
 						});
+
 						var record = new Record();
 						expect(record.MAX_LEVEL).to.equal(99);
-						expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+
+						if (IS_IE9) {
+							record.MAX_LEVEL = 98;
+							expect(record.MAX_LEVEL).to.equal(99);
+						} else {
+							expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+						}
 					},
 
 					'even if disabled, allows you to pass an initial value to the constructor': function () {
@@ -382,9 +403,16 @@ define(function (require) {
 								setter: false,
 							},
 						});
+
 						var record = new Record({ MAX_LEVEL: 99 });
 						expect(record.MAX_LEVEL).to.equal(99);
-						expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+
+						if (IS_IE9) {
+							record.MAX_LEVEL = 98;
+							expect(record.MAX_LEVEL).to.equal(99);
+						} else {
+							expect(function () { record.MAX_LEVEL = 98; }).to.throw();
+						}
 					},
 
 					'are applied before a property value is assigned': function () {
