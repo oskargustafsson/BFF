@@ -103,17 +103,17 @@
 <h4>Distinguishing features</h4><ul>
 <li>Modular and without external dependencies.</li>
 <li>Two versions; <em>development</em> and <em>production</em>. The former with lots of runtime error checking, the latter minified and without error checks, for optimal performance.</li>
-<li>Fast and fool-proof event system - uses inversion-of-control to automatically keep track of event listeners.</li>
-<li>Data modules (Record and List) combine event system with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get">getters</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set">setters</a>, to create an event emitting, type safe, data layer that can be manipulated as if they were plain objects.</li>
+<li>Fast and fool-proof event system - uses inversion-of-control to automatically keep track of registered event listeners.</li>
+<li>Data modules (Record and List) combine event system with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get">getters</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set">setters</a>, to create an event emitting, type safe, data layer that can be manipulated with the same syntax as plain JS objects.</li>
 <li>Data modules support calculated properties, similar to <a href="http://elm-lang.org/guide/reactivity#signals">signals</a> in <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">FRP</a>, whose values are derived from one or more other properties - and still emits events when their calculated values change.</li>
-<li>View module based on Backbone.js views, with the addition of React-like DOM patching and hierarchical structuring.</li>
+<li>View module inspired by Backbone.js views, with the addition of React-like DOM patching and hierarchical structuring.</li>
 </ul>
 <h2>Compatibility</h2><ul>
 <li>Latest versions (and presumably earlier) of Chrome, Firefox, Safari and Opera</li>
 <li>Internet Explorer 9 and later</li>
-<li>Node.js (except View and PatchDOM modules, which requeres a browser environment)</li>
+<li>Node.js (except View and Patch DOM modules, which naturally require a browser environment)</li>
 </ul>
-<h2>Get started</h2><ul>
+<h2>Download</h2><ul>
 <li>Run <code>npm install bff-lib --save</code> or <code>bower install bff-lib --save</code> in your project's root folder</li>
 <li>Or, download a release directly from <a href="https://github.com/oskargustafsson/BFF/releases">here</a>.</li>
 </ul>
