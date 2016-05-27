@@ -7,19 +7,19 @@ Its ambition is to be a helper library rather than a framework, to be mixed and 
 #### Distinguishing features
 * Modular and without external dependencies.
 * Two versions; _development_ and _production_. The former with lots of runtime error checking, the latter minified and without error checks, for optimal performance.
-* Fast and fool-proof event system - uses inversion-of-control to automatically keep track of event listeners.
-* Data modules (Record and List) combine event system with [getters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get) and [setters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set), to create an event emitting, type safe, data layer that can be manipulated as if they were plain objects.
+* Fast and fool-proof event system - uses inversion-of-control to automatically keep track of registered event listeners.
+* Data modules (Record and List) combine event system with [getters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get) and [setters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set), to create an event emitting, type safe, data layer that can be manipulated with the same syntax as plain JS objects.
 * Data modules support calculated properties, similar to [signals](http://elm-lang.org/guide/reactivity#signals) in [FRP](https://en.wikipedia.org/wiki/Functional_reactive_programming), whose values are derived from one or more other properties - and still emits events when their calculated values change.
-* View module based on Backbone.js views, with the addition of React-like DOM patching and hierarchical structuring.
+* View module inspired by Backbone.js views, with the addition of React-like DOM patching and hierarchical structuring.
 
 Compatibility
 -------------
 * Latest versions (and presumably earlier) of Chrome, Firefox, Safari and Opera
 * Internet Explorer 9 and later
-* Node.js (except View and PatchDOM modules, which requeres a browser environment)
+* Node.js (except View and Patch DOM modules, which naturally require a browser environment)
 
-Get started
------------
+Download
+--------
 * Run `npm install bff-lib --save` or `bower install bff-lib --save` in your project's root folder
 * Or, download a release directly from [here](https://github.com/oskargustafsson/BFF/releases).
 

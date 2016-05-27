@@ -28,7 +28,6 @@
 
 		function areProbablyTheSame(target, source) {
 			if (!source) { return false; }
-			//return target.nodeName === source.nodeName;
 			return target.nodeName === source.nodeName &&
 					((target.attributes && target.getAttribute('data-id')) ===
 					(source.attributes && source.getAttribute('data-id')));
