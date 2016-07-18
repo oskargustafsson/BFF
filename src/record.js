@@ -98,12 +98,13 @@
 		 * @arg {Object|module:bff/record} [values] - An object containing initial values for the Record to be created.
 		 */
 		function Record(values) {
-			if (RUNTIME_CHECKS && values !== undefined && typeof values !== 'object') {
-				throw '"values" argument must be an object';
-			}
-
-			if (!this.__private) {
-				throw 'Record is an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
+			if (RUNTIME_CHECKS) {
+				if (values !== undefined && typeof values !== 'object') {
+					throw '"values" argument must be an object';
+				}
+				if (!this.__private) {
+					throw 'Record is an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
+				}
 			}
 
 			this.__private.values = {};

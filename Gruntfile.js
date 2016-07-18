@@ -121,6 +121,6 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('ci-test', [ 'jshint', 'jscs', 'uglify', 'intern:unit' ]);
 	grunt.registerTask('test', [ 'jshint', 'jscs', 'uglify', 'intern:all' ]);
-	grunt.registerTask('default', [ 'jshint', 'jscs', 'jsdoc', 'uglify', 'test' ]);
+	grunt.registerTask('default', [ 'jshint', 'jscs', 'jsdoc', 'uglify', 'watch' ]);
 
 };

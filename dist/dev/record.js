@@ -33,11 +33,13 @@
       };
     }
     function Record(values) {
-      if (true && void 0 !== values && 'object' != typeof values) {
-        throw '"values" argument must be an object';
-      }
-      if (!this.__private) {
-        throw 'Record is an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
+      if (true) {
+        if (void 0 !== values && 'object' != typeof values) {
+          throw '"values" argument must be an object';
+        }
+        if (!this.__private) {
+          throw 'Record is an abstract class, meant to be "subclassed" using Record.withProperties(schema)';
+        }
       }
       this.__private.values = {};
       this.__private.previousValues = {};
