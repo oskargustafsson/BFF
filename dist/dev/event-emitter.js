@@ -13,7 +13,7 @@
         if (!listenersForEvent) {
           return;
         }
-        for (var i = 0, n = listenersForEvent.length; n > i; ++i) {
+        for (var i = 0, n = listenersForEvent.length; i < n; ++i) {
           var listener = listenersForEvent[i];
           listener.call.apply(listener, arguments);
         }
@@ -34,7 +34,7 @@
         if (!listenersForEvent) {
           return;
         }
-        for (var i = 0, n = listenersForEvent.length; n > i; ++i) {
+        for (var i = 0, n = listenersForEvent.length; i < n; ++i) {
           listenersForEvent[i].apply(void 0, argsArray);
         }
       },
@@ -53,7 +53,7 @@
         });
         var listeners = this.__private.listeners || (this.__private.listeners = {});
         var listenersForEvent = listeners[eventName] || (listeners[eventName] = []);
-        if (true && -1 !== listenersForEvent.indexOf(callback)) {
+        if (true && listenersForEvent.indexOf(callback) !== -1) {
           throw 'This listener has already been added (event: ' + eventName + ')';
         }
         listenersForEvent.push(callback);
@@ -76,7 +76,7 @@
         }
         if (callback) {
           var pos = listenersForEvent.indexOf(callback);
-          if (-1 === pos) {
+          if (pos === -1) {
             return;
           }
           listenersForEvent.splice(pos, 1);

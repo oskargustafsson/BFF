@@ -15,14 +15,14 @@
         if ('object' != typeof source) {
           throw '"source" argument must be an object';
         }
-        if (arguments.length > 2 && -1 === [ 'object', 'function', 'string' ].indexOf(typeof onConflict)) {
+        if (arguments.length > 2 && [ 'object', 'function', 'string' ].indexOf(typeof onConflict) === -1) {
           throw '"onConflict" argument must be an string (' + Object.keys(SOLVERS).join(', ') + '), object or function';
         }
         if (arguments.length > 3) {
           if ('object' != typeof onConflict) {
             throw 'There is no point in specifying a defaultOnConflict of onConflict is not an object';
           }
-          if (-1 === [ 'function', 'string' ].indexOf(typeof defaultOnConflict)) {
+          if ([ 'function', 'string' ].indexOf(typeof defaultOnConflict) === -1) {
             throw '"defaultOnConflict" argument must be a string (' + Object.keys(SOLVERS).join(', ') + '), or function';
           }
         }

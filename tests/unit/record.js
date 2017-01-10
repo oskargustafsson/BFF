@@ -22,12 +22,12 @@ define(function (require) {
 			'properties': {
 
 				'can be declared without any additional information and set in the constructor': function () {
-					var Record = AbstractRecord.withProperties({ race: undefined });
+					var Record = AbstractRecord.withProperties({ race: String });
 					expect(new Record({ race: 'human' }).race).to.equal('human');
 				},
 
 				'can be set after creation': function () {
-					var Record = AbstractRecord.withProperties({ race: undefined });
+					var Record = AbstractRecord.withProperties({ race: [ String, undefined ] });
 					var record = new Record();
 					expect(record.race).to.equal(undefined);
 					record.race = 'human';
@@ -35,7 +35,7 @@ define(function (require) {
 				},
 
 				/*'are enumerable, and nothing else is': function () {
-					var Record = AbstractRecord.withProperties({ prop1: undefined, prop2: undefined });
+					var Record = AbstractRecord.withProperties({ prop1: String, prop2: String });
 					var record = new Record({ prop1: 'a' });
 					expect(Object.keys(record)).to.contain('prop1');
 					expect(Object.keys(record)).to.contain('prop2');
@@ -57,7 +57,7 @@ define(function (require) {
 				},
 
 				'triggers "prechange" and "change" events when a property is changed': function () {
-					var Record = AbstractRecord.withProperties({ race: undefined, name: undefined });
+					var Record = AbstractRecord.withProperties({ race: [ String, undefined ], name: [ String, undefined ] });
 					var record = new Record();
 					var prechangeCallback = sinon.spy();
 					var prechangeRaceCallback = sinon.spy();
@@ -130,8 +130,8 @@ define(function (require) {
 
 					'causes "prechange" and "change" events to be triggered on dependent properties': function () {
 						var Record = AbstractRecord.withProperties({
-							firstName: { type: 'string', defaultValue: 'Boutros' },
-							lastName: { type: 'string', defaultValue: 'Ghali' },
+							firstName: { type: String, defaultValue: 'Boutros' },
+							lastName: { type: String, defaultValue: 'Ghali' },
 							fullName: {
 								setter: false,
 								getter: function () {
@@ -187,8 +187,8 @@ define(function (require) {
 
 					'does not trigger change events if the dependent does not actually change': function () {
 						var Record = AbstractRecord.withProperties({
-							firstName: { type: 'string', defaultValue: 'Boutros' },
-							lastName: { type: 'string', defaultValue: 'boutros-ghali' },
+							firstName: { type: String, defaultValue: 'Boutros' },
+							lastName: { type: String, defaultValue: 'boutros-ghali' },
 							fullName: {
 								setter: false,
 								getter: function () {
@@ -218,7 +218,7 @@ define(function (require) {
 
 					'emits "prechange" and "change" event when a property in its dependency chain is changed': function () {
 						var Record = AbstractRecord.withProperties({
-							first: { type: 'string', defaultValue: 'a' },
+							first: { type: String, defaultValue: 'a' },
 							second: {
 								setter: false,
 								getter: function () {
@@ -304,7 +304,7 @@ define(function (require) {
 					'are applied before a property value is returned': function () {
 						var Record = AbstractRecord.withProperties({
 							date: {
-								type: 'object',
+								type: Date,
 								getter: function (value) {
 									return new Date(value);
 								},
@@ -316,9 +316,9 @@ define(function (require) {
 
 					'have access to other properties': function () {
 						var Record = AbstractRecord.withProperties({
-							currencySymbol: 'string',
+							currencySymbol: String,
 							amount: {
-								type: 'string',
+								type: String,
 								getter: function (value) {
 									return value + ' ' + this.currencySymbol;
 								},
@@ -334,7 +334,7 @@ define(function (require) {
 					'can stop a change event from being triggered': function () {
 						var Record = AbstractRecord.withProperties({
 							username: {
-								type: 'string',
+								type: String,
 								defaultValue: '',
 								getter: function (value) {
 									return value.toLowerCase();
@@ -418,7 +418,7 @@ define(function (require) {
 					'are applied before a property value is assigned': function () {
 						var Record = AbstractRecord.withProperties({
 							date: {
-								type: 'object', // Stored type
+								type: Date, // Stored type
 								setter: function (value) {
 									return new Date(value);
 								},
@@ -430,9 +430,9 @@ define(function (require) {
 
 					'have access to other properties': function () {
 						var Record = AbstractRecord.withProperties({
-							currencySymbol: 'string',
+							currencySymbol: String,
 							amount: {
-								type: 'string',
+								type: String,
 								setter: function (value) {
 									return value + ' ' + this.currencySymbol;
 								},
@@ -448,7 +448,7 @@ define(function (require) {
 					'can stop a change event from being triggered': function () {
 						var Record = AbstractRecord.withProperties({
 							username: {
-								type: 'string',
+								type: String,
 								defaultValue: '',
 								setter: function (value) {
 									return value.toLowerCase();
@@ -477,7 +477,7 @@ define(function (require) {
 
 				'throws an error if the passed value is of the wrong type': function () {
 					var Record = AbstractRecord.withProperties({
-						race: { type: 'string', },
+						race: { type: String, },
 					});
 
 					expect(new Record({ race: 'human' }).race).to.equal('human');
@@ -486,7 +486,7 @@ define(function (require) {
 
 				'throws an error if the passed value is of the wrong type (alt. syntax)': function () {
 					var Record = AbstractRecord.withProperties({
-						race: 'string',
+						race: String,
 					});
 
 					expect(new Record({ race: 'human' }).race).to.equal('human');
@@ -495,7 +495,7 @@ define(function (require) {
 
 				'throws an error if a default value has not been provided': function () {
 					var Record = AbstractRecord.withProperties({
-						race: 'string',
+						race: String,
 					});
 
 					expect(function () { new Record(); }).to.throw();
@@ -504,7 +504,7 @@ define(function (require) {
 
 				'allows specifying multiple types (1/2)': function () {
 					var Record = AbstractRecord.withProperties({
-						race: { type: [ 'string', 'number', 'undefined' ], },
+						race: { type: [ String, Number, undefined ], },
 					});
 
 					expect(new Record().race).to.equal(undefined);
@@ -518,7 +518,7 @@ define(function (require) {
 
 				'allows specifying multiple types (2/2)': function () {
 					var Record = AbstractRecord.withProperties({
-						race: { type: [ 'string', 'number' ], },
+						race: { type: [ String, Number ], },
 					});
 
 					expect(new Record({ race: 'human' }).race).to.equal('human');
@@ -532,7 +532,7 @@ define(function (require) {
 
 				'allows specifying multiple types (alt. syntax)': function () {
 					var Record = AbstractRecord.withProperties({
-						race: [ 'string', 'number', 'undefined' ],
+						race: [ String, Number, undefined ],
 					});
 
 					expect(new Record({ race: 'human' }).race).to.equal('human');
@@ -563,14 +563,14 @@ define(function (require) {
 
 				'throws an error when the wrong type is passed': function () {
 					var Record = AbstractRecord.withProperties({
-						race: { type: 'number', defaultValue: 'human', },
+						race: { type: Number, defaultValue: 'human', },
 					});
 					expect(function () { new Record(); }).to.throw();
 				},
 
 				'does not throw an error when the specified type is passed': function () {
 					var Record = AbstractRecord.withProperties({
-						race: { type: 'string', defaultValue: 'human', },
+						race: { type: String, defaultValue: 'human', },
 					});
 					expect(new Record().race).to.equal('human');
 				},
@@ -579,17 +579,17 @@ define(function (require) {
 
 			'"toJSON" method returns a deep copied plain object representation of the record': function () {
 				var Record = AbstractRecord.withProperties({
-					firstName: 'string',
-					lastName: 'string',
+					firstName: String,
+					lastName: String,
 					fullName: {
-						type: 'string',
+						type: String,
 						setter: false,
 						getter: function () {
 							return this.firstName + ' ' + this.lastName;
 						},
 					},
-					age: 'number',
-					complexProp: 'object',
+					age: Number,
+					complexProp: Object,
 				});
 				var record = new Record({
 					firstName: 'Boutros',
@@ -620,16 +620,16 @@ define(function (require) {
 
 			'"toString" method returns a string containing all properties and their respective values': function () {
 				var Record = AbstractRecord.withProperties({
-					firstName: 'string',
-					lastName: 'string',
+					firstName: String,
+					lastName: String,
 					fullName: {
-						type: 'string',
+						type: String,
 						setter: false,
 						getter: function () {
 							return this.firstName + ' ' + this.lastName;
 						},
 					},
-					age: 'number',
+					age: Number,
 				});
 				var record = new Record({
 					firstName: 'Donky',
@@ -651,16 +651,16 @@ define(function (require) {
 
 			'"toString" method to returns a valid JSON string representation of the record': function () {
 				var Record = AbstractRecord.withProperties({
-					firstName: 'string',
-					lastName: 'string',
+					firstName: String,
+					lastName: String,
 					fullName: {
-						type: 'string',
+						type: String,
 						setter: false,
 						getter: function () {
 							return this.firstName + ' ' + this.lastName;
 						},
 					},
-					age: 'number',
+					age: Number,
 				});
 				var record = new Record({
 					firstName: 'Donky',

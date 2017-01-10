@@ -1,10 +1,66 @@
 !function() {
   'use strict';
   function moduleFactory(extend, eventEmitter, eventListener) {
+    function isPlainishObject(val) {
+      return val instanceof Object && val.constructor && !Array.isArray(val) && !val.call && !val.apply;
+    }
     function validateInput(val, propName, propSchema) {
-      var type = typeof val;
-      if ('type' in propSchema && -1 === propSchema.type.indexOf(type)) {
-        throw 'Property ' + propName + ' is of type ' + propSchema.type + ' and can not be assigned a value of type ' + type;
+      if (true && !('type' in propSchema)) {
+        throw 'propSchema is missing a \'type\' property';
+      }
+      var isValueOk = false;
+      for (var i = 0, n = propSchema.type.length; i < n; ++i) {
+        var anOkType = propSchema.type[i];
+        if (anOkType === ANY_TYPE) {
+          isValueOk = true;
+          break;
+        } else {
+          if (void 0 === anOkType) {
+            if (void 0 === val) {
+              isValueOk = true;
+              break;
+            }
+          } else {
+            if (null === anOkType) {
+              if (null === val) {
+                isValueOk = true;
+                break;
+              }
+            } else {
+              if (anOkType === String) {
+                if ('string' == typeof val) {
+                  isValueOk = true;
+                  break;
+                }
+              } else {
+                if (anOkType === Number) {
+                  if ('number' == typeof val) {
+                    isValueOk = true;
+                    break;
+                  }
+                } else {
+                  if (anOkType === Boolean) {
+                    if ('boolean' == typeof val) {
+                      isValueOk = true;
+                      break;
+                    }
+                  } else {
+                    if (val instanceof anOkType) {
+                      isValueOk = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      if (!isValueOk) {
+        var typeNames = propSchema.type.map(function(val) {
+          return val instanceof Function ? val.name : typeof val;
+        });
+        throw 'Property ' + propName + ' must be of type [' + typeNames.join(', ') + '], it can not be assigned a value of type ' + typeof val;
       }
     }
     function makeSetter(propName, propSchema) {
@@ -88,6 +144,7 @@
     }
     var PRECHANGE_EVENT = 'prechange';
     var CHANGE_EVENT = 'change';
+    var ANY_TYPE = 'undefined' == typeof Symbol ? Object.freeze({}) : Symbol('ANY_TYPE');
     Record.prototype.toJSON = function() {
       var jsonObj = {};
       for (var propName in this.__private.values) {
@@ -124,19 +181,24 @@
       var props = {};
       for (var propName in schema) {
         var propSchema = schema[propName] = schema[propName] || {};
-        if ('string' == typeof propSchema || propSchema instanceof Array) {
+        if (!isPlainishObject(propSchema)) {
           propSchema = schema[propName] = {
             type: propSchema
           };
         }
-        if ('type' in propSchema && !(propSchema.type instanceof Array)) {
+        if (!('type' in propSchema)) {
+          propSchema.type = [ ANY_TYPE ];
+        }
+        if (!(propSchema.type instanceof Array)) {
           propSchema.type = [ propSchema.type ];
         }
-        if (true && propSchema.type) {
-          for (var i = 0, n = propSchema.type.length; n > i; ++i) {
-            if ('string' != typeof propSchema.type[i]) {
-              throw 'All property type identifiers must be strings; ' + propName + '\'s is not';
+        if (true) {
+          for (var i = 0, n = propSchema.type.length; i < n; ++i) {
+            var type = propSchema.type[i];
+            if (type instanceof Function || type === ANY_TYPE || null === type || void 0 === type) {
+              continue;
             }
+            throw 'All property type identifiers must be constructor functions, or null, or undefined - ' + propName + ' is not';
           }
         }
         props[propName] = {

@@ -80,7 +80,7 @@
           var diff = length - prevLength;
           var i;
           if (diff > 0) {
-            for (i = prevLength; length > i; ++i) {
+            for (i = prevLength; i < length; ++i) {
               Object.defineProperty(this, i, {
                 enumerable: true,
                 configurable: true,
@@ -89,7 +89,7 @@
               });
             }
           } else {
-            for (i = length; prevLength > i; ++i) {
+            for (i = length; i < prevLength; ++i) {
               delete this[i];
             }
           }
@@ -155,7 +155,7 @@
       triggerPrechangeLengthEvent(this);
       this.__private.array.push.apply(this.__private.array, arguments);
       triggerChangeLengthEvent(this, prevLength);
-      for (var i = 0; nItems > i; ++i) {
+      for (var i = 0; i < nItems; ++i) {
         onItemAdded(this, this[prevLength + i], prevLength + i);
       }
       return this.length;
@@ -169,7 +169,7 @@
       triggerPrechangeLengthEvent(this);
       this.__private.array.unshift.apply(this.__private.array, arguments);
       triggerChangeLengthEvent(this, prevLength);
-      for (var i = 0; nItems > i; ++i) {
+      for (var i = 0; i < nItems; ++i) {
         onItemAdded(this, this[i], i);
       }
       return this.length;
@@ -210,7 +210,7 @@
       }
       var i;
       var oldLength = this.length;
-      0 > start && (start = oldLength + start);
+      start < 0 && (start = oldLength + start);
       nItemsToRemove = Math.min(nItemsToRemove, oldLength - start);
       var nItemsToAdd = arguments.length - 2;
       var nItemsToReplace = Math.min(nItemsToAdd, nItemsToRemove);
@@ -219,10 +219,10 @@
       triggerPrechangeLengthEvent(this);
       var deletedItems = this.__private.array.splice.apply(this.__private.array, arguments);
       triggerChangeLengthEvent(this, prevLength);
-      for (i = 0; nItemsAffected > i; ++i) {
-        nItemsToAdd > i && onItemAdded(this, this[start + i], start + i);
-        nItemsToReplace > i && onItemReplaced(this, this[start + i], deletedItems[i], start + i);
-        nItemsToRemove > i && onItemRemoved(this, deletedItems[i], start + i);
+      for (i = 0; i < nItemsAffected; ++i) {
+        i < nItemsToAdd && onItemAdded(this, this[start + i], start + i);
+        i < nItemsToReplace && onItemReplaced(this, this[start + i], deletedItems[i], start + i);
+        i < nItemsToRemove && onItemRemoved(this, deletedItems[i], start + i);
       }
       return deletedItems;
     };
@@ -236,7 +236,7 @@
       listFunctions[funcName] = delegateCreator(funcName);
     });
     listFunctions.concat = function() {
-      for (var i = 0, n = arguments.length; n > i; ++i) {
+      for (var i = 0, n = arguments.length; i < n; ++i) {
         var argument = arguments[i];
         if (!(argument instanceof Array) && void 0 !== argument.length) {
           arguments[i] = argument.toArray();
@@ -295,7 +295,7 @@
       var start = begin || 0;
       start = start >= 0 ? start : Math.max(0, length + start);
       var upTo = ('number' == typeof end ? Math.min(end, length) : length) - 1;
-      0 > end && (upTo = length + end);
+      end < 0 && (upTo = length + end);
       var size = upTo - start;
       if (size !== length) {
         this.splice(0, start);
@@ -307,7 +307,7 @@
       if (true && 'function' != typeof callback) {
         throw '"callback" argument must be a function';
       }
-      for (var i = 0, length = this.length; length > i; ++i) {
+      for (var i = 0, length = this.length; i < length; ++i) {
         this[i] = callback.call(thisArg, this[i], i, this);
       }
       return this;
@@ -316,7 +316,7 @@
       if (true && 'function' != typeof predicate) {
         throw '"predicate" argument must be a function';
       }
-      for (var i = 0, length = this.length; length > i; ++i) {
+      for (var i = 0, length = this.length; i < length; ++i) {
         if (predicate.call(thisArg, this[i], i, this)) {
           return this[i];
         }
@@ -326,7 +326,7 @@
       if (true && 'function' != typeof predicate) {
         throw '"predicate" argument must be a function';
       }
-      for (var i = 0, length = this.length; length > i; ++i) {
+      for (var i = 0, length = this.length; i < length; ++i) {
         if (predicate.call(thisArg, this[i], i, this)) {
           return i;
         }
@@ -339,14 +339,14 @@
       }
       fromIndex = fromIndex || 0;
       var index = this.__private.array.indexOf(item);
-      return -1 !== index && index >= fromIndex;
+      return index !== -1 && index >= fromIndex;
     };
     listFunctions.toArray = function() {
       return this.__private.array.slice();
     };
     listFunctions.toJSON = function() {
       var jsonObj = new Array(this.length);
-      for (var i = 0, n = jsonObj.length; n > i; ++i) {
+      for (var i = 0, n = jsonObj.length; i < n; ++i) {
         var item = this[i];
         jsonObj[i] = item instanceof Object ? item.toJSON ? item.toJSON() : JSON.parse(JSON.stringify(item)) : item;
       }
@@ -364,7 +364,7 @@
       }
       this.__private.reEmittingEvents[eventName] = true;
       var strippedEventName = eventName.replace(ITEM_EVENT_TOKEN_MATCHER, '');
-      for (var i = 0, n = this.length; n > i; ++i) {
+      for (var i = 0, n = this.length; i < n; ++i) {
         var item = this[i];
         isEmitter(item) && reemitItemEvent(this, item, strippedEventName, eventName);
       }

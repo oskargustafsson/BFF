@@ -47,10 +47,67 @@
 		 */
 		var CHANGE_EVENT = 'change';
 
+		var ANY_TYPE = typeof Symbol === 'undefined' ? Object.freeze({}) : Symbol('ANY_TYPE');
+
+		function isPlainishObject(val) {
+			// Plain in this context means that it is an object that is not an array or a function
+			return (val instanceof Object) && val.constructor && !Array.isArray(val) && !val.call && !val.apply;
+		}
+
 		function validateInput(val, propName, propSchema) {
-			var type = typeof val;
-			if ('type' in propSchema && propSchema.type.indexOf(type) === -1) {
-				throw 'Property ' + propName + ' is of type ' + propSchema.type + ' and can not be assigned a value of type ' + type;
+			if (RUNTIME_CHECKS && !('type' in propSchema)) {
+				throw "propSchema is missing a 'type' property";
+			}
+
+			var isValueOk = false;
+
+			// JS type checking is very inconsistent because of how primitive/boxed types are handled.
+			// Below we try create a consistent type checking scheme, where no distinction between
+			// boxed (e.g. var a = new Number(3)) and primitive (e.g. var a = 3) are made.
+			for (var i = 0, n = propSchema.type.length; i < n; ++i) {
+				var anOkType = propSchema.type[i];
+
+				if (anOkType === ANY_TYPE) {
+					isValueOk = true;
+					break;
+				} else if (anOkType === undefined) {
+					if (val === undefined) {
+						isValueOk = true;
+						break;
+					}
+				} else if (anOkType === null) {
+					if (val === null) {
+						isValueOk = true;
+						break;
+					}
+				} else if (anOkType === String) {
+					if (typeof val === 'string') {
+						isValueOk = true;
+						break;
+					}
+				} else if (anOkType === Number) {
+					if (typeof val === 'number') {
+						isValueOk = true;
+						break;
+					}
+				} else if (anOkType === Boolean) {
+					if (typeof val === 'boolean') {
+						isValueOk = true;
+						break;
+					}
+				} else if (val instanceof anOkType) {
+					isValueOk = true;
+					break;
+				}
+			}
+
+			if (!isValueOk) {
+				var typeNames = propSchema.type.map(function (val) {
+					return val instanceof Function ? val.name : typeof val;
+				});
+
+				throw 'Property ' + propName + ' must be of type [' + typeNames.join(', ') +
+						'], it can not be assigned a value of type ' + (typeof val);
 			}
 		}
 
@@ -116,12 +173,14 @@
 			for (var propName in schema) {
 				propsUnion[propName] = schema[propName].defaultValue;
 			}
+
 			for (propName in values) {
 				if (RUNTIME_CHECKS && !schema.hasOwnProperty(propName)) {
 					throw 'Cannot assign undeclared property ' + propName;
 				}
 				propsUnion[propName] = values[propName];
 			}
+
 			// Silently assign initial values
 			for (propName in propsUnion) {
 				var val = propsUnion[propName];
@@ -197,7 +256,7 @@
 		 *     dependencies: [ 'firstName', 'lastName' ],
 		 *   },
 		 *   age: {
-		 *     type: [ 'number', undefined ],
+		 *     type: [ Number, undefined ],
 		 *     defaultValue: 0,
 		 *   },
 		 *   someData: {},
@@ -216,8 +275,8 @@
 		 * `someData: {}`, `someData: undefined`, `someData: null` and `someData: false` all declares a property named someData, which can hold any type of data.
 		 *
 		 * There is also a shorthand syntax for specifying typed properties, because it is such a common use case, e.g.:
-		 * `aProp: 'string'` is equal to `aProp: { type: 'string' }` and e.g.
-		 * `aProp: [ 'string', 'undefined' ]` is equal to `aProp: { type: [ 'string', 'undefined' ] }`
+		 * `aProp: String` is equal to `aProp: { type: String }` and e.g.
+		 * `aProp: [ String, undefined ]` is equal to `aProp: { type: [ String, undefined ] }`
 		 *
 		 * @arg {boolean} dontPreventExtensions - All extensions of records are prevented by default (using `Object.preventExtensions`), but that behavior can be toggled using this flag.
 		 *
@@ -247,19 +306,27 @@
 			for (var propName in schema) {
 				var propSchema = schema[propName] = schema[propName] || {};
 
-				if (typeof propSchema === 'string' || propSchema instanceof Array) {
-					propSchema = schema[propName] = { type: propSchema };
+				// Convert shorthand aProp: SomeType into aProp: { type: SomeType }
+				if (!isPlainishObject(propSchema)) {
+						propSchema = schema[propName] = { type: propSchema };
 				}
 
-				if ('type' in propSchema && !(propSchema.type instanceof Array)) {
+				if (!('type' in propSchema)) {
+					propSchema.type = [ ANY_TYPE ];
+				}
+
+				if (!(propSchema.type instanceof Array)) {
 					propSchema.type = [ propSchema.type ];
 				}
 
-				if (RUNTIME_CHECKS && propSchema.type) {
+				if (RUNTIME_CHECKS) {
 					for (var i = 0, n = propSchema.type.length; i < n; ++i) {
-						if (typeof propSchema.type[i] !== 'string') {
-							throw 'All property type identifiers must be strings; ' + propName + '\'s is not';
+						var type = propSchema.type[i];
+						if (type instanceof Function || type === ANY_TYPE || type === null || type === undefined) {
+							continue;
 						}
+						throw 'All property type identifiers must be constructor functions, or null, or undefined - ' +
+								propName + ' is not';
 					}
 				}
 

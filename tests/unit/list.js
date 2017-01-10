@@ -91,8 +91,8 @@ define(function (require) {
 
 				'allows you to specify dependencies': function () {
 					var TodoItem = Record.withProperties({
-						id: 'number',
-						done: 'boolean',
+						id: Number,
+						done: Boolean,
 					});
 
 					var TodoItems = List.withProperties({

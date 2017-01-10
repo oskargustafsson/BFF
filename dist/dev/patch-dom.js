@@ -3,11 +3,11 @@
   function moduleFactory() {
     function makeLevMat(xSize, ySize) {
       var i, levMat = new Array(xSize + 1);
-      for (i = 0; xSize >= i; ++i) {
+      for (i = 0; i <= xSize; ++i) {
         levMat[i] = new Array(ySize + 1);
         levMat[i][0] = i;
       }
-      for (i = 0; ySize >= i; ++i) {
+      for (i = 0; i <= ySize; ++i) {
         levMat[0][i] = i;
       }
       return levMat;
@@ -20,7 +20,7 @@
     }
     function namedNodeMapToObject(namedNodeMap) {
       var obj = {};
-      for (var i = 0, n = namedNodeMap.length; n > i; ++i) {
+      for (var i = 0, n = namedNodeMap.length; i < n; ++i) {
         var node = namedNodeMap[i];
         obj[node.name] = node.value;
       }
@@ -39,7 +39,7 @@
       if (void 0 !== source.selected) {
         target.selected = source.selected;
       }
-      for (i = 0, n = sourceAttrArr.length; n > i; ++i) {
+      for (i = 0, n = sourceAttrArr.length; i < n; ++i) {
         sourceAttr = sourceAttrArr[i];
         attrName = sourceAttr.name;
         targetAttr = targetAttrObj[attrName];
@@ -86,7 +86,7 @@
         }
         return;
       }
-      if (ignoreSubtreeOf && -1 !== Array.prototype.indexOf.call(ignoreSubtreeOf, target)) {
+      if (ignoreSubtreeOf && Array.prototype.indexOf.call(ignoreSubtreeOf, target) !== -1) {
         return;
       }
       var targetChildren = target.childNodes;
@@ -98,7 +98,7 @@
       var nIgnoredTargetChildren = 0;
       var nTargetChildrenToIgnore = 0;
       var allChildrenMatchSoFar = true;
-      for (i = 0; nTargetChildren > i; ++i) {
+      for (i = 0; i < nTargetChildren; ++i) {
         if (shouldIgnoreNode(targetChildren[i])) {
           nTargetChildrenToIgnore++;
         } else {
@@ -119,8 +119,8 @@
       var levMatSizeX = nTargetChildren - nLeadingSameTypeChildren;
       var levMatSizeY = nSourceChildren - nLeadingSameTypeChildren;
       var levMat;
-      if (levMatSizeX > preallocLevMatSizeX || levMatSizeY > preallocLevMatSizeY) {
-        if (levMatSizeX >= preallocLevMatSizeX && levMatSizeY >= preallocLevMatSizeY) {
+      if (preallocLevMatSizeX < levMatSizeX || preallocLevMatSizeY < levMatSizeY) {
+        if (preallocLevMatSizeX <= levMatSizeX && preallocLevMatSizeY <= levMatSizeY) {
           preallocLevMatSizeX = levMatSizeX;
           preallocLevMatSizeY = levMatSizeY;
           preallocLevMat = makeLevMat(preallocLevMatSizeX, preallocLevMatSizeY);
@@ -131,14 +131,14 @@
       } else {
         levMat = preallocLevMat;
       }
-      for (targetPos = 1; nTargetChildren - nLeadingSameTypeChildren >= targetPos + nIgnoredTargetChildren; targetPos++) {
+      for (targetPos = 1; targetPos + nIgnoredTargetChildren <= nTargetChildren - nLeadingSameTypeChildren; targetPos++) {
         targetChild = targetChildren[targetPos + nIgnoredTargetChildren + nLeadingSameTypeChildren - 1];
         if (shouldIgnoreNode(targetChild)) {
           nIgnoredTargetChildren++;
           targetPos--;
           continue;
         }
-        for (sourcePos = 1; nSourceChildren - nLeadingSameTypeChildren >= sourcePos; ++sourcePos) {
+        for (sourcePos = 1; sourcePos <= nSourceChildren - nLeadingSameTypeChildren; ++sourcePos) {
           if (areProbablyTheSame(targetChild, sourceChildren[sourcePos + nLeadingSameTypeChildren - 1])) {
             levMat[targetPos][sourcePos] = levMat[targetPos - 1][sourcePos - 1];
           } else {
@@ -158,7 +158,7 @@
         var insertion = sourcePos > 0 ? levMat[targetPos][sourcePos - 1] : 1 / 0;
         var deletion = targetPos > 0 ? levMat[targetPos - 1][sourcePos] : 1 / 0;
         sourceChild = sourceChildren[sourcePos + nLeadingSameTypeChildren - 1];
-        if (insertion >= substitution && deletion >= substitution) {
+        if (substitution <= insertion && substitution <= deletion) {
           if (substitution < levMat[targetPos][sourcePos]) {
             target.replaceChild(sourceChild, targetChild);
           } else {
@@ -168,7 +168,7 @@
           targetPos--;
           sourcePos--;
         } else {
-          if (deletion >= insertion) {
+          if (insertion <= deletion) {
             target.insertBefore(sourceChild, targetChild ? targetChild.nextSibling : null);
             sourcePos--;
           } else {
@@ -177,7 +177,7 @@
           }
         }
       }
-      for (i = 0, n = childrenToPatch.length; n > i; i += 2) {
+      for (i = 0, n = childrenToPatch.length; i < n; i += 2) {
         patchRecursive(childrenToPatch[i], childrenToPatch[i + 1], ignoreSubtreeOf);
       }
     }

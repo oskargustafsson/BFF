@@ -16,7 +16,7 @@
             continue;
           }
           var delegatesForEventAndSelector = delegatesForEvent[selectorStr];
-          for (var i = 0, n = delegatesForEventAndSelector.length; n > i; ++i) {
+          for (var i = 0, n = delegatesForEventAndSelector.length; i < n; ++i) {
             delegatesForEventAndSelector[i](ev);
           }
         }
@@ -180,7 +180,7 @@
         }
         var eventDelegates = this.__private.eventDelegates;
         var eventNames = void 0 !== eventName ? [ eventName ] : Object.keys(eventDelegates);
-        for (var i = 0, n = eventNames.length; n > i; ++i) {
+        for (var i = 0, n = eventNames.length; i < n; ++i) {
           eventName = eventNames[i];
           var delegatesForEvent = eventDelegates[eventName];
           if (!delegatesForEvent) {
