@@ -56,7 +56,7 @@
 
 		function validateInput(val, propName, propSchema) {
 			if (RUNTIME_CHECKS && !('type' in propSchema)) {
-				throw "propSchema is missing a 'type' property";
+				throw 'propSchema is missing a "type" property';
 			}
 
 			var isValueOk = false;

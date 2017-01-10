@@ -86,5 +86,5 @@
 	"yui"           : false,    // Yahoo User Interface
 
 	// Custom Globals
-	"globals"       : { "define": false, "require": false, "RUNTIME_CHECKS": false }
+	"globals"       : { "define": false, "require": false, "RUNTIME_CHECKS": false, "Symbol": false }
 }

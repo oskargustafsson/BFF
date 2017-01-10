@@ -6,7 +6,7 @@
     }
     function validateInput(val, propName, propSchema) {
       if (true && !('type' in propSchema)) {
-        throw 'propSchema is missing a \'type\' property';
+        throw 'propSchema is missing a "type" property';
       }
       var isValueOk = false;
       for (var i = 0, n = propSchema.type.length; i < n; ++i) {
