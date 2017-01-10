@@ -52,16 +52,18 @@
 			</li>
 			
 		</ul>
-		<div class="col-sm-3 col-md-3">
-            <form class="navbar-form" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        
 	</div>
 
 </div>
@@ -105,7 +107,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="module:bff/record"><span class="type-signature"></span>new (require("bff/record"))(<span class="optional">values</span>)</h4>
+    <h4 class="name" id="module:bff/record"><span class="type-signature"></span>new (require("bff/record"))( [values])</h4>
     
     
 </dt>
@@ -235,7 +237,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-100">line 100</a>
+				 <a href="record.js.html#sunlight-1-line-157">line 157</a>
 			</li>
 		</ul>
 	</dd>
@@ -305,7 +307,7 @@
     dependencies: [ 'firstName', 'lastName' ],
   },
   age: {
-    type: [ 'number', undefined ],
+    type: [ Number, undefined ],
     defaultValue: 0,
   },
   someData: {},
@@ -369,7 +371,7 @@
 <li><em>getter</em>: A function that will be run to transform the read value before it is returned. Shouldn't have any side effects, as it might be called internally to determine when events should be triggered.</li>
 </ul>
 <p>All schema descriptor properties are optional. An empty schema descriptor can be replaced with any falsy value for the same effect, which means that:<br><code>someData: {}</code>, <code>someData: undefined</code>, <code>someData: null</code> and <code>someData: false</code> all declares a property named someData, which can hold any type of data.</p>
-<p>There is also a shorthand syntax for specifying typed properties, because it is such a common use case, e.g.:<br><code>aProp: 'string'</code> is equal to <code>aProp: { type: 'string' }</code> and e.g.<br><code>aProp: [ 'string', 'undefined' ]</code> is equal to <code>aProp: { type: [ 'string', 'undefined' ] }</code></p></td>
+<p>There is also a shorthand syntax for specifying typed properties, because it is such a common use case, e.g.:<br><code>aProp: String</code> is equal to <code>aProp: { type: String }</code> and e.g.<br><code>aProp: [ String, undefined ]</code> is equal to <code>aProp: { type: [ String, undefined ] }</code></p></td>
         </tr>
 
     
@@ -438,7 +440,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-226">line 226</a>
+				 <a href="record.js.html#sunlight-1-line-285">line 285</a>
 			</li>
 		</ul>
 	</dd>
@@ -550,7 +552,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-168">line 168</a>
+				 <a href="record.js.html#sunlight-1-line-227">line 227</a>
 			</li>
 		</ul>
 	</dd>
@@ -654,7 +656,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="record.js.html">record.js</a>,
-				 <a href="record.js.html#sunlight-1-line-181">line 181</a>
+				 <a href="record.js.html#sunlight-1-line-240">line 240</a>
 			</li>
 		</ul>
 	</dd>
@@ -1482,20 +1484,22 @@
 </div>
 </div>
 
-<div class="modal fade" id="searchResults">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Search results</h4>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div>
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
 
 <footer>
 
@@ -1505,9 +1509,9 @@
 	</span>
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Jul 2016
+		on Jan 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
@@ -1515,7 +1519,9 @@
 
 <script src="scripts/docstrap.lib.js"></script>
 <script src="scripts/toc.js"></script>
-<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
 
 <script>
 $( function () {
@@ -1525,7 +1531,7 @@ $( function () {
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
 
-	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
 		var $this = $( this );
 
 		var example = $this.find( "code" );
@@ -1561,8 +1567,7 @@ $( function () {
 	} );
 	$( "#toc" ).toc( {
 		anchorName  : function ( i, heading, prefix ) {
-			var id = $( heading ).attr( "id" );
-			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+			return $( heading ).attr( "id" ) || ( prefix + i );
 		},
 		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
 		showAndHide : false,
@@ -1588,11 +1593,13 @@ $( function () {
 <!--Google Analytics-->
 
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		SearcherDisplay.init();
-	});
-</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
 
 </body>
 </html>

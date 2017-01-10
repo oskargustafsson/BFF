@@ -52,16 +52,18 @@
 			</li>
 			
 		</ul>
-		<div class="col-sm-3 col-md-3">
-            <form class="navbar-form" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        
 	</div>
 
 </div>
@@ -101,7 +103,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="module:bff/list"><span class="type-signature"></span>new (require("bff/list"))(<span class="optional">items</span>)</h4>
+    <h4 class="name" id="module:bff/list"><span class="type-signature"></span>new (require("bff/list"))( [items])</h4>
     
     
 </dt>
@@ -876,7 +878,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="every"><span class="type-signature"></span>every(predicate, <span class="optional">thisArg</span>)</h4>
+    <h4 class="name" id="every"><span class="type-signature"></span>every(predicate [, thisArg])</h4>
     
     
 </dt>
@@ -1244,7 +1246,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="filterMut"><span class="type-signature"></span>filterMut(predicate, <span class="optional">thisArg</span>)</h4>
+    <h4 class="name" id="filterMut"><span class="type-signature"></span>filterMut(predicate [, thisArg])</h4>
     
     
 </dt>
@@ -1784,7 +1786,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="forEach"><span class="type-signature"></span>forEach(callback, <span class="optional">thisArg</span>)</h4>
+    <h4 class="name" id="forEach"><span class="type-signature"></span>forEach(callback [, thisArg])</h4>
     
     
 </dt>
@@ -1966,7 +1968,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="includes"><span class="type-signature"></span>includes(item, <span class="optional">fromIndex</span>)</h4>
+    <h4 class="name" id="includes"><span class="type-signature"></span>includes(item [, fromIndex])</h4>
     
     
 </dt>
@@ -2172,7 +2174,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="indexOf"><span class="type-signature"></span>indexOf(searchItem, <span class="optional">fromIndex</span>)</h4>
+    <h4 class="name" id="indexOf"><span class="type-signature"></span>indexOf(searchItem [, fromIndex])</h4>
     
     
 </dt>
@@ -2378,7 +2380,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="join"><span class="type-signature"></span>join(<span class="optional">separator</span>)</h4>
+    <h4 class="name" id="join"><span class="type-signature"></span>join( [separator])</h4>
     
     
 </dt>
@@ -2548,7 +2550,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="lastIndexOf"><span class="type-signature"></span>lastIndexOf(searchItem, <span class="optional">fromIndex</span>)</h4>
+    <h4 class="name" id="lastIndexOf"><span class="type-signature"></span>lastIndexOf(searchItem [, fromIndex])</h4>
     
     
 </dt>
@@ -2750,7 +2752,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="map"><span class="type-signature"></span>map(callback, <span class="optional">thisArg</span>)</h4>
+    <h4 class="name" id="map"><span class="type-signature"></span>map(callback [, thisArg])</h4>
     
     
 </dt>
@@ -2956,7 +2958,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="mapMut"><span class="type-signature"></span>mapMut(callback, <span class="optional">thisArg</span>)</h4>
+    <h4 class="name" id="mapMut"><span class="type-signature"></span>mapMut(callback [, thisArg])</h4>
     
     
 </dt>
@@ -4633,7 +4635,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="slice"><span class="type-signature"></span>slice(<span class="optional">begin</span>, <span class="optional">end</span>)</h4>
+    <h4 class="name" id="slice"><span class="type-signature"></span>slice( [begin] [, end])</h4>
     
     
 </dt>
@@ -4841,7 +4843,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="sliceMut"><span class="type-signature"></span>sliceMut(<span class="optional">begin</span>, <span class="optional">end</span>)</h4>
+    <h4 class="name" id="sliceMut"><span class="type-signature"></span>sliceMut( [begin] [, end])</h4>
     
     
 </dt>
@@ -5056,7 +5058,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="some"><span class="type-signature"></span>some(predicate, <span class="optional">thisArg</span>)</h4>
+    <h4 class="name" id="some"><span class="type-signature"></span>some(predicate [, thisArg])</h4>
     
     
 </dt>
@@ -5262,7 +5264,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="sort"><span class="type-signature"></span>sort(<span class="optional">comparator</span>)</h4>
+    <h4 class="name" id="sort"><span class="type-signature"></span>sort( [comparator])</h4>
     
     
 </dt>
@@ -5436,7 +5438,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="splice"><span class="type-signature"></span>splice(start, nItemsToRemove, <span class="optional">itemToAdd</span>)</h4>
+    <h4 class="name" id="splice"><span class="type-signature"></span>splice(start, nItemsToRemove [, itemToAdd])</h4>
     
     
 </dt>
@@ -7985,20 +7987,22 @@
 </div>
 </div>
 
-<div class="modal fade" id="searchResults">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Search results</h4>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div>
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
 
 <footer>
 
@@ -8008,9 +8012,9 @@
 	</span>
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Jul 2016
+		on Jan 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
@@ -8018,7 +8022,9 @@
 
 <script src="scripts/docstrap.lib.js"></script>
 <script src="scripts/toc.js"></script>
-<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
 
 <script>
 $( function () {
@@ -8028,7 +8034,7 @@ $( function () {
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
 
-	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
 		var $this = $( this );
 
 		var example = $this.find( "code" );
@@ -8064,8 +8070,7 @@ $( function () {
 	} );
 	$( "#toc" ).toc( {
 		anchorName  : function ( i, heading, prefix ) {
-			var id = $( heading ).attr( "id" );
-			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+			return $( heading ).attr( "id" ) || ( prefix + i );
 		},
 		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
 		showAndHide : false,
@@ -8091,11 +8096,13 @@ $( function () {
 <!--Google Analytics-->
 
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		SearcherDisplay.init();
-	});
-</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
 
 </body>
 </html>
