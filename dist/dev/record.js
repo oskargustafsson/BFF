@@ -101,8 +101,24 @@
       this.__private.previousValues = {};
       var schema = this.__private.schema;
       var propsUnion = {};
+      var propSchema, i;
       for (var propName in schema) {
-        propsUnion[propName] = schema[propName].defaultValue;
+        propSchema = schema[propName];
+        var defaultValue = propSchema.defaultValue;
+        var propSchemaTypes = propSchema.type;
+        if (defaultValue instanceof Function) {
+          var canTypeBeFunction = false;
+          for (i = 0; i < propSchemaTypes.length; i++) {
+            if (propSchemaTypes[i] === Function) {
+              canTypeBeFunction = true;
+              break;
+            }
+          }
+          if (!canTypeBeFunction) {
+            defaultValue = defaultValue();
+          }
+        }
+        propsUnion[propName] = defaultValue;
       }
       for (propName in values) {
         if (true && !schema.hasOwnProperty(propName)) {
@@ -131,11 +147,11 @@
         this.emit(CHANGE_EVENT + ':' + propName, newVal, oldVal, this);
       };
       for (propName in schema) {
-        var propSchema = schema[propName];
+        propSchema = schema[propName];
         if (!propSchema.dependencies) {
           continue;
         }
-        for (var i = 0; i < propSchema.dependencies.length; ++i) {
+        for (i = 0; i < propSchema.dependencies.length; ++i) {
           var dependencyPropName = propSchema.dependencies[i];
           this.listenTo(this, PRECHANGE_EVENT + ':' + dependencyPropName, onPreChangeEvent.bind(this, propName));
           this.listenTo(this, CHANGE_EVENT + ':' + dependencyPropName, onChangeEvent.bind(this, propName));
