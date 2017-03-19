@@ -153,11 +153,12 @@
       }
       var prevLength = this.length;
       triggerPrechangeLengthEvent(this);
-      this.__private.array.push.apply(this.__private.array, arguments);
-      triggerChangeLengthEvent(this, prevLength);
-      for (var i = 0; i < nItems; ++i) {
-        onItemAdded(this, this[prevLength + i], prevLength + i);
+      var privArray = this.__private.array;
+      privArray.push.apply(privArray, arguments);
+      for (var i = prevLength; i < privArray.length; ++i) {
+        onItemAdded(this, privArray[i], i);
       }
+      triggerChangeLengthEvent(this, prevLength);
       return this.length;
     };
     listFunctions.unshift = function() {
@@ -167,11 +168,12 @@
       }
       var prevLength = this.length;
       triggerPrechangeLengthEvent(this);
-      this.__private.array.unshift.apply(this.__private.array, arguments);
-      triggerChangeLengthEvent(this, prevLength);
+      var privArray = this.__private.array;
+      privArray.unshift.apply(privArray, arguments);
       for (var i = 0; i < nItems; ++i) {
-        onItemAdded(this, this[i], i);
+        onItemAdded(this, privArray[i], i);
       }
+      triggerChangeLengthEvent(this, prevLength);
       return this.length;
     };
     listFunctions.pop = function() {
@@ -180,9 +182,10 @@
       }
       var prevLength = this.length;
       triggerPrechangeLengthEvent(this);
-      var poppedItem = this.__private.array.pop.apply(this.__private.array, arguments);
-      triggerChangeLengthEvent(this, prevLength);
+      var privArray = this.__private.array;
+      var poppedItem = privArray.pop.apply(privArray, arguments);
       onItemRemoved(this, poppedItem, this.length);
+      triggerChangeLengthEvent(this, prevLength);
       return poppedItem;
     };
     listFunctions.shift = function() {
@@ -191,9 +194,10 @@
       }
       var prevLength = this.length;
       triggerPrechangeLengthEvent(this);
-      var shiftedItem = this.__private.array.shift.apply(this.__private.array, arguments);
-      triggerChangeLengthEvent(this, prevLength);
+      var privArray = this.__private.array;
+      var shiftedItem = privArray.shift.apply(privArray, arguments);
       onItemRemoved(this, shiftedItem, 0);
+      triggerChangeLengthEvent(this, prevLength);
       return shiftedItem;
     };
     listFunctions.splice = function(start, nItemsToRemove) {
@@ -210,20 +214,29 @@
       }
       var i;
       var oldLength = this.length;
-      start < 0 && (start = oldLength + start);
+      if (start < 0) {
+        start = oldLength + start;
+      }
       nItemsToRemove = Math.min(nItemsToRemove, oldLength - start);
       var nItemsToAdd = arguments.length - 2;
       var nItemsToReplace = Math.min(nItemsToAdd, nItemsToRemove);
       var nItemsAffected = Math.max(nItemsToAdd, nItemsToRemove);
       var prevLength = this.length;
       triggerPrechangeLengthEvent(this);
-      var deletedItems = this.__private.array.splice.apply(this.__private.array, arguments);
-      triggerChangeLengthEvent(this, prevLength);
+      var privArray = this.__private.array;
+      var deletedItems = privArray.splice.apply(privArray, arguments);
       for (i = 0; i < nItemsAffected; ++i) {
-        i < nItemsToAdd && onItemAdded(this, this[start + i], start + i);
-        i < nItemsToReplace && onItemReplaced(this, this[start + i], deletedItems[i], start + i);
-        i < nItemsToRemove && onItemRemoved(this, deletedItems[i], start + i);
+        if (i < nItemsToAdd) {
+          onItemAdded(this, privArray[start + i], start + i);
+        }
+        if (i < nItemsToReplace) {
+          onItemReplaced(this, privArray[start + i], deletedItems[i], start + i);
+        }
+        if (i < nItemsToRemove) {
+          onItemRemoved(this, deletedItems[i], start + i);
+        }
       }
+      triggerChangeLengthEvent(this, prevLength);
       return deletedItems;
     };
     [ 'forEach', 'every', 'some', 'indexOf', 'lastIndexOf', 'join', 'reduce', 'reduceRight' ].forEach(function(funcName) {
