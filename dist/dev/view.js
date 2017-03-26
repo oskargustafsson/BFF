@@ -60,16 +60,20 @@
         this.el && this.el.parentNode && this.el.parentNode.removeChild(this.el);
         this.emit('destroyed', this);
       },
+      getHtml: function() {
+        return this.template ? this.template(this) : '';
+      },
       render: function(patchOptions) {
         if (true) {
-          if (!this.getHtml) {
-            throw 'You must implement getHtml() in order to use render()';
-          }
-          if (arguments.length > 1 && 'object' != typeof patchOptions) {
+          if (arguments.length >= 1 && 'object' != typeof patchOptions) {
             throw '"patchOptions" argument must be an object';
           }
         }
-        var newEl = this.parseHtml(this.getHtml());
+        var htmlStr = this.getHtml();
+        if (!htmlStr) {
+          return;
+        }
+        var newEl = this.parseHtml(htmlStr);
         this.doPatch || newEl.setAttribute('patch-ignore', '');
         if (this.el) {
           patch(this.el, newEl, patchOptions);

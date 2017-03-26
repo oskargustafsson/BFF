@@ -188,21 +188,31 @@
 			},
 
 			/**
-			 * Creates a DOM representation of the view, based on the HTML string returned by the getHtml() function and then assigns it to the view's `el` property. If the view already has an `el`, it will be patched instead of replaced, so that delegated event listeners will be preserved.
+			 * Returns an HTML string representation of the view in its current state. Its is used by the default implementation of `render()`, where its return value is parsed and becomes the view's DOM representation.
+			 * @instance
+			 */
+			getHtml: function () {
+				return this.template ? this.template(this) : '';
+			},
+
+			/**
+			 * Creates a DOM element representation of the view, based on the HTML string returned by the getHtml() function and then assigns it to the view's `el` property. If the view already has an `el`, it will be patched instead of replaced, so that delegated event listeners will be preserved.
 			 * @instance
 			 * @arg {Object} [patchOptions] - Options object forwarded to the `patch()` function, in case it is called.
 			 */
 			render: function (patchOptions) {
 				if (RUNTIME_CHECKS) {
-					if (!this.getHtml) {
-						throw 'You must implement getHtml() in order to use render()';
-					}
-					if (arguments.length > 1 &amp;&amp; typeof patchOptions !== 'object') {
+					if (arguments.length >= 1 &amp;&amp; typeof patchOptions !== 'object') {
 						throw '"patchOptions" argument must be an object';
 					}
 				}
 
-				var newEl = this.parseHtml(this.getHtml());
+				var htmlStr = this.getHtml();
+				if (!htmlStr) {
+					return;
+				}
+
+				var newEl = this.parseHtml(htmlStr);
 				this.doPatch || newEl.setAttribute('patch-ignore', '');
 
 				if (this.el) {
