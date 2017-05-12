@@ -543,6 +543,15 @@ define(function (require) {
 					expect(function () { new Record({ race: false }); }).to.throw();
 				},
 
+				'allows Symbol type': function () {
+					var human = Symbol('human');
+					var Record = AbstractRecord.withProperties({
+						race: Symbol,
+					});
+					expect(new Record({ race: human }).race).to.equal(human);
+					expect(function () { new Record({ race: 'human' }); }).to.throw();
+				},
+
 			},
 
 			'default values': {

@@ -95,6 +95,11 @@
 						isValueOk = true;
 						break;
 					}
+				} else if (anOkType === Symbol) {
+					if (typeof val === 'symbol') {
+						isValueOk = true;
+						break;
+					}
 				} else if (val instanceof anOkType) {
 					isValueOk = true;
 					break;
@@ -102,8 +107,8 @@
 			}
 
 			if (!isValueOk) {
-				var typeNames = propSchema.type.map(function (val) {
-					return val instanceof Function ? val.name : typeof val;
+				var typeNames = propSchema.type.map(function (aType) {
+					return aType instanceof Function ? aType.name : typeof aType;
 				});
 
 				throw 'Property ' + propName + ' must be of type [' + typeNames.join(', ') +
